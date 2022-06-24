@@ -77,17 +77,15 @@ while robot.step(timestep) != -1:
         )
     )
 
-    takeoffSignal = 0
-    rollSignal = 70  # (roll - 0) * 10
-    pitchSignal = (pitch - 0) * 10
-    throttleSignal = (zGPS + 2) * 15
+    takeoffSignal = 60
+    rollSignal = (roll + 1.57) * 10
+    pitchSignal = (pitch - 0.07) * 10
+    throttleSignal = (zGPS + 2) * 10
 
-    frontLeftMotorSpeed = takeoffSignal  # + rollSignal + pitchSignal + throttleSignal
-    frontRightMotorSpeed = (
-        takeoffSignal  # + rollSignal   + pitchSignal + throttleSignal
-    )
-    backLeftMotorSpeed = takeoffSignal + rollSignal  # + pitchSignal + throttleSignal
-    backRightMotorSpeed = takeoffSignal + rollSignal  # + pitchSignal + throttleSignal
+    frontLeftMotorSpeed = takeoffSignal - rollSignal - pitchSignal + throttleSignal
+    frontRightMotorSpeed = takeoffSignal + rollSignal - pitchSignal + throttleSignal
+    backLeftMotorSpeed = takeoffSignal - rollSignal + pitchSignal + throttleSignal
+    backRightMotorSpeed = takeoffSignal + rollSignal + pitchSignal + throttleSignal
 
     frontLeftMotor.setVelocity(frontLeftMotorSpeed)
     frontRightMotor.setVelocity(-frontRightMotorSpeed)
@@ -101,3 +99,7 @@ while robot.step(timestep) != -1:
 # pitch zero 0.07
 # pitch dangak 0.33
 # pitch nunduk - 0.19
+
+# height zero 0.00
+# naik -0.04
+# turun 0.04
