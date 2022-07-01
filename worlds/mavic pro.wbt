@@ -4,7 +4,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.9314307769767172 0.2044763493638551 -0.3010417417093174 1.620807917074715
-  position -33.86106501977176 22.765432033761357 -3.119070404674358
+  position -5.077607912113396 3.563582325029654 -0.3455407339933833
   follow "Mavic 2 PRO"
 }
 TexturedBackground {
@@ -21,7 +21,7 @@ Mavic2Pro {
   controller "test_controller"
   cameraSlot [
     Camera {
-      rotation 0.5773502691896257 -0.5773502691896257 -0.5773502691896258 2.0943951023931957
+      rotation 1 0 0 0
       width 400
       height 240
     }
