@@ -46,7 +46,7 @@ print("arming")
 
 param_roll = [50, 0, 0]
 param_pitch = [30, 0, 0]
-param_alti = [3, 0, 0]
+param_alti = [2, 0, 0]
 
 set_point_roll = 0.0
 set_point_pitch = 0.0
@@ -144,7 +144,7 @@ while robot.step(timestep) != -1:
 
     """
 
-    roll_pwm = param_roll[0] * np.clip(roll, -1.0, 1.0) + roll_acceleration - err_roll
+    roll_pwm = param_roll[0] * np.clip(roll, -1.0, 1.0) + roll_acceleration + err_roll
     pitch_pwm = param_pitch[0] * np.clip(pitch, -1.0, 1.0) - pitch_acceleration - err_pitch
     yaw_pwm = 0.1 * (set_point_yaw - yaw)
 
@@ -172,8 +172,8 @@ while robot.step(timestep) != -1:
             err_roll,
             err_pitch,
             err_alti,
-            set_point_pitch,
-            set_point_roll,
+            err_x,
+            err_y,
             frontLeftMotorSpeed,
             frontRightMotorSpeed,
             rearLeftMotorSpeed,

@@ -93,6 +93,7 @@ def convert_to_pitch_roll(ex, ey, yaw):
 # - perform simulation steps until Webots is stopping the controller
 while robot.step(timestep) != -1:
     # Read the sensors:
+    """
     message = receiver.getData()
     paramList = struct.unpack("5f", message)
     receiver.nextPacket()
@@ -102,7 +103,7 @@ while robot.step(timestep) != -1:
         paramList[2],
         paramList[3],
         paramList[4],
-    )
+    )"""
 
     roll = imu.getRollPitchYaw()[0] + math.pi / 2.0
     pitch = imu.getRollPitchYaw()[1]
