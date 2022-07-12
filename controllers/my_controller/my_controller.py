@@ -33,6 +33,7 @@ gyro = robot.getDevice("gyro")
 gyro.enable(timestep)
 camera_roll_motor = robot.getDevice("camera roll")
 camera_pitch_motor = robot.getDevice("camera pitch")
+camera_yaw_motor = robot.getDevice("camera yaw")
 front_left_motor = robot.getDevice("front left propeller")
 front_right_motor = robot.getDevice("front right propeller")
 rear_left_motor = robot.getDevice("rear left propeller")
@@ -52,8 +53,8 @@ set_point_roll = 0.0
 set_point_pitch = 0.0
 set_point_yaw = 0.0
 
-set_point_x = 0.0
-set_point_y = 0.0
+set_point_x = 1.0
+set_point_y = -1.0
 set_point_alti = 1.0
 
 int_err_roll = 0.0
@@ -144,9 +145,16 @@ while robot.step(timestep) != -1:
 
     """
 
+    # camera_roll_motor.setPosition(-0.115 * roll_acceleration)
+    # camera_pitch_motor.setPosition(-0.115 * pitch_acceleration)
+
+    camera_roll_motor.setPosition(0)
+    camera_pitch_motor.setPosition(0)
+    camera_yaw_motor.setPosition(0)
+
     roll_pwm = param_roll[0] * np.clip(roll, -1.0, 1.0) + roll_acceleration + err_roll
     pitch_pwm = param_pitch[0] * np.clip(pitch, -1.0, 1.0) - pitch_acceleration - err_pitch
-    yaw_pwm = 0.1 * (set_point_yaw - yaw)
+    yaw_pwm = 0.05 * (set_point_yaw - yaw)
 
     clamped_difference_altitude = np.clip(err_alti + alti_pwm_offset, -1.0, 1.0)
     alti_pwm = param_alti[0] * math.pow(clamped_difference_altitude, 3.0)
