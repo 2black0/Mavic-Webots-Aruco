@@ -16,24 +16,46 @@ import math
 import numpy as np
 import struct
 
+
+# import numpy as np
+# import cv2, PIL
+# from cv2 import aruco
+# import matplotlib.pyplot as plt
+# import matplotlib as mpl
+# import pandas as pd
+
+# import numpy
+import cv2
+import cv2.aruco as aruco
+from matplotlib import pyplot as plt
+
 robot = Robot()
 
 timestep = int(robot.getBasicTimeStep())
+
 keyboard = Keyboard()
 keyboard.enable(timestep)
+
 imu = robot.getDevice("inertial unit")
 imu.enable(timestep)
+
 camera = robot.getDevice("camera")
 camera.enable(timestep)
+# camera.recognitionEnable(timestep)
+
 gps = robot.getDevice("gps")
 gps.enable(timestep)
+
 compass = robot.getDevice("compass")
 compass.enable(timestep)
+
 gyro = robot.getDevice("gyro")
 gyro.enable(timestep)
+
 camera_roll_motor = robot.getDevice("camera roll")
 camera_pitch_motor = robot.getDevice("camera pitch")
 camera_yaw_motor = robot.getDevice("camera yaw")
+
 front_left_motor = robot.getDevice("front left propeller")
 front_right_motor = robot.getDevice("front right propeller")
 rear_left_motor = robot.getDevice("rear left propeller")
@@ -53,9 +75,9 @@ set_point_roll = 0.0
 set_point_pitch = 0.0
 set_point_yaw = 0.0
 
-set_point_x = 1.0
-set_point_y = -1.0
-set_point_alti = 1.0
+set_point_x = 0.0
+set_point_y = 0.0
+set_point_alti = 3.0
 
 int_err_roll = 0.0
 int_err_pitch = 0.0
@@ -89,6 +111,22 @@ def convert_to_pitch_roll(ex, ey, yaw):
     # print("ex_ = %f, ey_ = %f" % (exy_[0], exy_[1]))
     return exy_[0], exy_[1]
 
+
+# tutorial https://www.youtube.com/watch?v=AQXLC2Btag4
+def findAruco(img, marker_size=6, total_markers=250, draw=True):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    key = getattr(aruco, f"DICT_{marker_size}X{marker_size}_{total_markers}")
+    arucoDict = aruco.Dictionary_get(key)
+    arucoParam = aruco.DetectorParameters_create()
+    bbox, ids, _ = aruco.detectMarkers(gray, arucoDict, parameters=arucoParam)
+    print(ids)
+    if draw:
+        aruco.drawDetectedMarkers(img, bbox)
+    return bbox, ids
+
+
+# cv2.startWindowThread()
+# cv2.namedWindow("preview")
 
 while robot.step(timestep) != -1:
     roll = imu.getRollPitchYaw()[0] + math.pi / 2.0
@@ -188,6 +226,41 @@ while robot.step(timestep) != -1:
             rearRightMotorSpeed,
         )
     )
+
+    # camera tutorial from this link
+    # https://erebus.rcj.cloud/docs/tutorials/sensors/rgb-camera/
+    image = camera.getImage()
+    image = np.frombuffer(image, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4))
+    # frame = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
+
+    # cv2.imshow("frame", frame)
+    cv2.imshow("camera", image)
+
+    # im = cv2.VideoCapture(image)
+    """
+    ARUCO_PARAMETERS = aruco.DetectorParameters_create()
+    ARUCO_DICT = aruco.Dictionary_get(aruco.DICT_5X5_1000)
+
+    plt.figure(figsize=(20, 20))
+    imgplot = plt.imshow(im, interpolation="nearest")
+    plt.show()
+
+    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    corners, ids, rejectedImgPoints = aruco.detectMarkers(im, ARUCO_DICT, parameters=ARUCO_PARAMETERS)
+
+    if ids is not None:
+        print("detected: {}".format(len(ids)))
+        # for i, corner in zip(ids, corners):
+        # print('ID: {}; Corners: {}'.format(i, corner))
+
+        im = aruco.drawDetectedMarkers(im, corners, borderColor=(255, 0, 0))
+    else:
+        print("NONE")
+    plt.figure(figsize=(20, 20))
+    imgplot = plt.imshow(im, interpolation="nearest")
+    plt.show()
+    """
+    cv2.waitKey(1)  # Render imshows on screen
 
 # roll zero 0
 # roll kiri negatif
