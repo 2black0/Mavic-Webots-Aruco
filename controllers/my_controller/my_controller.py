@@ -67,16 +67,6 @@ rear_left_motor = robot.getDevice("rear left propeller")
 rear_right_motor = robot.getDevice("rear right propeller")
 motors = [front_left_motor, front_right_motor, rear_left_motor, rear_right_motor]
 
-for i in range(4):
-    motors[i].setPosition(float("inf"))
-    motors[i].setVelocity(1.0)
-print("arming")
-
-# camera face down
-camera_pitch_motor.setPosition(1.6)
-camera_yaw_motor.setPosition(0)
-camera_roll_motor.setPosition(0)
-
 param_roll = [50, 0, 0]
 param_pitch = [30, 0, 0]
 param_alti = [2, 0, 0]
@@ -103,6 +93,16 @@ MAX_PITCH_ANGLE = 0.5
 MIN_PITCH_ANGLE = -0.5
 MAX_ROLL_ANGLE = 0.5
 MIN_ROLL_ANGLE = -0.5
+
+for i in range(4):
+    motors[i].setPosition(float("inf"))
+    motors[i].setVelocity(1.0)
+print("arming")
+
+# camera face down
+camera_pitch_motor.setPosition(1.6)
+camera_yaw_motor.setPosition(0)
+camera_roll_motor.setPosition(0)
 
 
 def motor_action(frontLeftMotorSpeed, frontRightMotorSpeed, rearLeftMotorSpeed, rearRightMotorSpeed):
@@ -134,9 +134,6 @@ def findAruco(img, marker_size=6, total_markers=250, draw=True):
         aruco.drawDetectedMarkers(img, bbox)
     return bbox, ids
 
-
-# cv2.startWindowThread()
-# cv2.namedWindow("preview")
 
 while robot.step(timestep) != -1:
     roll = imu.getRollPitchYaw()[0] + math.pi / 2.0
@@ -193,12 +190,10 @@ while robot.step(timestep) != -1:
 
     """
 
-    # camera_roll_motor.setPosition(-0.115 * roll_acceleration)
-    # camera_pitch_motor.setPosition(-0.1 * pitch_acceleration)
-
-    # camera_roll_motor.setPosition(0.5)
-    # camera_pitch_motor.setPosition(1.6)
-    # camera_yaw_motor.setPosition()
+    # stabilize the camera
+    camera_roll_motor.setPosition(-0.115 * roll_acceleration)
+    camera_pitch_motor.setPosition((-0.1 * pitch_acceleration) + 1.6)
+    camera_yaw_motor.setPosition(-0.115 * yaw_acceleration)
 
     roll_pwm = param_roll[0] * np.clip(roll, -1.0, 1.0) + roll_acceleration + err_roll
     pitch_pwm = param_pitch[0] * np.clip(pitch, -1.0, 1.0) - pitch_acceleration - err_pitch
