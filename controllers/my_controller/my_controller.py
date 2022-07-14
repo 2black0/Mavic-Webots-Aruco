@@ -67,7 +67,7 @@ rear_left_motor = robot.getDevice("rear left propeller")
 rear_right_motor = robot.getDevice("rear right propeller")
 motors = [front_left_motor, front_right_motor, rear_left_motor, rear_right_motor]
 
-param_roll = [50, 0, 0]
+param_roll = [50, 5, 10]
 param_pitch = [30, 0, 0]
 param_alti = [2, 0, 0]
 
@@ -157,15 +157,26 @@ while robot.step(timestep) != -1:
     # get error attitude from position error
     err_pitch, err_roll = convert_to_pitch_roll(err_x, err_y, yaw)
 
+    int_err_pitch = int_err_pitch + err_pitch
+    int_err_roll = int_err_roll + err_roll
+
     # stabilize the camera
-    camera_roll_motor.setPosition(-0.115 * roll_acceleration)
     camera_pitch_motor.setPosition(np.clip(((-0.1 * pitch_acceleration) + 1.6), -0.5, 1.7))
+    camera_roll_motor.setPosition(-0.115 * roll_acceleration)
     camera_yaw_motor.setPosition(-0.115 * yaw_acceleration)
 
     # calulate attitude pwm
     roll_pwm = param_roll[0] * np.clip(roll, -1.0, 1.0) + roll_acceleration + err_roll
     pitch_pwm = param_pitch[0] * np.clip(pitch, -1.0, 1.0) - pitch_acceleration - err_pitch
     yaw_pwm = 0.05 * (set_point_yaw - yaw)
+
+    # pitch_pwm = (
+    #    (param_pitch[0] * np.clip(pitch, -1.0, 1.0))
+    #    # - (param_pitch[1] * np.clip(int_err_pitch, -1.0, 1.0))
+    #    - (param_pitch[2] * pitch_acceleration)
+    # )
+    # roll_pwm = param_roll[0] * np.clip(roll, -1.0, 1.0) + roll_acceleration + err_roll
+    # yaw_pwm = 0.05 * (set_point_yaw - yaw)
 
     # calculate altitude pwm
     clamped_difference_altitude = np.clip(err_alti + alti_pwm_offset, -1.0, 1.0)
@@ -180,6 +191,7 @@ while robot.step(timestep) != -1:
     # action of motor
     motor_action(frontLeftMotorSpeed, frontRightMotorSpeed, rearLeftMotorSpeed, rearRightMotorSpeed)
 
+    """
     print(
         "r_pwm:{:.2f} | p_pwm:{:.2f} | y_pwm:{:.2f} | c_alti:{:.2f} | a_pwm:{:.2f} | fl_motor:{:.2f} | fr_motor:{:.2f} | rl_motor:{:.2f} | rr_motor:{:.2f}".format(
             roll_pwm,
@@ -193,7 +205,7 @@ while robot.step(timestep) != -1:
             rearRightMotorSpeed,
         )
     )
-
+    """
     """
     print(
         "r:{:.2f} | p:{:.2f} | y:{:.2f} | X:{:.2f} | Y:{:.2f} | Z:{:.2f} | gr:{:.2f} | gp:{:.2f} | gy:{:.2f} | er:{:.2f} | ep:{:.2f} | eZ:{:.2f} | ex:{:.2f} | ey:{:.2f} | fl:{:.2f} | fr:{:.2f} | rl:{:.2f} | rr:{:.2f}".format(
@@ -218,6 +230,29 @@ while robot.step(timestep) != -1:
         )
     )
     """
+
+    print(
+        "r:{: .2f} | p:{: .2f} | y:{: .2f} | X:{: .2f} | Y:{: .2f} | Z:{: .2f} | gr:{: .2f} | gp:{: .2f} | gy:{: .2f} | er:{: .2f} | ep:{: .2f} | eZ:{: .2f} | ex:{: .2f} | ey:{: .2f} | fl:{: .2f} | fr:{: .2f} | rl:{: .2f} | rr:{: .2f}".format(
+            roll,
+            pitch,
+            yaw,
+            px,
+            py,
+            altitude,
+            roll_acceleration,
+            pitch_acceleration,
+            yaw_acceleration,
+            err_roll,
+            err_pitch,
+            err_alti,
+            err_x,
+            err_y,
+            frontLeftMotorSpeed,
+            frontRightMotorSpeed,
+            rearLeftMotorSpeed,
+            rearRightMotorSpeed,
+        )
+    )
 
     # camera tutorial from this link
     # https://erebus.rcj.cloud/docs/tutorials/sensors/rgb-camera/
