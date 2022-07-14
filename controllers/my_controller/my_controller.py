@@ -32,6 +32,7 @@ import argparse
 import imutils
 import cv2
 import sys
+from time import sleep
 
 robot = Robot()
 
@@ -70,6 +71,11 @@ for i in range(4):
     motors[i].setPosition(float("inf"))
     motors[i].setVelocity(1.0)
 print("arming")
+
+# camera face down
+camera_pitch_motor.setPosition(1.6)
+camera_yaw_motor.setPosition(0)
+camera_roll_motor.setPosition(0)
 
 param_roll = [50, 0, 0]
 param_pitch = [30, 0, 0]
@@ -187,8 +193,8 @@ while robot.step(timestep) != -1:
 
     """
 
-    camera_roll_motor.setPosition(-0.115 * roll_acceleration)
-    camera_pitch_motor.setPosition(-0.1 * pitch_acceleration)
+    # camera_roll_motor.setPosition(-0.115 * roll_acceleration)
+    # camera_pitch_motor.setPosition(-0.1 * pitch_acceleration)
 
     # camera_roll_motor.setPosition(0.5)
     # camera_pitch_motor.setPosition(1.6)
