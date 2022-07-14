@@ -136,6 +136,7 @@ def findAruco(img, marker_size=6, total_markers=250, draw=True):
 
 
 while robot.step(timestep) != -1:
+    # read sensor
     roll = imu.getRollPitchYaw()[0] + math.pi / 2.0
     pitch = imu.getRollPitchYaw()[1]
     yaw = imu.getRollPitchYaw()[2]
@@ -148,67 +149,52 @@ while robot.step(timestep) != -1:
     pitch_acceleration = gyro.getValues()[1]
     yaw_acceleration = gyro.getValues()[2]
 
+    # calculate position error
     err_x = px - set_point_x
     err_y = py - set_point_y
     err_alti = set_point_alti - altitude
 
+    # get error attitude from position error
     err_pitch, err_roll = convert_to_pitch_roll(err_x, err_y, yaw)
-
-    """
-    # set_point_pitch = err_x / 20
-    if set_point_pitch >= MAX_PITCH_ANGLE:
-        set_point_pitch = MAX_PITCH_ANGLE
-    if set_point_pitch <= MIN_PITCH_ANGLE:
-        set_point_pitch = MIN_PITCH_ANGLE
-
-    # set_point_roll = -(err_y / 20)
-    if set_point_roll >= MAX_ROLL_ANGLE:
-        set_point_roll = MAX_ROLL_ANGLE
-    if set_point_roll <= MIN_ROLL_ANGLE:
-        set_point_roll = MIN_ROLL_ANGLE
-
-    # err_roll = roll - set_point_roll
-    int_err_roll = int_err_roll + err_roll
-    if int_err_roll >= MAX_INTEGRAL_ERROR:
-        int_err_roll = MAX_INTEGRAL_ERROR
-    if int_err_roll <= MIN_INTEGRAL_ERROR:
-        int_err_roll = MIN_INTEGRAL_ERROR
-    dif_err_roll = roll_acceleration
-
-    # err_pitch = pitch - set_point_pitch
-    int_err_pitch = int_err_pitch + err_pitch
-    if int_err_pitch >= MAX_INTEGRAL_ERROR:
-        int_err_pitch = MAX_INTEGRAL_ERROR
-    if int_err_pitch <= MIN_INTEGRAL_ERROR:
-        int_err_pitch = MIN_INTEGRAL_ERROR
-    dif_err_pitch = pitch_acceleration
-
-    roll_pwm = err_roll * param_roll[0] + (dif_err_roll * param_roll[2]) + (int_err_roll * param_roll[1])
-    pitch_pwm = err_pitch * param_pitch[0] - (dif_err_pitch * param_pitch[2]) + (int_err_pitch * param_pitch[1])
-
-    alti_pwm = (err_alti * param_alti[0])# + (diff_err_alti * param_alti[2])
-
-    """
 
     # stabilize the camera
     camera_roll_motor.setPosition(-0.115 * roll_acceleration)
-    camera_pitch_motor.setPosition((-0.1 * pitch_acceleration) + 1.6)
+    camera_pitch_motor.setPosition(np.clip(((-0.1 * pitch_acceleration) + 1.6), -0.5, 1.7))
     camera_yaw_motor.setPosition(-0.115 * yaw_acceleration)
 
+    # calulate attitude pwm
     roll_pwm = param_roll[0] * np.clip(roll, -1.0, 1.0) + roll_acceleration + err_roll
     pitch_pwm = param_pitch[0] * np.clip(pitch, -1.0, 1.0) - pitch_acceleration - err_pitch
     yaw_pwm = 0.05 * (set_point_yaw - yaw)
 
+    # calculate altitude pwm
     clamped_difference_altitude = np.clip(err_alti + alti_pwm_offset, -1.0, 1.0)
     alti_pwm = param_alti[0] * math.pow(clamped_difference_altitude, 3.0)
 
+    # pwm combination of each motor
     frontLeftMotorSpeed = take_off_pwm + alti_pwm - roll_pwm - pitch_pwm + yaw_pwm
     frontRightMotorSpeed = take_off_pwm + alti_pwm + roll_pwm - pitch_pwm - yaw_pwm
     rearLeftMotorSpeed = take_off_pwm + alti_pwm - roll_pwm + pitch_pwm - yaw_pwm
     rearRightMotorSpeed = take_off_pwm + alti_pwm + roll_pwm + pitch_pwm + yaw_pwm
 
+    # action of motor
     motor_action(frontLeftMotorSpeed, frontRightMotorSpeed, rearLeftMotorSpeed, rearRightMotorSpeed)
 
+    print(
+        "r_pwm:{:.2f} | p_pwm:{:.2f} | y_pwm:{:.2f} | c_alti:{:.2f} | a_pwm:{:.2f} | fl_motor:{:.2f} | fr_motor:{:.2f} | rl_motor:{:.2f} | rr_motor:{:.2f}".format(
+            roll_pwm,
+            pitch_pwm,
+            yaw_pwm,
+            clamped_difference_altitude,
+            alti_pwm,
+            frontLeftMotorSpeed,
+            frontRightMotorSpeed,
+            rearLeftMotorSpeed,
+            rearRightMotorSpeed,
+        )
+    )
+
+    """
     print(
         "r:{:.2f} | p:{:.2f} | y:{:.2f} | X:{:.2f} | Y:{:.2f} | Z:{:.2f} | gr:{:.2f} | gp:{:.2f} | gy:{:.2f} | er:{:.2f} | ep:{:.2f} | eZ:{:.2f} | ex:{:.2f} | ey:{:.2f} | fl:{:.2f} | fr:{:.2f} | rl:{:.2f} | rr:{:.2f}".format(
             roll,
@@ -231,6 +217,7 @@ while robot.step(timestep) != -1:
             rearRightMotorSpeed,
         )
     )
+    """
 
     # camera tutorial from this link
     # https://erebus.rcj.cloud/docs/tutorials/sensors/rgb-camera/
