@@ -28,6 +28,10 @@ import struct
 import cv2
 import cv2.aruco as aruco
 from matplotlib import pyplot as plt
+import argparse
+import imutils
+import cv2
+import sys
 
 robot = Robot()
 
@@ -183,12 +187,12 @@ while robot.step(timestep) != -1:
 
     """
 
-    # camera_roll_motor.setPosition(-0.115 * roll_acceleration)
-    # camera_pitch_motor.setPosition(-0.115 * pitch_acceleration)
+    camera_roll_motor.setPosition(-0.115 * roll_acceleration)
+    camera_pitch_motor.setPosition(-0.1 * pitch_acceleration)
 
-    camera_roll_motor.setPosition(0)
-    camera_pitch_motor.setPosition(0)
-    camera_yaw_motor.setPosition(0)
+    # camera_roll_motor.setPosition(0.5)
+    # camera_pitch_motor.setPosition(1.6)
+    # camera_yaw_motor.setPosition()
 
     roll_pwm = param_roll[0] * np.clip(roll, -1.0, 1.0) + roll_acceleration + err_roll
     pitch_pwm = param_pitch[0] * np.clip(pitch, -1.0, 1.0) - pitch_acceleration - err_pitch
@@ -285,3 +289,6 @@ while robot.step(timestep) != -1:
 # posisi Y 0
 # posisi Y kiri negatif
 # posisi Y kanan positif
+
+# nitip link
+# https://github.sre.pub/felipenmartins/Robotics-Simulation-Labs
