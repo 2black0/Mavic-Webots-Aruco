@@ -81,13 +81,19 @@ MIN_PITCH_ANGLE = -0.5
 MAX_ROLL_ANGLE = 0.5
 MIN_ROLL_ANGLE = -0.5
 
+down_angle_camera = 0
+
 for i in range(4):
     motors[i].setPosition(float("inf"))
     motors[i].setVelocity(1.0)
 print("arming")
 
 # camera face down
-camera_pitch_motor.setPosition(1.6)
+camera_pitch_motor.setPosition(0)
+camera_yaw_motor.setPosition(0)
+camera_roll_motor.setPosition(0)
+
+camera_pitch_motor.setPosition(down_angle_camera)
 camera_yaw_motor.setPosition(0)
 camera_roll_motor.setPosition(0)
 
@@ -147,7 +153,7 @@ while robot.step(timestep) != -1:
     int_err_roll = int_err_roll + err_roll
 
     # stabilize the camera
-    camera_pitch_motor.setPosition(np.clip(((-0.1 * pitch_acceleration) + 1.6), -0.5, 1.7))
+    camera_pitch_motor.setPosition(np.clip(((-0.1 * pitch_acceleration) + down_angle_camera), -0.5, 1.7))
     camera_roll_motor.setPosition(-0.115 * roll_acceleration)
     camera_yaw_motor.setPosition(-0.115 * yaw_acceleration)
 
@@ -253,10 +259,12 @@ while robot.step(timestep) != -1:
     corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
     if len(corners) != 0:
         # print(corners[0][0][0])
-        left_bottom = (corners[0][0][0][0], corners[0][0][0][1])
-        left_top = (corners[0][0][1][0], corners[0][0][1][1])
-        right_top = (corners[0][0][2][0], corners[0][0][2][1])
-        right_bottom = (corners[0][0][3][0], corners[0][0][3][1])
+        # print(type(corners))
+
+        left_bottom = (int(corners[0][0][0][0]), int(corners[0][0][0][1]))
+        left_top = (int(corners[0][0][1][0]), int(corners[0][0][1][1]))
+        right_top = (int(corners[0][0][2][0]), int(corners[0][0][2][1]))
+        right_bottom = (int(corners[0][0][3][0]), int(corners[0][0][3][1]))
         x_center = corners[0][0][1][0] + ((corners[0][0][2][0] - corners[0][0][1][0]) / 2)
         y_center = corners[0][0][3][1] + ((corners[0][0][2][1] - corners[0][0][3][1]) / 2)
         radius = 5
