@@ -15,24 +15,11 @@ from controller import (
 import math
 import numpy as np
 import struct
-
-
-# import numpy as np
-# import cv2, PIL
-# from cv2 import aruco
-# import matplotlib.pyplot as plt
-# import matplotlib as mpl
-# import pandas as pd
-
-# import numpy
-import cv2
-import cv2.aruco as aruco
-from matplotlib import pyplot as plt
-import argparse
-import imutils
-import cv2
-import sys
-from time import sleep
+import cv2, PIL
+from cv2 import aruco
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import pandas as pd
 
 robot = Robot()
 
@@ -77,7 +64,7 @@ set_point_yaw = 0.0
 
 set_point_x = 0.0
 set_point_y = 0.0
-set_point_alti = 3.0
+set_point_alti = 3.5
 
 int_err_roll = 0.0
 int_err_pitch = 0.0
@@ -101,7 +88,6 @@ print("arming")
 
 # camera face down
 camera_pitch_motor.setPosition(1.6)
-# camera_pitch_motor.setPosition(0)
 camera_yaw_motor.setPosition(0)
 camera_roll_motor.setPosition(0)
 
@@ -130,10 +116,9 @@ def findAruco(img, marker_size=6, total_markers=250, draw=True):
     arucoDict = aruco.Dictionary_get(key)
     arucoParam = aruco.DetectorParameters_create()
     bbox, ids, _ = aruco.detectMarkers(gray, arucoDict, parameters=arucoParam)
-    print(ids)
     if draw:
         aruco.drawDetectedMarkers(img, bbox)
-    return bbox, ids
+    return [bbox, ids]
 
 
 while robot.step(timestep) != -1:
@@ -259,37 +244,34 @@ while robot.step(timestep) != -1:
     # https://erebus.rcj.cloud/docs/tutorials/sensors/rgb-camera/
     image = camera.getImage()
     image = np.frombuffer(image, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4))
-    # frame = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
+    # findAruco(image, draw=False)
 
-    # cv2.imshow("frame", frame)
+    # gray = cv2.cvtColor(image, cv2.COLOR_RGBA2GRAY)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
+    parameters = aruco.DetectorParameters_create()
+    corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
+    if len(corners) != 0:
+        # print(corners[0][0][0])
+        left_bottom = (corners[0][0][0][0], corners[0][0][0][1])
+        left_top = (corners[0][0][1][0], corners[0][0][1][1])
+        right_top = (corners[0][0][2][0], corners[0][0][2][1])
+        right_bottom = (corners[0][0][3][0], corners[0][0][3][1])
+        x_center = corners[0][0][1][0] + ((corners[0][0][2][0] - corners[0][0][1][0]) / 2)
+        y_center = corners[0][0][3][1] + ((corners[0][0][2][1] - corners[0][0][3][1]) / 2)
+        radius = 5
+        color = (255, 0, 0)
+        thickness = 2
+        image = cv2.circle(image, (x_center, y_center), radius, color, thickness)
+    # aruco.drawDetectedMarkers(image, corners)
+
+    # image = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
+    # frame_markers = aruco.drawDetectedMarkers(image, corners, ids)
+
     cv2.imshow("camera", image)
-
-    # im = cv2.VideoCapture(image)
-    """
-    ARUCO_PARAMETERS = aruco.DetectorParameters_create()
-    ARUCO_DICT = aruco.Dictionary_get(aruco.DICT_5X5_1000)
-
-    plt.figure(figsize=(20, 20))
-    imgplot = plt.imshow(im, interpolation="nearest")
-    plt.show()
-
-    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    corners, ids, rejectedImgPoints = aruco.detectMarkers(im, ARUCO_DICT, parameters=ARUCO_PARAMETERS)
-
-    if ids is not None:
-        print("detected: {}".format(len(ids)))
-        # for i, corner in zip(ids, corners):
-        # print('ID: {}; Corners: {}'.format(i, corner))
-
-        im = aruco.drawDetectedMarkers(im, corners, borderColor=(255, 0, 0))
-    else:
-        print("NONE")
-    plt.figure(figsize=(20, 20))
-    imgplot = plt.imshow(im, interpolation="nearest")
-    plt.show()
-    """
     cv2.waitKey(1)  # Render imshows on screen
 
+cv2.destroyAllWindows()
 # roll zero 0
 # roll kiri negatif
 # roll kanan positif

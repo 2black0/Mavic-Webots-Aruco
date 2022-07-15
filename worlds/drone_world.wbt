@@ -13,8 +13,8 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation -0.31025189359439925 -0.5235835644883037 -0.7934759060732794 1.9580810790657925
-  position 3.7535698360774123 10.33867536330141 -13.22946499264595
+  orientation -0.23829187203455612 -0.5639853555658574 -0.790656374431725 2.0560655998655517
+  position 4.317167357431396 7.557415110955156 -9.68571507035408
   near 0.2
   followSmoothness 0.2
 }
@@ -77,29 +77,29 @@ Solid {
       appearance PBRAppearance {
         baseColorMap ImageTexture {
           url [
-            "textures/aruco.jpg"
+            "textures/aruco-land.png"
           ]
           filtering 0
         }
         roughness 1
         roughnessMap ImageTexture {
           url [
-            "textures/aruco.jpg"
+            "textures/aruco-land.png"
           ]
         }
         metalnessMap ImageTexture {
           url [
-            "textures/aruco.jpg"
+            "textures/aruco-land.png"
           ]
         }
         normalMap ImageTexture {
           url [
-            "textures/aruco.jpg"
+            "textures/aruco-land.png"
           ]
         }
         occlusionMap ImageTexture {
           url [
-            "textures/aruco.jpg"
+            "textures/aruco-land.png"
           ]
         }
       }
@@ -180,12 +180,12 @@ Forest {
   minRadius 3
 }
 Mavic2Pro {
-  translation -0.224692 0.0857091 0.0400006
+  translation -0.194691 0.0857091 0.07
   rotation 0 0.7071067811865476 0.7071067811865476 3.14159
   controller "my_controller"
   cameraSlot [
     Camera {
-      rotation 1 0 0 0
+      rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
       width 400
       height 240
     }
