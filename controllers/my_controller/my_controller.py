@@ -101,6 +101,7 @@ print("arming")
 
 # camera face down
 camera_pitch_motor.setPosition(1.6)
+# camera_pitch_motor.setPosition(0)
 camera_yaw_motor.setPosition(0)
 camera_roll_motor.setPosition(0)
 
@@ -230,7 +231,7 @@ while robot.step(timestep) != -1:
         )
     )
     """
-
+    """
     print(
         "r:{: .2f} | p:{: .2f} | y:{: .2f} | X:{: .2f} | Y:{: .2f} | Z:{: .2f} | gr:{: .2f} | gp:{: .2f} | gy:{: .2f} | er:{: .2f} | ep:{: .2f} | eZ:{: .2f} | ex:{: .2f} | ey:{: .2f} | fl:{: .2f} | fr:{: .2f} | rl:{: .2f} | rr:{: .2f}".format(
             roll,
@@ -252,7 +253,7 @@ while robot.step(timestep) != -1:
             rearLeftMotorSpeed,
             rearRightMotorSpeed,
         )
-    )
+    )"""
 
     # camera tutorial from this link
     # https://erebus.rcj.cloud/docs/tutorials/sensors/rgb-camera/
