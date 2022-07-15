@@ -262,7 +262,10 @@ while robot.step(timestep) != -1:
         radius = 5
         color = (255, 0, 0)
         thickness = 2
-        image = cv2.circle(image, (x_center, y_center), radius, color, thickness)
+        image = cv2.circle(image, left_bottom, radius, color, thickness)
+        image = cv2.circle(image, left_top, radius, color, thickness)
+        image = cv2.circle(image, right_top, radius, color, thickness)
+        image = cv2.circle(image, right_bottom, radius, color, thickness)
     # aruco.drawDetectedMarkers(image, corners)
 
     # image = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
