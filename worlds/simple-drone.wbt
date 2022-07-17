@@ -14,7 +14,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.14905046045272213 -0.6086516216807573 -0.7793119809577008 2.1999408991457057
-  position 5.126631082412032 5.537862328979886 -6.184669395776932
+  position 4.90554421372892 5.842393079793891 -6.146682631473569
   near 0.2
   followSmoothness 0.2
 }
@@ -37,7 +37,7 @@ Mavic2Pro {
   controller "my_controller"
   cameraSlot [
     Camera {
-      rotation 0.5773502691896257 -0.5773502691896257 -0.5773502691896258 2.0943951023931957
+      rotation 1 0 0 0
       width 400
       height 240
     }
@@ -84,16 +84,4 @@ Solid {
   name "aruco-marker"
   model "manhole"
   boundingObject USE MANHOLE_BOX
-}
-Mavic2Pro {
-  translation -0.194691 0.0857091 0.96
-  rotation 0 0.7071067811865476 0.7071067811865476 3.14159
-  controller "void"
-  cameraSlot [
-    Camera {
-      rotation 0.5773502691896257 -0.5773502691896257 -0.5773502691896258 2.0943951023931957
-      width 400
-      height 240
-    }
-  ]
 }

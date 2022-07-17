@@ -64,7 +64,7 @@ set_point_yaw = 0.0
 
 set_point_x = 0.0
 set_point_y = 0.0
-set_point_alti = 3.5
+set_point_alti = 10
 
 int_err_roll = 0.0
 int_err_pitch = 0.0
@@ -81,7 +81,7 @@ MIN_PITCH_ANGLE = -0.5
 MAX_ROLL_ANGLE = 0.5
 MIN_ROLL_ANGLE = -0.5
 
-down_angle_camera = 0
+down_angle_camera = 1.6
 
 for i in range(4):
     motors[i].setPosition(float("inf"))
