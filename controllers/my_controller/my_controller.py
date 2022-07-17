@@ -82,6 +82,8 @@ MAX_ROLL_ANGLE = 0.5
 MIN_ROLL_ANGLE = -0.5
 
 down_angle_camera = 1.6
+camera_res_width = 400
+camera_res_height = 240
 
 for i in range(4):
     motors[i].setPosition(float("inf"))
@@ -265,15 +267,22 @@ while robot.step(timestep) != -1:
         left_top = (int(corners[0][0][1][0]), int(corners[0][0][1][1]))
         right_top = (int(corners[0][0][2][0]), int(corners[0][0][2][1]))
         right_bottom = (int(corners[0][0][3][0]), int(corners[0][0][3][1]))
-        x_center = corners[0][0][1][0] + ((corners[0][0][2][0] - corners[0][0][1][0]) / 2)
-        y_center = corners[0][0][3][1] + ((corners[0][0][2][1] - corners[0][0][3][1]) / 2)
-        radius = 5
-        color = (255, 0, 0)
-        thickness = 2
-        image = cv2.circle(image, left_bottom, radius, color, thickness)
-        image = cv2.circle(image, left_top, radius, color, thickness)
-        image = cv2.circle(image, right_top, radius, color, thickness)
-        image = cv2.circle(image, right_bottom, radius, color, thickness)
+        x_center = (int(corners[0][0][3][0]) / 2) + (int(corners[0][0][0][0]) / 2)
+        y_center = (int(corners[0][0][2][1]) / 2) + (int(corners[0][0][3][1]) / 2)
+        # print(int(x_center), int(y_center))
+        radius = 3
+        color_center = (255, 255, 0)
+        color_pos = (0, 0, 255)
+        thickness = 3
+        # image = cv2.circle(image, left_bottom, radius, color, thickness)
+        # image = cv2.circle(image, left_top, radius, color, thickness)
+        # image = cv2.circle(image, right_top, radius, color, thickness)
+        # image = cv2.circle(image, right_bottom, radius, color, thickness)
+        image = cv2.circle(image, (int(x_center), int(y_center)), radius, color_pos, thickness)
+        image = cv2.circle(
+            image, (int(camera_res_width / 2), int(camera_res_height / 2)), radius, color_center, thickness
+        )
+
     # aruco.drawDetectedMarkers(image, corners)
 
     # image = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
