@@ -1,5 +1,6 @@
 """my_controller controller."""
 
+from var import *
 from controller import (
     Robot,
     Motor,
@@ -25,6 +26,7 @@ robot = Robot()
 
 timestep = int(robot.getBasicTimeStep())
 
+# definition the hardware
 keyboard = Keyboard()
 keyboard.enable(timestep)
 
@@ -44,79 +46,40 @@ compass.enable(timestep)
 gyro = robot.getDevice("gyro")
 gyro.enable(timestep)
 
-camera_roll_motor = robot.getDevice("camera roll")
-camera_pitch_motor = robot.getDevice("camera pitch")
-camera_yaw_motor = robot.getDevice("camera yaw")
+camera_roll = robot.getDevice("camera roll")
+camera_pitch = robot.getDevice("camera pitch")
+camera_yaw = robot.getDevice("camera yaw")
 
-front_left_motor = robot.getDevice("front left propeller")
-front_right_motor = robot.getDevice("front right propeller")
-rear_left_motor = robot.getDevice("rear left propeller")
-rear_right_motor = robot.getDevice("rear right propeller")
-motors = [front_left_motor, front_right_motor, rear_left_motor, rear_right_motor]
+motor_front_left = robot.getDevice("front left propeller")
+motor_front_right = robot.getDevice("front right propeller")
+motor_rear_left = robot.getDevice("rear left propeller")
+motor_rear_right = robot.getDevice("rear right propeller")
+motors = [motor_front_left, motor_front_right, motor_rear_left, motor_rear_right]
 
-param_roll = [50, 5, 10]
-param_pitch = [30, 0, 0]
-param_alti = [2, 0, 0]
+# camera face down
+camera_roll.setPosition(0)
+camera_pitch.setPosition(camera_down_angle)
+camera_yaw.setPosition(0)
 
-set_point_roll = 0.0
-set_point_pitch = 0.0
-set_point_yaw = 0.0
 
-set_point_x = 0.0
-set_point_y = 0.0
-set_point_alti = 10
-
-int_err_roll = 0.0
-int_err_pitch = 0.0
-bef_err_alti = 0.0
-
-take_off_pwm = 68.5
-alti_pwm_offset = 0.6
-
-MAX_INTEGRAL_ERROR = 4.0
-MIN_INTEGRAL_ERROR = -4.0
-
-MAX_PITCH_ANGLE = 0.5
-MIN_PITCH_ANGLE = -0.5
-MAX_ROLL_ANGLE = 0.5
-MIN_ROLL_ANGLE = -0.5
-
-down_angle_camera = 1.6
-camera_res_width = 400
-camera_res_height = 240
-
+# arming
 for i in range(4):
     motors[i].setPosition(float("inf"))
     motors[i].setVelocity(1.0)
-print("arming")
-
-# camera face down
-camera_pitch_motor.setPosition(0)
-camera_yaw_motor.setPosition(0)
-camera_roll_motor.setPosition(0)
-
-camera_pitch_motor.setPosition(down_angle_camera)
-camera_yaw_motor.setPosition(0)
-camera_roll_motor.setPosition(0)
+print("Arming")
 
 
-radius = 3
-color_center = (255, 255, 0)
-color_pos = (0, 0, 255)
-thickness = 3
+def motor_action(speed_motor_front_left, speed_motor_front_right, speed_motor_rear_left, speed_motor_rear_right):
+    motor_front_left.setVelocity(speed_motor_front_left)
+    motor_front_right.setVelocity(-speed_motor_front_right)
+    motor_rear_left.setVelocity(-speed_motor_rear_left)
+    motor_rear_right.setVelocity(speed_motor_rear_right)
 
 
-def motor_action(frontLeftMotorSpeed, frontRightMotorSpeed, rearLeftMotorSpeed, rearRightMotorSpeed):
-    front_left_motor.setVelocity(frontLeftMotorSpeed)
-    front_right_motor.setVelocity(-frontRightMotorSpeed)
-    rear_left_motor.setVelocity(-rearLeftMotorSpeed)
-    rear_right_motor.setVelocity(rearRightMotorSpeed)
-
-
-def convert_to_pitch_roll(ex, ey, yaw):
+def convert_to_pitch_roll(x_error, y_error, yaw):
     c, s = np.cos(yaw), np.sin(yaw)
     R = np.array(((c, -s), (s, c)))
-    exy_ = np.matmul([ex, ey], R)
+    exy_ = np.matmul([x_error, y_error], R)
     # print("ex = %f, ey = %f" % (ex, ey))
     # print(yaw)
     # print("ex_ = %f, ey_ = %f" % (exy_[0], exy_[1]))
@@ -135,130 +98,35 @@ def findAruco(img, marker_size=6, total_markers=250, draw=True):
     return [bbox, ids]
 
 
-while robot.step(timestep) != -1:
-    # read sensor
+def read_imu(imu):
     roll = imu.getRollPitchYaw()[0] + math.pi / 2.0
     pitch = imu.getRollPitchYaw()[1]
     yaw = imu.getRollPitchYaw()[2]
 
-    altitude = gps.getValues()[1]
-    px = gps.getValues()[0]
-    py = gps.getValues()[2]
+    return roll, pitch, yaw
 
-    roll_acceleration = gyro.getValues()[0]
-    pitch_acceleration = gyro.getValues()[1]
-    yaw_acceleration = gyro.getValues()[2]
 
-    # calculate position error
-    err_x = px - set_point_x
-    err_y = py - set_point_y
-    err_alti = set_point_alti - altitude
+def read_gps(gps):
+    alti = gps.getValues()[1]
+    x = gps.getValues()[0]
+    y = gps.getValues()[2]
 
-    # get error attitude from position error
-    err_pitch, err_roll = convert_to_pitch_roll(err_x, err_y, yaw)
+    return alti, x, y
 
-    int_err_pitch = int_err_pitch + err_pitch
-    int_err_roll = int_err_roll + err_roll
 
-    # stabilize the camera
-    camera_pitch_motor.setPosition(np.clip(((-0.1 * pitch_acceleration) + down_angle_camera), -0.5, 1.7))
-    camera_roll_motor.setPosition(-0.115 * roll_acceleration)
-    camera_yaw_motor.setPosition(-0.115 * yaw_acceleration)
+def read_gyro(gyro):
+    roll_gyro = gyro.getValues()[0]
+    pitch_gyro = gyro.getValues()[1]
+    yaw_gyro = gyro.getValues()[2]
 
-    # calulate attitude pwm
-    roll_pwm = param_roll[0] * np.clip(roll, -1.0, 1.0) + roll_acceleration + err_roll
-    pitch_pwm = param_pitch[0] * np.clip(pitch, -1.0, 1.0) - pitch_acceleration - err_pitch
-    yaw_pwm = 0.05 * (set_point_yaw - yaw)
+    return roll_gyro, pitch_gyro, yaw_gyro
 
-    # pitch_pwm = (
-    #    (param_pitch[0] * np.clip(pitch, -1.0, 1.0))
-    #    # - (param_pitch[1] * np.clip(int_err_pitch, -1.0, 1.0))
-    #    - (param_pitch[2] * pitch_acceleration)
-    # )
-    # roll_pwm = param_roll[0] * np.clip(roll, -1.0, 1.0) + roll_acceleration + err_roll
-    # yaw_pwm = 0.05 * (set_point_yaw - yaw)
 
-    # calculate altitude pwm
-    clamped_difference_altitude = np.clip(err_alti + alti_pwm_offset, -1.0, 1.0)
-    alti_pwm = param_alti[0] * math.pow(clamped_difference_altitude, 3.0)
-
-    # pwm combination of each motor
-    frontLeftMotorSpeed = take_off_pwm + alti_pwm - roll_pwm - pitch_pwm + yaw_pwm
-    frontRightMotorSpeed = take_off_pwm + alti_pwm + roll_pwm - pitch_pwm - yaw_pwm
-    rearLeftMotorSpeed = take_off_pwm + alti_pwm - roll_pwm + pitch_pwm - yaw_pwm
-    rearRightMotorSpeed = take_off_pwm + alti_pwm + roll_pwm + pitch_pwm + yaw_pwm
-
-    # action of motor
-    motor_action(frontLeftMotorSpeed, frontRightMotorSpeed, rearLeftMotorSpeed, rearRightMotorSpeed)
-
-    """
-    print(
-        "r_pwm:{:.2f} | p_pwm:{:.2f} | y_pwm:{:.2f} | c_alti:{:.2f} | a_pwm:{:.2f} | fl_motor:{:.2f} | fr_motor:{:.2f} | rl_motor:{:.2f} | rr_motor:{:.2f}".format(
-            roll_pwm,
-            pitch_pwm,
-            yaw_pwm,
-            clamped_difference_altitude,
-            alti_pwm,
-            frontLeftMotorSpeed,
-            frontRightMotorSpeed,
-            rearLeftMotorSpeed,
-            rearRightMotorSpeed,
-        )
-    )
-    """
-    """
-    print(
-        "r:{:.2f} | p:{:.2f} | y:{:.2f} | X:{:.2f} | Y:{:.2f} | Z:{:.2f} | gr:{:.2f} | gp:{:.2f} | gy:{:.2f} | er:{:.2f} | ep:{:.2f} | eZ:{:.2f} | ex:{:.2f} | ey:{:.2f} | fl:{:.2f} | fr:{:.2f} | rl:{:.2f} | rr:{:.2f}".format(
-            roll,
-            pitch,
-            yaw,
-            px,
-            py,
-            altitude,
-            roll_acceleration,
-            pitch_acceleration,
-            yaw_acceleration,
-            err_roll,
-            err_pitch,
-            err_alti,
-            err_x,
-            err_y,
-            frontLeftMotorSpeed,
-            frontRightMotorSpeed,
-            rearLeftMotorSpeed,
-            rearRightMotorSpeed,
-        )
-    )
-    """
-    """
-    print(
-        "r:{: .2f} | p:{: .2f} | y:{: .2f} | X:{: .2f} | Y:{: .2f} | Z:{: .2f} | gr:{: .2f} | gp:{: .2f} | gy:{: .2f} | er:{: .2f} | ep:{: .2f} | eZ:{: .2f} | ex:{: .2f} | ey:{: .2f} | fl:{: .2f} | fr:{: .2f} | rl:{: .2f} | rr:{: .2f}".format(
-            roll,
-            pitch,
-            yaw,
-            px,
-            py,
-            altitude,
-            roll_acceleration,
-            pitch_acceleration,
-            yaw_acceleration,
-            err_roll,
-            err_pitch,
-            err_alti,
-            err_x,
-            err_y,
-            frontLeftMotorSpeed,
-            frontRightMotorSpeed,
-            rearLeftMotorSpeed,
-            rearRightMotorSpeed,
-        )
-    )"""
-
+def read_aruco(camera):
     # camera tutorial from this link
     # https://erebus.rcj.cloud/docs/tutorials/sensors/rgb-camera/
     image = camera.getImage()
     image = np.frombuffer(image, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4))
-    # findAruco(image, draw=False)
 
     # gray = cv2.cvtColor(image, cv2.COLOR_RGBA2GRAY)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -266,6 +134,8 @@ while robot.step(timestep) != -1:
     parameters = aruco.DetectorParameters_create()
     corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
     image = cv2.circle(image, (int(camera_res_width / 2), int(camera_res_height / 2)), radius, color_center, thickness)
+    x_center = 0
+    y_center = 0
     if len(corners) != 0:
         # print(corners[0][0][0])
         # print(type(corners))
@@ -281,40 +151,59 @@ while robot.step(timestep) != -1:
         # image = cv2.circle(image, left_top, radius, color, thickness)
         # image = cv2.circle(image, right_top, radius, color, thickness)
         # image = cv2.circle(image, right_bottom, radius, color, thickness)
-        image = cv2.circle(image, (int(x_center), int(y_center)), radius, color_pos, thickness)
+        # image = cv2.circle(image, (int(x_center), int(y_center)), radius, color_pos, thickness)
 
     # aruco.drawDetectedMarkers(image, corners)
 
     # image = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
     # frame_markers = aruco.drawDetectedMarkers(image, corners, ids)
+    return image, x_center, y_center
+    # cv2.imshow("camera", image)
+    # cv2.waitKey(1)  # Render imshows on screen
 
+
+while robot.step(timestep) != -1:
+    roll, pitch, yaw = read_imu(imu)
+    alti, x, y = read_gps(gps)
+    roll_gyro, pitch_gyro, yaw_gyro = read_gyro(gyro)
+
+    # calculate position error
+    x_error = x - x_setpoint
+    y_error = y - y_setpoint
+    alti_error = alti_setpoint - alti
+
+    # get error attitude from position error
+    pitch_error, roll_error = convert_to_pitch_roll(x_error, y_error, yaw)
+
+    pitch_interror = pitch_interror + pitch_error
+    roll_interror = roll_interror + roll_error
+
+    # stabilize the camera
+    camera_pitch.setPosition(np.clip(((-0.1 * pitch_gyro) + camera_down_angle), -0.5, 1.7))
+    camera_roll.setPosition(-0.115 * roll_gyro)
+    camera_yaw.setPosition(-0.115 * yaw_gyro)
+
+    # calulate attitude pwm
+    roll_pwm = roll_parameter[0] * np.clip(roll, -1.0, 1.0) + roll_gyro + roll_error
+    pitch_pwm = pitch_parameter[0] * np.clip(pitch, -1.0, 1.0) - pitch_gyro - pitch_error
+    yaw_pwm = 0.05 * (yaw_setpoint - yaw)
+
+    # calculate altitude pwm
+    clamped_difference_altitude = np.clip(alti_error + alti_pwm_offset, -1.0, 1.0)
+    alti_pwm = alti_parameter[0] * math.pow(clamped_difference_altitude, 3.0)
+
+    # pwm combination of each motor
+    frontLeftMotorSpeed = take_off_pwm + alti_pwm - roll_pwm - pitch_pwm + yaw_pwm
+    frontRightMotorSpeed = take_off_pwm + alti_pwm + roll_pwm - pitch_pwm - yaw_pwm
+    rearLeftMotorSpeed = take_off_pwm + alti_pwm - roll_pwm + pitch_pwm - yaw_pwm
+    rearRightMotorSpeed = take_off_pwm + alti_pwm + roll_pwm + pitch_pwm + yaw_pwm
+
+    # action of motor
+    motor_action(frontLeftMotorSpeed, frontRightMotorSpeed, rearLeftMotorSpeed, rearRightMotorSpeed)
+    # read aruco marker
+    image, x_center, y_center = read_aruco(camera)
+    image = cv2.circle(image, (int(x_center), int(y_center)), radius, color_pos, thickness)
     cv2.imshow("camera", image)
-    cv2.waitKey(1)  # Render imshows on screen
+    cv2.waitKey(1)
 
 cv2.destroyAllWindows()
-# roll zero 0
-# roll kiri negatif
-# roll kanan positif
-
-# pitch zero 0.07
-# pitch up positif
-# pitch down negatif
-
-# yaw zero 0
-# yaw cw negatif
-# yaw ccw positif
-
-# height zero 0.00
-# naik positif
-# turun negatif
-
-# posisi X 0
-# posisi X maju positif
-# posisi X mundur negatif
-
-# posisi Y 0
-# posisi Y kiri negatif
-# posisi Y kanan positif
-
-# nitip link
-# https://github.sre.pub/felipenmartins/Robotics-Simulation-Labs

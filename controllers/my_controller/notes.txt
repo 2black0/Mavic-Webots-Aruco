@@ -1,0 +1,90 @@
+# roll zero 0
+# roll kiri negatif
+# roll kanan positif
+
+# pitch zero 0.07
+# pitch up positif
+# pitch down negatif
+
+# yaw zero 0
+# yaw cw negatif
+# yaw ccw positif
+
+# height zero 0.00
+# naik positif
+# turun negatif
+
+# posisi X 0
+# posisi X maju positif
+# posisi X mundur negatif
+
+# posisi Y 0
+# posisi Y kiri negatif
+# posisi Y kanan positif
+
+# nitip link
+# https://github.sre.pub/felipenmartins/Robotics-Simulation-Labs
+
+
+    """
+    print(
+        "r_pwm:{:.2f} | p_pwm:{:.2f} | y_pwm:{:.2f} | c_alti:{:.2f} | a_pwm:{:.2f} | fl_motor:{:.2f} | fr_motor:{:.2f} | rl_motor:{:.2f} | rr_motor:{:.2f}".format(
+            roll_pwm,
+            pitch_pwm,
+            yaw_pwm,
+            clamped_difference_altitude,
+            alti_pwm,
+            frontLeftMotorSpeed,
+            frontRightMotorSpeed,
+            rearLeftMotorSpeed,
+            rearRightMotorSpeed,
+        )
+    )
+    """
+    """
+    print(
+        "r:{:.2f} | p:{:.2f} | y:{:.2f} | X:{:.2f} | Y:{:.2f} | Z:{:.2f} | gr:{:.2f} | gp:{:.2f} | gy:{:.2f} | er:{:.2f} | ep:{:.2f} | eZ:{:.2f} | ex:{:.2f} | ey:{:.2f} | fl:{:.2f} | fr:{:.2f} | rl:{:.2f} | rr:{:.2f}".format(
+            roll,
+            pitch,
+            yaw,
+            px,
+            py,
+            altitude,
+            roll_acceleration,
+            pitch_acceleration,
+            yaw_acceleration,
+            err_roll,
+            err_pitch,
+            err_alti,
+            err_x,
+            err_y,
+            frontLeftMotorSpeed,
+            frontRightMotorSpeed,
+            rearLeftMotorSpeed,
+            rearRightMotorSpeed,
+        )
+    )
+    """
+    """
+    print(
+        "r:{: .2f} | p:{: .2f} | y:{: .2f} | X:{: .2f} | Y:{: .2f} | Z:{: .2f} | gr:{: .2f} | gp:{: .2f} | gy:{: .2f} | er:{: .2f} | ep:{: .2f} | eZ:{: .2f} | ex:{: .2f} | ey:{: .2f} | fl:{: .2f} | fr:{: .2f} | rl:{: .2f} | rr:{: .2f}".format(
+            roll,
+            pitch,
+            yaw,
+            px,
+            py,
+            altitude,
+            roll_acceleration,
+            pitch_acceleration,
+            yaw_acceleration,
+            err_roll,
+            err_pitch,
+            err_alti,
+            err_x,
+            err_y,
+            frontLeftMotorSpeed,
+            frontRightMotorSpeed,
+            rearLeftMotorSpeed,
+            rearRightMotorSpeed,
+        )
+    )"""
