@@ -100,6 +100,12 @@ camera_yaw_motor.setPosition(0)
 camera_roll_motor.setPosition(0)
 
 
+radius = 3
+color_center = (255, 255, 0)
+color_pos = (0, 0, 255)
+thickness = 3
+
+
 def motor_action(frontLeftMotorSpeed, frontRightMotorSpeed, rearLeftMotorSpeed, rearRightMotorSpeed):
     front_left_motor.setVelocity(frontLeftMotorSpeed)
     front_right_motor.setVelocity(-frontRightMotorSpeed)
@@ -259,6 +265,7 @@ while robot.step(timestep) != -1:
     aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
     parameters = aruco.DetectorParameters_create()
     corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
+    image = cv2.circle(image, (int(camera_res_width / 2), int(camera_res_height / 2)), radius, color_center, thickness)
     if len(corners) != 0:
         # print(corners[0][0][0])
         # print(type(corners))
@@ -270,18 +277,11 @@ while robot.step(timestep) != -1:
         x_center = (int(corners[0][0][3][0]) / 2) + (int(corners[0][0][0][0]) / 2)
         y_center = (int(corners[0][0][2][1]) / 2) + (int(corners[0][0][3][1]) / 2)
         # print(int(x_center), int(y_center))
-        radius = 3
-        color_center = (255, 255, 0)
-        color_pos = (0, 0, 255)
-        thickness = 3
         # image = cv2.circle(image, left_bottom, radius, color, thickness)
         # image = cv2.circle(image, left_top, radius, color, thickness)
         # image = cv2.circle(image, right_top, radius, color, thickness)
         # image = cv2.circle(image, right_bottom, radius, color, thickness)
         image = cv2.circle(image, (int(x_center), int(y_center)), radius, color_pos, thickness)
-        image = cv2.circle(
-            image, (int(camera_res_width / 2), int(camera_res_height / 2)), radius, color_center, thickness
-        )
 
     # aruco.drawDetectedMarkers(image, corners)
 
