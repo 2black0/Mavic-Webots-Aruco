@@ -88,3 +88,8 @@
             rearRightMotorSpeed,
         )
     )"""
+
+    x = 0.08159
+    y = 0.706735
+    z = 0.702758
+    angle = -3.07673
