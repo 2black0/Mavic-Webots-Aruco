@@ -92,27 +92,40 @@ def findAruco(img, marker_size=6, total_markers=250, draw=True):
 
 
 def read_imu(imu):
-    roll = imu.getRollPitchYaw()[0] + math.pi / 2.0
-    pitch = imu.getRollPitchYaw()[1]
-    yaw = imu.getRollPitchYaw()[2]
-
-    return roll, pitch, yaw
+    roll_imu = imu.getRollPitchYaw()[0] + math.pi / 2.0
+    pitch_imu = imu.getRollPitchYaw()[1]
+    yaw_imu = imu.getRollPitchYaw()[2]
+    return roll_imu, pitch_imu, yaw_imu
 
 
 def read_gps(gps):
-    alti = gps.getValues()[1]
-    x = gps.getValues()[0]
-    y = gps.getValues()[2]
-
-    return alti, x, y
+    z_gps = gps.getValues()[1]
+    x_gps = gps.getValues()[0]
+    y_gps = gps.getValues()[2]
+    return z_gps, x_gps, y_gps
 
 
 def read_gyro(gyro):
     roll_gyro = gyro.getValues()[0]
     pitch_gyro = gyro.getValues()[1]
     yaw_gyro = gyro.getValues()[2]
-
     return roll_gyro, pitch_gyro, yaw_gyro
+
+
+def read_compass(compass):
+    x_compass = compass.getValues[0]
+    y_compass = compass.getValues[1]
+    z_compass = compass.getValues[2]
+    return x_compass, y_compass, z_compass
+
+
+def get_compass_heading(compass) -> float:
+    compass_values = compass.getValues()
+    rad = math.atan2(compass_values[0], compass_values[1]) - (math.pi / 2)
+    if rad < -math.pi:
+        rad = rad + (2 * math.pi)
+
+    return rad
 
 
 def read_aruco(camera):
@@ -164,9 +177,10 @@ for i in range(4):
 print("Arming")
 
 while robot.step(timestep) != -1:
-    roll, pitch, yaw = read_imu(imu)
-    alti, x, y = read_gps(gps)
+    roll_imu, pitch_imu, yaw_imu = read_imu(imu)
+    z_gps, x_gps, y_gps = read_gps(gps)
     roll_gyro, pitch_gyro, yaw_gyro = read_gyro(gyro)
+    heading = get_compass_heading(compass)
 
     # read aruco marker
     status, image, x_center, y_center = read_aruco(camera)
@@ -175,25 +189,26 @@ while robot.step(timestep) != -1:
     cv2.imshow("camera", image)
     cv2.waitKey(1)
 
+    status = 0
     # calculate error based on aruco position
     x_aruco_error = ((camera_res_width / 2) - x_center) / (camera_res_width / 2)
     y_aruco_error = ((camera_res_height / 2) - y_center) / (camera_res_height / 2)
 
     # calculate position error
-    x_error = x - x_setpoint
-    y_error = y - y_setpoint
-    alti_error = alti_setpoint - alti
+    x_error = x_gps - x_setpoint
+    y_error = y_gps - y_setpoint
+    z_error = alti_setpoint - z_gps
 
     # get error attitude from position error
     if status:
-        print("X error={: .2f} | Y error={: .2f}".format(y_aruco_error, x_aruco_error))
-        pitch_error, roll_error = convert_to_pitch_roll(x_aruco_error, y_aruco_error, yaw)
+        # print("X error={: .2f} | Y error={: .2f}".format(y_aruco_error, x_aruco_error))
+        pitch_error, roll_error = convert_to_pitch_roll(x_aruco_error, y_aruco_error, yaw_imu)
     else:
-        print("X error={: .2f}  | Y error={: .2f}".format(x_error, y_error))
-        pitch_error, roll_error = convert_to_pitch_roll(x_error, y_error, yaw)
+        # print("X error={: .2f}  | Y error={: .2f}".format(x_error, y_error))
+        pitch_error, roll_error = convert_to_pitch_roll(x_error, y_error, yaw_imu)
 
-    pitch_interror = pitch_interror + pitch_error
-    roll_interror = roll_interror + roll_error
+    # pitch_interror = pitch_interror + pitch_error
+    # roll_interror = roll_interror + roll_error
 
     # stabilize the camera
     camera_pitch.setPosition(np.clip(((-0.1 * pitch_gyro) + camera_down_angle), -0.5, 1.7))
@@ -201,12 +216,13 @@ while robot.step(timestep) != -1:
     camera_yaw.setPosition(np.clip((-0.115 * yaw_gyro), -1.7, 1.7))
 
     # calulate attitude pwm
-    roll_pwm = roll_parameter[0] * np.clip(roll, -1.0, 1.0) + roll_gyro + roll_error
-    pitch_pwm = pitch_parameter[0] * np.clip(pitch, -1.0, 1.0) - pitch_gyro - pitch_error
-    yaw_pwm = 0.05 * (yaw_setpoint - yaw)
+    roll_pwm = roll_parameter[0] * np.clip(roll_imu, -1.0, 1.0) + roll_gyro + roll_error
+    pitch_pwm = pitch_parameter[0] * np.clip(pitch_imu, -1.0, 1.0) - pitch_gyro - pitch_error
+    # yaw_pwm = 0.05 * (yaw_setpoint - yaw_imu)
+    yaw_pwm = 0.05 * (yaw_setpoint - heading)
 
     # calculate altitude pwm
-    clamped_difference_altitude = np.clip(alti_error + alti_pwm_offset, -1.0, 1.0)
+    clamped_difference_altitude = np.clip(z_error + alti_pwm_offset, -1.0, 1.0)
     alti_pwm = alti_parameter[0] * math.pow(clamped_difference_altitude, 3.0)
 
     # pwm combination of each motor
