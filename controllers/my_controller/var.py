@@ -6,7 +6,7 @@ roll_setpoint = 0.0
 pitch_setpoint = 0.0
 yaw_setpoint = 0.0
 
-x_setpoint = 0.0
+x_setpoint = 1.0
 y_setpoint = 0.0
 alti_setpoint = 10
 

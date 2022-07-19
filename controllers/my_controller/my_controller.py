@@ -62,13 +62,6 @@ camera_pitch.setPosition(camera_down_angle)
 camera_yaw.setPosition(0)
 
 
-# arming
-for i in range(4):
-    motors[i].setPosition(float("inf"))
-    motors[i].setVelocity(1.0)
-print("Arming")
-
-
 def motor_action(speed_motor_front_left, speed_motor_front_right, speed_motor_rear_left, speed_motor_rear_right):
     motor_front_left.setVelocity(speed_motor_front_left)
     motor_front_right.setVelocity(-speed_motor_front_right)
@@ -136,7 +129,9 @@ def read_aruco(camera):
     image = cv2.circle(image, (int(camera_res_width / 2), int(camera_res_height / 2)), radius, color_center, thickness)
     x_center = 0
     y_center = 0
+    status = 0
     if len(corners) != 0:
+        status = 1
         # print(corners[0][0][0])
         # print(type(corners))
 
@@ -157,15 +152,32 @@ def read_aruco(camera):
 
     # image = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
     # frame_markers = aruco.drawDetectedMarkers(image, corners, ids)
-    return image, x_center, y_center
+    return status, image, x_center, y_center
     # cv2.imshow("camera", image)
     # cv2.waitKey(1)  # Render imshows on screen
 
+
+# arming
+for i in range(4):
+    motors[i].setPosition(float("inf"))
+    motors[i].setVelocity(1.0)
+print("Arming")
 
 while robot.step(timestep) != -1:
     roll, pitch, yaw = read_imu(imu)
     alti, x, y = read_gps(gps)
     roll_gyro, pitch_gyro, yaw_gyro = read_gyro(gyro)
+
+    # read aruco marker
+    status, image, x_center, y_center = read_aruco(camera)
+    if status:
+        image = cv2.circle(image, (int(x_center), int(y_center)), radius, color_pos, thickness)
+    cv2.imshow("camera", image)
+    cv2.waitKey(1)
+
+    # calculate error based on aruco position
+    x_aruco_error = ((camera_res_width / 2) - x_center) / (camera_res_width / 2)
+    y_aruco_error = ((camera_res_height / 2) - y_center) / (camera_res_height / 2)
 
     # calculate position error
     x_error = x - x_setpoint
@@ -173,15 +185,20 @@ while robot.step(timestep) != -1:
     alti_error = alti_setpoint - alti
 
     # get error attitude from position error
-    pitch_error, roll_error = convert_to_pitch_roll(x_error, y_error, yaw)
+    if status:
+        print("X error={: .2f} | Y error={: .2f}".format(y_aruco_error, x_aruco_error))
+        pitch_error, roll_error = convert_to_pitch_roll(x_aruco_error, y_aruco_error, yaw)
+    else:
+        print("X error={: .2f}  | Y error={: .2f}".format(x_error, y_error))
+        pitch_error, roll_error = convert_to_pitch_roll(x_error, y_error, yaw)
 
     pitch_interror = pitch_interror + pitch_error
     roll_interror = roll_interror + roll_error
 
     # stabilize the camera
     camera_pitch.setPosition(np.clip(((-0.1 * pitch_gyro) + camera_down_angle), -0.5, 1.7))
-    camera_roll.setPosition(-0.115 * roll_gyro)
-    camera_yaw.setPosition(-0.115 * yaw_gyro)
+    camera_roll.setPosition(np.clip((-0.115 * roll_gyro), -0.5, 0.5))
+    camera_yaw.setPosition(np.clip((-0.115 * yaw_gyro), -1.7, 1.7))
 
     # calulate attitude pwm
     roll_pwm = roll_parameter[0] * np.clip(roll, -1.0, 1.0) + roll_gyro + roll_error
@@ -200,10 +217,5 @@ while robot.step(timestep) != -1:
 
     # action of motor
     motor_action(frontLeftMotorSpeed, frontRightMotorSpeed, rearLeftMotorSpeed, rearRightMotorSpeed)
-    # read aruco marker
-    image, x_center, y_center = read_aruco(camera)
-    image = cv2.circle(image, (int(x_center), int(y_center)), radius, color_pos, thickness)
-    cv2.imshow("camera", image)
-    cv2.waitKey(1)
 
 cv2.destroyAllWindows()
