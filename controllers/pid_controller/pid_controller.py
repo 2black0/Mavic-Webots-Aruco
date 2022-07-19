@@ -1,61 +1,54 @@
-"""my_controller controller."""
+"""pid_controller controller"""
 
+# get the variable
 from var import *
-from controller import (
-    Robot,
-    Motor,
-    Camera,
-    InertialUnit,
-    Gyro,
-    Compass,
-    GPS,
-    LED,
-    Keyboard,
-)
 
-import math
+# declaration library
+from controller import Robot
+from controller import Keyboard
+from controller import Motor
+from controller import Camera
+from controller import Gyro
+from controller import Compass
+from controller import InertialUnit
+from controller import GPS
+from controller import LED
+
 import numpy as np
-import struct
+import math
 import cv2, PIL
-from cv2 import aruco
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import pandas as pd
-from simple_pid import PID
 
+# instance
 robot = Robot()
 
+# time step
 timestep = int(robot.getBasicTimeStep())
 
-# definition the hardware
+# definition the sensor
+imu = robot.getDevice("inertial unit")
+imu.enable(timestep)
+gyro = robot.getDevice("gyro")
+gyro.enable(timestep)
+gps = robot.getDevice("gps")
+gps.enable(timestep)
+compass = robot.getDevice("compass")
+compass.enable(timestep)
+camera = robot.getDevice("camera")
+camera.enable(timestep)
+
+# definition the keyboard
 keyboard = Keyboard()
 keyboard.enable(timestep)
 
-imu = robot.getDevice("inertial unit")
-imu.enable(timestep)
-
-camera = robot.getDevice("camera")
-camera.enable(timestep)
-# camera.recognitionEnable(timestep)
-
-gps = robot.getDevice("gps")
-gps.enable(timestep)
-
-compass = robot.getDevice("compass")
-compass.enable(timestep)
-
-gyro = robot.getDevice("gyro")
-gyro.enable(timestep)
-
-camera_roll = robot.getDevice("camera roll")
-camera_pitch = robot.getDevice("camera pitch")
-camera_yaw = robot.getDevice("camera yaw")
-
+# definition the motor
 motor_front_left = robot.getDevice("front left propeller")
 motor_front_right = robot.getDevice("front right propeller")
 motor_rear_left = robot.getDevice("rear left propeller")
 motor_rear_right = robot.getDevice("rear right propeller")
 motors = [motor_front_left, motor_front_right, motor_rear_left, motor_rear_right]
+camera_roll = robot.getDevice("camera roll")
+camera_pitch = robot.getDevice("camera pitch")
+camera_yaw = robot.getDevice("camera yaw")
 
 # camera face down
 camera_roll.setPosition(0)
@@ -63,176 +56,236 @@ camera_pitch.setPosition(camera_down_angle)
 camera_yaw.setPosition(0)
 
 
-def motor_action(speed_motor_front_left, speed_motor_front_right, speed_motor_rear_left, speed_motor_rear_right):
-    motor_front_left.setVelocity(speed_motor_front_left)
-    motor_front_right.setVelocity(-speed_motor_front_right)
-    motor_rear_left.setVelocity(-speed_motor_rear_left)
-    motor_rear_right.setVelocity(speed_motor_rear_right)
+class Sensor:
+    def __init__(self, robot):
+        self.robot = robot
+        self.imu = self.robot.getDevice("inertial unit")
+        self.gyro = self.robot.getDevice("gyro")
+        self.gps = self.robot.getDevice("gps")
+        self.compass = self.robot.getDevice("compass")
+        self.camera = self.robot.getDevice("camera")
+
+    def enable(self, timestep):
+        self.imu.enable(timestep)
+        self.gyro.enable(timestep)
+        self.gps.enable(timestep)
+        self.compass.enable(timestep)
+        self.camera.enable(timestep)
+        return "sensor enable"
+
+    def read_imu(self):
+        self.roll = self.imu.getRollPitchYaw()[0] + math.pi / 2.0
+        self.pitch = self.imu.getRollPitchYaw()[1]
+        self.yaw = self.imu.getRollPitchYaw()[2]
+        return self.roll, self.pitch, self.yaw
+
+    def read_gyro(self):
+        self.roll_accel = self.gyro.getValues()[0]
+        self.pitch_accel = self.gyro.getValues()[1]
+        self.yaw_accel = self.gyro.getValues()[2]
+        return self.roll_accel, self.pitch_accel, self.yaw_accel
+
+    def read_gps(self):
+        self.xpos = self.gps.getValues()[0]
+        self.ypos = self.gps.getValues()[1]
+        self.zpos = self.gps.getValues()[2]
+        return self.xpos, self.ypos, self.zpos
+
+    def read_compass(self):
+        self.compass_value = self.compass.getValues()
+        self.heading = math.atan2(self.compass_value[0], self.compass_value[1]) - (math.pi / 2)
+        if self.heading < -math.pi:
+            self.heading = self.heading + (2 * math.pi)
+        return self.heading
+
+    def read_camera(self):
+        self.image = self.camera.getImage()
+        self.image = np.frombuffer(self.image, np.uint8).reshape((self.camera.getHeight(), self.camera.getWidth(), 4))
+        return self.image
+
+    def convert_to_attitude(self, x, y, yaw):
+        self.c, self.s = np.cos(yaw), np.sin(yaw)
+        self.R = np.array(((self.c, -self.s), (self.s, self.c)))
+        self.converted = np.matmul([x, y], self.R)
+        return self.converted
 
 
-def convert_to_pitch_roll(x_error, y_error, yaw):
-    c, s = np.cos(yaw), np.sin(yaw)
-    R = np.array(((c, -s), (s, c)))
-    exy_ = np.matmul([x_error, y_error], R)
-    # print("ex = %f, ey = %f" % (ex, ey))
-    # print(yaw)
-    # print("ex_ = %f, ey_ = %f" % (exy_[0], exy_[1]))
-    return exy_[0], exy_[1]
+class Actuator:
+    def __init__(self, robot):
+        self.robot = robot
+        self.motor_fl = self.robot.getDevice("front left propeller")
+        self.motor_fr = self.robot.getDevice("front right propeller")
+        self.motor_rl = self.robot.getDevice("rear left propeller")
+        self.motor_rr = self.robot.getDevice("rear right propeller")
+        self.camera_roll = self.robot.getDevice("camera roll")
+        self.camera_pitch = self.robot.getDevice("camera pitch")
+        self.camera_yaw = self.robot.getDevice("camera yaw")
+
+    def arming(self, arming_speed=5.0):
+        self.motor_fl.setPosition(float("inf"))
+        self.motor_fr.setPosition(float("inf"))
+        self.motor_rl.setPosition(float("inf"))
+        self.motor_rr.setPosition(float("inf"))
+        self.motor_fl.setVelocity(arming_speed)
+        self.motor_fr.setVelocity(arming_speed)
+        self.motor_rl.setVelocity(arming_speed)
+        self.motor_rr.setVelocity(arming_speed)
+        return "arming"
+
+    def gimbal_down(self, roll_angle=0.0, pitch_angle=0.0, yaw_angle=0.0):
+        self.camera_roll.setPosition(roll_angle)
+        self.camera_pitch.setPosition(pitch_angle)
+        self.camera_yaw.setPosition(yaw_angle)
+        return "camera face down"
+
+    def motor_speed(self, motor_fl=0, motor_fr=0, motor_rl=0, motor_rr=0):
+        self.motor_fl.setVelocity(motor_fl)
+        self.motor_fr.setVelocity(motor_fr)
+        self.motor_rl.setVelocity(motor_rl)
+        self.motor_rr.setVelocity(motor_rr)
 
 
-# tutorial https://www.youtube.com/watch?v=AQXLC2Btag4
-def findAruco(img, marker_size=6, total_markers=250, draw=True):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    key = getattr(aruco, f"DICT_{marker_size}X{marker_size}_{total_markers}")
-    arucoDict = aruco.Dictionary_get(key)
-    arucoParam = aruco.DetectorParameters_create()
-    bbox, ids, _ = aruco.detectMarkers(gray, arucoDict, parameters=arucoParam)
-    if draw:
-        aruco.drawDetectedMarkers(img, bbox)
-    return [bbox, ids]
+class PDController:
+    def __init__(
+        self,
+        roll_param,
+        pitch_param,
+        yaw_param,
+        sampling_period,
+        roll_target=0.0,
+        pitch_target=0.0,
+        yaw_target=0.0,
+        z_target=2.0,
+        # roll_old_error=0.0,
+        # pitch_old_error=0.0,
+        # yaw_old_error=0.0,
+    ):
+        self.roll_param = roll_param
+        self.pitch_param = pitch_param
+        self.yaw_param = yaw_param
+        self.z_param = z_param
+        self.sampling_period = sampling_period
+        self.roll_target = roll_target
+        self.pitch_target = pitch_target
+        self.yaw_target = yaw_target
+        self.z_target = z_target
+        # self.roll_old_error = roll_old_error
+        # self.pitch_old_error = pitch_old_error
+        # self.yaw_old_error = yaw_old_error
+
+    def attitude_calculation(self, imu=[0, 0, 0], gyro=[0, 0, 0], head=0):
+        self.roll_error = self.roll_target - imu[0]
+        self.pitch_error = self.pitch_target - imu[1]
+        self.yaw_error = self.yaw_target - head
+        # self.roll_derivative = (self.roll_error - self.roll_old_error) / self.sampling_period
+        # self.roll_old_error = self.roll_error
+        # self.pitch_derivative = (self.pitch_error - self.pitch_old_error) / self.sampling_period
+        # self.pitch_old_error = self.pitch_error
+        # self.yaw_derivative = (self.yaw_error - self.yaw_old_error) / self.sampling_period
+        # self.yaw_old_error = self.yaw_error
+        # self.roll_response = (self.roll_param[0] * self.roll_error) + (self.roll_param[2] * self.roll_derivative)
+        # self.pitch_response = (self.pitch_param[0] * self.pitch_error) + (self.pitch_param[2] * self.pitch_derivative)
+        # self.yaw_response = (self.yaw_param[0] * self.yaw_error) + (self.yaw_param[2] * self.yaw_derivative)
+        self.roll_response = (self.roll_param[0] * self.roll_error) + (self.roll_param[2] * gyro[0])
+        self.pitch_response = (self.pitch_param[0] * self.pitch_error) + (self.pitch_param[2] * gyro[1])
+        self.yaw_response = (self.yaw_param[0] * self.yaw_error) + (self.yaw_param[2] * gyro[2])
+        return (
+            self.roll_error,
+            self.pitch_error,
+            self.yaw_error,
+            self.roll_response,
+            self.pitch_response,
+            self.yaw_response,
+        )
+
+    def altitude_calculation(self, gps=[0, 0, 0]):
+        self.z_error = gps[2] - self.z_target
+        self.z_response = self.z_param[0] * self.z_error
+        return self.z_error, self.z_response
 
 
-def read_imu(imu):
-    roll_imu = imu.getRollPitchYaw()[0] + math.pi / 2.0
-    pitch_imu = imu.getRollPitchYaw()[1]
-    yaw_imu = imu.getRollPitchYaw()[2]
-    return roll_imu, pitch_imu, yaw_imu
-
-
-def read_gps(gps):
-    z_gps = gps.getValues()[1]
-    x_gps = gps.getValues()[0]
-    y_gps = gps.getValues()[2]
-    return z_gps, x_gps, y_gps
-
-
-def read_gyro(gyro):
-    roll_gyro = gyro.getValues()[0]
-    pitch_gyro = gyro.getValues()[1]
-    yaw_gyro = gyro.getValues()[2]
-    return roll_gyro, pitch_gyro, yaw_gyro
-
-
-def read_compass(compass):
-    x_compass = compass.getValues[0]
-    y_compass = compass.getValues[1]
-    z_compass = compass.getValues[2]
-    return x_compass, y_compass, z_compass
-
-
-def get_compass_heading(compass) -> float:
-    compass_values = compass.getValues()
-    rad = math.atan2(compass_values[0], compass_values[1]) - (math.pi / 2)
-    if rad < -math.pi:
-        rad = rad + (2 * math.pi)
-
-    return rad
-
-
-def read_aruco(camera):
-    # camera tutorial from this link
-    # https://erebus.rcj.cloud/docs/tutorials/sensors/rgb-camera/
-    image = camera.getImage()
-    image = np.frombuffer(image, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4))
-
-    # gray = cv2.cvtColor(image, cv2.COLOR_RGBA2GRAY)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
-    parameters = aruco.DetectorParameters_create()
-    corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
-    image = cv2.circle(image, (int(camera_res_width / 2), int(camera_res_height / 2)), radius, color_center, thickness)
-    x_center = 0
-    y_center = 0
-    status = 0
-    if len(corners) != 0:
-        status = 1
-        # print(corners[0][0][0])
-        # print(type(corners))
-
-        left_bottom = (int(corners[0][0][0][0]), int(corners[0][0][0][1]))
-        left_top = (int(corners[0][0][1][0]), int(corners[0][0][1][1]))
-        right_top = (int(corners[0][0][2][0]), int(corners[0][0][2][1]))
-        right_bottom = (int(corners[0][0][3][0]), int(corners[0][0][3][1]))
-        x_center = (int(corners[0][0][3][0]) / 2) + (int(corners[0][0][0][0]) / 2)
-        y_center = (int(corners[0][0][2][1]) / 2) + (int(corners[0][0][3][1]) / 2)
-        # print(int(x_center), int(y_center))
-        # image = cv2.circle(image, left_bottom, radius, color, thickness)
-        # image = cv2.circle(image, left_top, radius, color, thickness)
-        # image = cv2.circle(image, right_top, radius, color, thickness)
-        # image = cv2.circle(image, right_bottom, radius, color, thickness)
-        # image = cv2.circle(image, (int(x_center), int(y_center)), radius, color_pos, thickness)
-
-    # aruco.drawDetectedMarkers(image, corners)
-
-    # image = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
-    # frame_markers = aruco.drawDetectedMarkers(image, corners, ids)
-    return status, image, x_center, y_center
-    # cv2.imshow("camera", image)
-    # cv2.waitKey(1)  # Render imshows on screen
-
-
-# arming
-for i in range(4):
-    motors[i].setPosition(float("inf"))
-    motors[i].setVelocity(1.0)
-print("Arming")
+sensor = Sensor(robot)
+sensor.enable(timestep)
+motor = Actuator(robot)
+motor.arming(arming_speed=25)
+motor.gimbal_down(pitch_angle=1.6)
 
 while robot.step(timestep) != -1:
-    roll_imu, pitch_imu, yaw_imu = read_imu(imu)
-    z_gps, x_gps, y_gps = read_gps(gps)
-    roll_gyro, pitch_gyro, yaw_gyro = read_gyro(gyro)
-    heading = get_compass_heading(compass)
-
-    # read aruco marker
-    status, image, x_center, y_center = read_aruco(camera)
-    if status:
-        image = cv2.circle(image, (int(x_center), int(y_center)), radius, color_pos, thickness)
+    imu = sensor.read_imu()
+    # print("roll={: .2f} | pitch={: .2f} | yaw={: .2f}".format(imu[0], imu[1], imu[2]))
+    gyro = sensor.read_gyro()
+    # print("roll_accel={: .2f} | pitch_accel={: .2f} | yaw_accel={: .2f}".format(gyro[0], gyro[1], gyro[2]))
+    gps = sensor.read_gps()
+    # print("xpos={: .2f} | ypos={: .2f} | zpos={: .2f}".format(gps[0], gps[1], gps[2]))
+    head = sensor.read_compass()
+    # print("heading={: .2f}".format(head))
+    image = sensor.read_camera()
     cv2.imshow("camera", image)
     cv2.waitKey(1)
 
-    status = 0
-    # calculate error based on aruco position
-    x_aruco_error = ((camera_res_width / 2) - x_center) / (camera_res_width / 2)
-    y_aruco_error = ((camera_res_height / 2) - y_center) / (camera_res_height / 2)
+    attitude_error = sensor.convert_to_attitude(x=gps[0], y=gps[1], yaw=head)
+    # print("roll_error={: .2f} | pitch_error={: .2f}".format(attitude_error[1], attitude_error[0]))
 
-    # calculate position error
-    x_error = x_gps - x_setpoint
-    y_error = y_gps - y_setpoint
-    z_error = alti_setpoint - z_gps
+    control = PDController(
+        roll_param=roll_param,
+        pitch_param=pitch_param,
+        yaw_param=yaw_param,
+        sampling_period=sampling_period,
+        roll_target=roll_target,
+        pitch_target=pitch_target,
+        yaw_target=yaw_target,
+        z_target=z_target,
+    )
+    attitude_calculation = control.attitude_calculation(imu=imu, gyro=gyro, head=head)
+    """print(
+        "roll_response={: .2f} | pitch_response={: .2f} | yaw_response={: .2f}".format(
+            attitude_calculation[0], attitude_calculation[1], attitude_calculation[2]
+        )
+    )"""
+    altitude_calculation = control.altitude_calculation(gps=gps)
+    # print("z_response={: .2f}".format(altitude_calculation))
 
-    # get error attitude from position error
-    if status:
-        # print("X error={: .2f} | Y error={: .2f}".format(y_aruco_error, x_aruco_error))
-        pitch_error, roll_error = convert_to_pitch_roll(x_aruco_error, y_aruco_error, yaw_imu)
-    else:
-        # print("X error={: .2f}  | Y error={: .2f}".format(x_error, y_error))
-        pitch_error, roll_error = convert_to_pitch_roll(x_error, y_error, yaw_imu)
+    print(
+        "roll_error={: .2f} | pitch_error={: .2f} | yaw_error={: .2f} | z_error={: .2f} | roll_response={: .2f} | pitch_response={: .2f} | yaw_response={: .2f} | z_response{: .2f}".format(
+            attitude_calculation[0],
+            attitude_calculation[1],
+            attitude_calculation[2],
+            altitude_calculation[0],
+            attitude_calculation[3],
+            attitude_calculation[4],
+            attitude_calculation[5],
+            altitude_calculation[1],
+        )
+    )
 
-    # pitch_interror = pitch_interror + pitch_error
-    # roll_interror = roll_interror + roll_error
+    motor_fl = (
+        take_off_pwm
+        + altitude_calculation[1]
+        - attitude_calculation[3]
+        - attitude_calculation[4]
+        + attitude_calculation[5]
+    )
+    motor_fr = (
+        take_off_pwm
+        + altitude_calculation[1]
+        + attitude_calculation[3]
+        - attitude_calculation[4]
+        - attitude_calculation[5]
+    )
+    motor_rl = (
+        take_off_pwm
+        + altitude_calculation[1]
+        - attitude_calculation[3]
+        + attitude_calculation[4]
+        - attitude_calculation[5]
+    )
+    motor_rr = (
+        take_off_pwm
+        + altitude_calculation[1]
+        + attitude_calculation[3]
+        + attitude_calculation[4]
+        + attitude_calculation[5]
+    )
 
-    # stabilize the camera
-    camera_pitch.setPosition(np.clip(((-0.1 * pitch_gyro) + camera_down_angle), -0.5, 1.7))
-    camera_roll.setPosition(np.clip((-0.115 * roll_gyro), -0.5, 0.5))
-    camera_yaw.setPosition(np.clip((-0.115 * yaw_gyro), -1.7, 1.7))
-
-    # calulate attitude pwm
-    roll_pwm = roll_parameter[0] * np.clip(roll_imu, -1.0, 1.0) + roll_gyro + roll_error
-    pitch_pwm = pitch_parameter[0] * np.clip(pitch_imu, -1.0, 1.0) - pitch_gyro - pitch_error
-    # yaw_pwm = 0.05 * (yaw_setpoint - yaw_imu)
-    yaw_pwm = 0.05 * (yaw_setpoint - heading)
-
-    # calculate altitude pwm
-    clamped_difference_altitude = np.clip(z_error + alti_pwm_offset, -1.0, 1.0)
-    alti_pwm = alti_parameter[0] * math.pow(clamped_difference_altitude, 3.0)
-
-    # pwm combination of each motor
-    frontLeftMotorSpeed = take_off_pwm + alti_pwm - roll_pwm - pitch_pwm + yaw_pwm
-    frontRightMotorSpeed = take_off_pwm + alti_pwm + roll_pwm - pitch_pwm - yaw_pwm
-    rearLeftMotorSpeed = take_off_pwm + alti_pwm - roll_pwm + pitch_pwm - yaw_pwm
-    rearRightMotorSpeed = take_off_pwm + alti_pwm + roll_pwm + pitch_pwm + yaw_pwm
-
-    # action of motor
-    motor_action(frontLeftMotorSpeed, frontRightMotorSpeed, rearLeftMotorSpeed, rearRightMotorSpeed)
-
+    motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
 cv2.destroyAllWindows()

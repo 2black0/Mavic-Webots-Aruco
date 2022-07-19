@@ -182,7 +182,7 @@ Forest {
 Mavic2Pro {
   translation -0.194691 0.0857091 0.07
   rotation 0 0.7071067811865476 0.7071067811865476 3.14159
-  controller "my_controller"
+  controller "pid_controller"
   cameraSlot [
     Camera {
       rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
