@@ -147,8 +147,8 @@ class Controller:
             self.y_error = gps[1] - self.y_target
         else:
             if marker[1] != 0:
-                self.y_error = (marker[2] - marker[1]) / (marker[1] / 2)
-                self.x_error = -(marker[3] - marker[0]) / (marker[0] / 2)
+                self.y_error = (marker[2] - marker[1]) / (marker[1] / 3)
+                self.x_error = -(marker[3] - marker[0]) / (marker[0] / 3)
             else:
                 self.x_error = 0
                 self.y_error = 0
