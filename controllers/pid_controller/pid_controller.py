@@ -152,7 +152,6 @@ class Controller:
             else:
                 self.x_error = 0
                 self.y_error = 0
-        print("xr={: .2f}|yr={: .2f}".format(self.x_error, self.y_error))
         return self.x_error, self.y_error, self.z_error
 
     def calculate(self, imu=[0, 0, 0], gyro=[0, 0, 0], error=[0, 0, 0], head=0):
@@ -171,6 +170,12 @@ class Controller:
         self.z_diff = np.clip(self.error[2] + self.z_offset, -1.0, 1.0)
         self.z_input = self.z_param[0] * math.pow(self.z_diff, 3.0)
         return self.z_takeoff, self.z_input, self.roll_input, self.pitch_input, self.yaw_input
+
+    def gimbal_control(self, gyro=[0, 0, 0], roll_angle=0.0, pitch_angle=0.0, yaw_angle=0.0):
+        pitch_gimbal = np.clip(((-0.1 * gyro[1]) + pitch_angle), -0.5, 1.7)
+        roll_gimbal = np.clip((-0.115 * gyro[0] + roll_angle), -0.5, 0.5)
+        yaw_gimbal = np.clip((-0.115 * gyro[2] + yaw_angle), -1.7, 1.7)
+        return roll_gimbal, pitch_gimbal, yaw_gimbal
 
 
 class Marker:
@@ -213,6 +218,9 @@ motor.gimbal_down(pitch_angle=1.6)
 
 marker = Marker()
 
+keyboard = Keyboard()
+keyboard.enable(timestep)
+
 while robot.step(timestep) != -1:
     imu = sensor.read_imu()
     gyro = sensor.read_gyro()
@@ -225,42 +233,62 @@ while robot.step(timestep) != -1:
     # print("xpos={: .2f} | ypos={: .2f} | zpos={: .2f}".format(gps[0], gps[1], gps[2]))
     # print("heading={: .2f}".format(head))
 
-    controller = Controller(
-        roll_param=roll_param,
-        pitch_param=pitch_param,
-        yaw_param=yaw_param,
-        z_param=z_param,
-        # yaw_target=0.0,
-        x_target=2.0,
-        # y_target=0.0,
-        z_target=20.0,
-        # z_takeoff=68.5,
-        # z_offset=0.6,
-    )
+    key = keyboard.getKey()
+    while key > 0:
+        if key == ord("K"):
+            status_takeoff = 1
+            z_param = [5, 0, 0]
+            z_target = 10.0
+            print("Take Off")
+            break
 
-    error_cal = controller.error_calculation(gps=gps, marker=marker_pos, status=status_aruco)
-    action = controller.calculate(imu=imu, gyro=gyro, error=error_cal, head=head)
+        if key == ord("L"):
+            status_landing = 1
+            z_param = [2, 0, 0]
+            z_target = 0.0
+            print("Landing")
+            break
 
-    motor_fl = action[0] + action[1] - action[2] - action[3] + action[4]
-    motor_fr = action[0] + action[1] + action[2] - action[3] - action[4]
-    motor_rl = action[0] + action[1] - action[2] + action[3] - action[4]
-    motor_rr = action[0] + action[1] + action[2] + action[3] + action[4]
+    if status_takeoff == 1 or status_landing == 1:
+        controller = Controller(
+            roll_param=roll_param,
+            pitch_param=pitch_param,
+            yaw_param=yaw_param,
+            z_param=z_param,
+            # yaw_target=0.0,
+            x_target=0.0,
+            y_target=0.0,
+            z_target=z_target,
+            # z_takeoff=68.5,
+            # z_offset=0.6,
+        )
 
-    motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
+        error_cal = controller.error_calculation(gps=gps, marker=marker_pos, status=status_aruco)
+        action = controller.calculate(imu=imu, gyro=gyro, error=error_cal, head=head)
+        gimbal_cal = controller.gimbal_control(gyro=gyro, pitch_angle=1.6)
 
-    # print(
-    #    "z_in:{: .2f} | roll_in:{: .2f} | pitch_in:{: .2f} | yaw_in:{: .2f} | motor_fl:{: .2f} | motor_fr:{: .2f} | motor_rl:{: .2f} | motor_rr:{: .2f}".format(
-    #        action[1], action[2], action[3], action[4], motor_fl, motor_fr, motor_rl, motor_rr
-    #    )
-    # )
+        motor_fl = action[0] + action[1] - action[2] - action[3] + action[4]
+        motor_fr = action[0] + action[1] + action[2] - action[3] - action[4]
+        motor_rl = action[0] + action[1] - action[2] + action[3] - action[4]
+        motor_rr = action[0] + action[1] + action[2] + action[3] + action[4]
 
-    corner, id, reject = marker.find_aruco(image=image)
-    if id is not None:
-        status_aruco = 1
-        marker_pos = marker.get_center()
-        image = marker.create_marker(xpos=marker_pos[1], ypos=marker_pos[0], color=(255, 255, 0))
-        image = marker.create_marker(xpos=marker_pos[2], ypos=marker_pos[3])
+        motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
+        motor.gimbal_down(gimbal_cal[0], gimbal_cal[1], gimbal_cal[2])
 
-    cv2.imshow("camera", image[0])
-    cv2.waitKey(1)
+        # print(
+        #    "z_in:{: .2f} | roll_in:{: .2f} | pitch_in:{: .2f} | yaw_in:{: .2f} | motor_fl:{: .2f} | motor_fr:{: .2f} | motor_rl:{: .2f} | motor_rr:{: .2f}".format(
+        #        action[1], action[2], action[3], action[4], motor_fl, motor_fr, motor_rl, motor_rr
+        #    )
+        # )
+
+        corner, id, reject = marker.find_aruco(image=image)
+        if id is not None:
+            status_aruco = 1
+            marker_pos = marker.get_center()
+            image = marker.create_marker(xpos=marker_pos[1], ypos=marker_pos[0], color=(255, 255, 0))
+            image = marker.create_marker(xpos=marker_pos[2], ypos=marker_pos[3])
+
+        cv2.imshow("camera", image[0])
+        cv2.waitKey(1)
+
 cv2.destroyAllWindows()
