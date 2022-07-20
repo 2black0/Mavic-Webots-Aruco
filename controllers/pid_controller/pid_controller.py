@@ -87,7 +87,7 @@ class Actuator:
         self.camera_pitch = self.robot.getDevice("camera pitch")
         self.camera_yaw = self.robot.getDevice("camera yaw")
 
-    def arming(self, arming_speed=1.0):
+    def arming(self, arming_speed=0.0):
         self.motor_fl.setPosition(float("inf"))
         self.motor_fl.setVelocity(arming_speed)
         self.motor_fr.setPosition(float("inf"))
@@ -161,10 +161,10 @@ class Controller:
         )
 
         self.roll_input = (
-            self.roll_param[0] * np.clip(imu[0], -0.5, 0.5) + gyro[0] + np.clip(self.roll_error, -3.5, 3.5)
+            self.roll_param[0] * np.clip(imu[0], -0.5, 0.5) + gyro[0] + np.clip(self.roll_error, -1.0, 1.0)
         )
         self.pitch_input = (
-            self.pitch_param[0] * np.clip(imu[1], -0.5, 0.5) - gyro[1] - np.clip(self.pitch_error, -3.5, 3.5)
+            self.pitch_param[0] * np.clip(imu[1], -0.5, 0.5) - gyro[1] - np.clip(self.pitch_error, -1.0, 1.0)
         )
         self.yaw_input = self.yaw_param[0] * (self.yaw_target - head)
         self.z_diff = np.clip(self.error[2] + self.z_offset, -1.0, 1.0)
@@ -213,9 +213,7 @@ sensor = Sensor(robot)
 sensor.enable(timestep)
 
 motor = Actuator(robot)
-motor.arming(arming_speed=1.0)
-motor.gimbal_down(pitch_angle=1.6)
-
+motor.arming()
 marker = Marker()
 
 keyboard = Keyboard()
@@ -232,63 +230,105 @@ while robot.step(timestep) != -1:
     # print("roll_accel={: .2f} | pitch_accel={: .2f} | yaw_accel={: .2f}".format(gyro[0], gyro[1], gyro[2]))
     # print("xpos={: .2f} | ypos={: .2f} | zpos={: .2f}".format(gps[0], gps[1], gps[2]))
     # print("heading={: .2f}".format(head))
+    # print("x_tar={: .2f}|y_tar={: .2f}|z_tar={: .2f}|yaw_tar={: .2f}".format(x_target, y_target, z_target, yaw_target))
 
     key = keyboard.getKey()
     while key > 0:
-        if key == ord("K"):
+        if key == ord("T"):
+            print("Arming and Take Off")
             status_takeoff = 1
-            z_param = [5, 0, 0]
+            motor.arming(arming_speed=1.0)
+            motor.gimbal_down(pitch_angle=1.6)
+            z_target = 5.0
+            break
+        if key == Keyboard.UP:
+            z_target += 0.01
+            print("z_target=", z_target)
+            break
+        if key == Keyboard.DOWN:
+            z_target -= 0.01
+            print("z_target=", z_target)
+            break
+        if key == Keyboard.RIGHT:
+            yaw_target += 0.01
+            print("yaw_target=", yaw_target)
+            break
+        if key == Keyboard.LEFT:
+            yaw_target -= 0.01
+            print("yaw_target=", yaw_target)
+            break
+        if key == ord("W"):
+            x_target -= 0.01
+            print("x_target=", x_target)
+            break
+        if key == ord("X"):
+            x_target += 0.01
+            print("x_target=", x_target)
+            break
+        if key == ord("A"):
+            y_target += 0.01
+            print("y_target=", y_target)
+            break
+        if key == ord("D"):
+            y_target -= 0.01
+            print("y_target=", y_target)
+            break
+        if key == Keyboard.HOME:
+            print(" Go Home")
+            x_target = 0.0
+            y_target = 0.0
             z_target = 10.0
-            print("Take Off")
+            yaw_target = 0.0
+            break
+        if key == ord("R"):
+            if id is not None:
+                status_aruco = 1
+            else:
+                status_aruco = 0
+            print("Status Aruco:", status_aruco)
             break
 
-        if key == ord("L"):
-            status_landing = 1
-            z_param = [2, 0, 0]
-            z_target = 0.0
-            print("Landing")
-            break
+    controller = Controller(
+        roll_param=roll_param,
+        pitch_param=pitch_param,
+        yaw_param=yaw_param,
+        z_param=z_param,
+        yaw_target=yaw_target,
+        x_target=x_target,
+        y_target=y_target,
+        z_target=z_target,
+        # z_takeoff=68.5,
+        # z_offset=0.6,
+    )
 
-    if status_takeoff == 1 or status_landing == 1:
-        controller = Controller(
-            roll_param=roll_param,
-            pitch_param=pitch_param,
-            yaw_param=yaw_param,
-            z_param=z_param,
-            # yaw_target=0.0,
-            x_target=0.0,
-            y_target=0.0,
-            z_target=z_target,
-            # z_takeoff=68.5,
-            # z_offset=0.6,
-        )
+    error_cal = controller.error_calculation(gps=gps, marker=marker_pos, status=status_aruco)
+    action = controller.calculate(imu=imu, gyro=gyro, error=error_cal, head=head)
+    gimbal_cal = controller.gimbal_control(gyro=gyro, pitch_angle=1.6)
 
-        error_cal = controller.error_calculation(gps=gps, marker=marker_pos, status=status_aruco)
-        action = controller.calculate(imu=imu, gyro=gyro, error=error_cal, head=head)
-        gimbal_cal = controller.gimbal_control(gyro=gyro, pitch_angle=1.6)
+    motor_fl = action[0] + action[1] - action[2] - action[3] + action[4]
+    motor_fr = action[0] + action[1] + action[2] - action[3] - action[4]
+    motor_rl = action[0] + action[1] - action[2] + action[3] - action[4]
+    motor_rr = action[0] + action[1] + action[2] + action[3] + action[4]
 
-        motor_fl = action[0] + action[1] - action[2] - action[3] + action[4]
-        motor_fr = action[0] + action[1] + action[2] - action[3] - action[4]
-        motor_rl = action[0] + action[1] - action[2] + action[3] - action[4]
-        motor_rr = action[0] + action[1] + action[2] + action[3] + action[4]
+    if status_takeoff == 0:
+        motor_fl = motor_fr = motor_rl = motor_rr = 0.0
 
-        motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
-        motor.gimbal_down(gimbal_cal[0], gimbal_cal[1], gimbal_cal[2])
+    motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
+    motor.gimbal_down(gimbal_cal[0], gimbal_cal[1], gimbal_cal[2])
 
-        # print(
-        #    "z_in:{: .2f} | roll_in:{: .2f} | pitch_in:{: .2f} | yaw_in:{: .2f} | motor_fl:{: .2f} | motor_fr:{: .2f} | motor_rl:{: .2f} | motor_rr:{: .2f}".format(
-        #        action[1], action[2], action[3], action[4], motor_fl, motor_fr, motor_rl, motor_rr
-        #    )
-        # )
+    # print(
+    #    "z_in:{: .2f} | roll_in:{: .2f} | pitch_in:{: .2f} | yaw_in:{: .2f} | motor_fl:{: .2f} | motor_fr:{: .2f} | motor_rl:{: .2f} | motor_rr:{: .2f}".format(
+    #        action[1], action[2], action[3], action[4], motor_fl, motor_fr, motor_rl, motor_rr
+    #    )
+    # )
 
-        corner, id, reject = marker.find_aruco(image=image)
-        if id is not None:
-            status_aruco = 1
-            marker_pos = marker.get_center()
-            image = marker.create_marker(xpos=marker_pos[1], ypos=marker_pos[0], color=(255, 255, 0))
-            image = marker.create_marker(xpos=marker_pos[2], ypos=marker_pos[3])
+    corner, id, reject = marker.find_aruco(image=image)
+    if id is not None:
+        marker_pos = marker.get_center()
+        image = marker.create_marker(xpos=marker_pos[1], ypos=marker_pos[0], color=(255, 255, 0))
+        image = marker.create_marker(xpos=marker_pos[2], ypos=marker_pos[3])
 
-        cv2.imshow("camera", image[0])
-        cv2.waitKey(1)
+    cv2.imshow("camera", image[0])
+    cv2.waitKey(1)
 
 cv2.destroyAllWindows()

@@ -3,7 +3,10 @@ pitch_param = [30, 0, 0]
 yaw_param = [0.05, 0, 0]
 z_param = [5, 0, 0]
 
+x_target = 0.0
+y_target = 0.0
 z_target = 0.0
+yaw_target = 0.0
 
 marker_pos = [0, 0, 0, 0]
 id = None
@@ -11,12 +14,3 @@ status_aruco = 0
 
 status_takeoff = 0
 status_landing = 0
-
-# flight_cmd = {
-#    ord('T'): (),
-#    ord('W'): (),
-#    ord('A'): (),
-#    ord('S'): (),
-#    ord('D'): (),
-#    ord('L'): (),
-# }
