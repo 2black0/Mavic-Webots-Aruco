@@ -142,16 +142,6 @@ class Controller:
 
     def error_calculation(self, gps=[0, 0, 0], marker=[0, 0, 0, 0], status=0):
         self.z_error = self.z_target - gps[2]
-        # self.x_error = gps[0] - self.x_target
-        # self.y_error = gps[1] - self.y_target
-        # self.x_error_marker = np.clip(marker[2] - marker[1], -1.0, 1.0)
-        # self.y_error_marker = np.clip(marker[3] - marker[0], -1.0, 1.0)
-        if marker[1] != 0:
-            self.y_error_marker = (marker[2] - marker[1]) / (marker[1] / 2)
-            self.x_error_marker = -(marker[3] - marker[0]) / (marker[0] / 2)
-        else:
-            self.x_error_marker = 0
-            self.y_error_marker = 0
         if status == 0:
             self.x_error = gps[0] - self.x_target
             self.y_error = gps[1] - self.y_target
@@ -162,11 +152,7 @@ class Controller:
             else:
                 self.x_error = 0
                 self.y_error = 0
-        print(
-            "xr={: .2f}|xrm={: .2f}|yr={: .2f}|yrm={: .2f}".format(
-                self.x_error, self.x_error_marker, self.y_error, self.y_error_marker
-            )
-        )
+        print("xr={: .2f}|yr={: .2f}".format(self.x_error, self.y_error))
         return self.x_error, self.y_error, self.z_error
 
     def calculate(self, imu=[0, 0, 0], gyro=[0, 0, 0], error=[0, 0, 0], head=0):
@@ -245,9 +231,9 @@ while robot.step(timestep) != -1:
         yaw_param=yaw_param,
         z_param=z_param,
         # yaw_target=0.0,
-        # x_target=0.0,
+        x_target=2.0,
         # y_target=0.0,
-        z_target=10.0,
+        z_target=20.0,
         # z_takeoff=68.5,
         # z_offset=0.6,
     )
