@@ -182,6 +182,8 @@ while robot.step(timestep) != -1:
     roll_gyro, pitch_gyro, yaw_gyro = read_gyro(gyro)
     heading = get_compass_heading(compass)
 
+    # print("xpos={: .2f} | ypos={: .2f} | zpos={: .2f}".format(x_gps, y_gps, z_gps))
+
     # read aruco marker
     status, image, x_center, y_center = read_aruco(camera)
     if status:
@@ -233,5 +235,18 @@ while robot.step(timestep) != -1:
 
     # action of motor
     motor_action(frontLeftMotorSpeed, frontRightMotorSpeed, rearLeftMotorSpeed, rearRightMotorSpeed)
+
+    # print(
+    #    "z_in:{: .2f} | roll_in:{: .2f} | pitch_in:{: .2f} | yaw_in:{: .2f} | motor_fl:{: .2f} | motor_fr:{: .2f} | motor_rl:{: .2f} | motor_rr:{: .2f}".format(
+    #        alti_pwm,
+    #        roll_pwm,
+    #        pitch_pwm,
+    #        yaw_pwm,
+    #        frontLeftMotorSpeed,
+    #        frontRightMotorSpeed,
+    #        rearLeftMotorSpeed,
+    #        rearRightMotorSpeed,
+    #    )
+    # )
 
 cv2.destroyAllWindows()

@@ -1,6 +1,7 @@
 """pid_controller controller"""
 
 # get the variable
+from re import A
 from var import *
 
 # declaration library
@@ -16,9 +17,10 @@ from controller import LED
 
 import numpy as np
 import math
-import cv2, PIL
+import cv2
+from cv2 import aruco
 
-# instance
+# instance the robot
 robot = Robot()
 
 # time step
@@ -67,9 +69,11 @@ class Sensor:
         return self.heading
 
     def read_camera(self):
+        self.camera_height = self.camera.getHeight()
+        self.camera_width = self.camera.getWidth()
         self.image = self.camera.getImage()
-        self.image = np.frombuffer(self.image, np.uint8).reshape((self.camera.getHeight(), self.camera.getWidth(), 4))
-        return self.image
+        self.image = np.frombuffer(self.image, np.uint8).reshape((self.camera_height, self.camera_width, 4))
+        return self.image, self.camera_height, self.camera_width
 
 
 class Actuator:
@@ -83,14 +87,14 @@ class Actuator:
         self.camera_pitch = self.robot.getDevice("camera pitch")
         self.camera_yaw = self.robot.getDevice("camera yaw")
 
-    def arming(self, arming_speed=5.0):
+    def arming(self, arming_speed=1.0):
         self.motor_fl.setPosition(float("inf"))
-        self.motor_fr.setPosition(float("inf"))
-        self.motor_rl.setPosition(float("inf"))
-        self.motor_rr.setPosition(float("inf"))
         self.motor_fl.setVelocity(arming_speed)
+        self.motor_fr.setPosition(float("inf"))
         self.motor_fr.setVelocity(arming_speed)
+        self.motor_rl.setPosition(float("inf"))
         self.motor_rl.setVelocity(arming_speed)
+        self.motor_rr.setPosition(float("inf"))
         self.motor_rr.setVelocity(arming_speed)
 
     def gimbal_down(self, roll_angle=0.0, pitch_angle=0.0, yaw_angle=0.0):
@@ -100,8 +104,8 @@ class Actuator:
 
     def motor_speed(self, motor_fl=0, motor_fr=0, motor_rl=0, motor_rr=0):
         self.motor_fl.setVelocity(motor_fl)
-        self.motor_fr.setVelocity(motor_fr)
-        self.motor_rl.setVelocity(motor_rl)
+        self.motor_fr.setVelocity(-motor_fr)
+        self.motor_rl.setVelocity(-motor_rl)
         self.motor_rr.setVelocity(motor_rr)
 
 
@@ -136,55 +140,110 @@ class Controller:
         self.converted = np.matmul([x_error, y_error], self.R)
         return self.converted
 
-    def calculate(self, imu=[0, 0, 0], gyro=[0, 0, 0], gps=[0, 0, 0], head=0):
+    def error_calculation(self, gps=[0, 0, 0], marker=[0, 0, 0, 0], status=None):
+        self.z_error = self.z_target - gps[2]
         self.x_error = gps[0] - self.x_target
         self.y_error = gps[1] - self.y_target
-        self.z_error = self.z_target - gps[2]
-        self.pitch_error, self.roll_error = self.convert_to_attitude(self.x_error, self.y_error, head)
+        self.x_error_marker = np.clip(marker[2] - marker[1], -0.5, 0.5)
+        self.y_error_marker = np.clip(marker[3] - marker[0], -0.5, 0.5)
+        # if status is not None:
+        #    self.x_error_marker = marker[2] - marker[1]
+        #    self.y_error_marker = marker[3] - marker[0]
+        # else:
+        #    self.x_error = gps[0] - self.x_target
+        #    self.y_error = gps[1] - self.y_target
+        print(
+            "xr={: .2f} |xrm={: .2f} |yr={: .2f} |yrm={: .2f}".format(
+                self.x_error, self.x_error_marker, self.y_error, self.y_error_marker
+            )
+        )
+        return self.x_error, self.y_error, self.z_error
 
-        self.roll_input = self.roll_param[0] * np.clip(imu[0], -0.5, 0.5) + gyro[0] + self.roll_error
-        self.pitch_input = self.pitch_param[0] * np.clip(imu[1], -0.5, 0.5) - gyro[1] - self.pitch_error
+    def calculate(self, imu=[0, 0, 0], gyro=[0, 0, 0], error=[0, 0, 0], head=0):
+        self.error = error
+        self.pitch_error, self.roll_error = self.convert_to_attitude(
+            np.clip(self.error[0], -3.5, 3.5), np.clip(self.error[1], -3.5, 3.5), head
+        )
+
+        self.roll_input = (
+            self.roll_param[0] * np.clip(imu[0], -0.5, 0.5) + gyro[0] + np.clip(self.roll_error, -3.5, 3.5)
+        )
+        self.pitch_input = (
+            self.pitch_param[0] * np.clip(imu[1], -0.5, 0.5) - gyro[1] - np.clip(self.pitch_error, -3.5, 3.5)
+        )
         self.yaw_input = self.yaw_param[0] * (self.yaw_target - head)
-        self.z_diff = np.clip(self.z_error + self.z_offset, -1.0, 1.0)
+        self.z_diff = np.clip(self.error[2] + self.z_offset, -1.0, 1.0)
         self.z_input = self.z_param[0] * math.pow(self.z_diff, 3.0)
         return self.z_takeoff, self.z_input, self.roll_input, self.pitch_input, self.yaw_input
 
 
+class Marker:
+    def __init__(self):
+        self.radius = 3
+        self.color_blue = (0, 0, 255)
+        self.color_red = (255, 0, 0)
+        self.thickness = 3
+
+    def find_aruco(self, image):
+        self.image = image[0]
+        self.image_height = image[1]
+        self.image_width = image[2]
+        self.gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        self.aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
+        self.parameters = aruco.DetectorParameters_create()
+        self.corner, self.id, self.reject = aruco.detectMarkers(self.gray, self.aruco_dict, parameters=self.parameters)
+        return self.corner, self.id, self.reject
+
+    def get_center(self):
+        self.corner_lb = (int(self.corner[0][0][0][0]), int(self.corner[0][0][0][1]))
+        self.corner_lt = (int(self.corner[0][0][1][0]), int(self.corner[0][0][1][1]))
+        self.corner_rb = (int(self.corner[0][0][2][0]), int(self.corner[0][0][2][1]))
+        self.corner_rt = (int(self.corner[0][0][3][0]), int(self.corner[0][0][3][1]))
+        self.center_x = (int(self.corner[0][0][3][0]) / 2) + (int(self.corner[0][0][0][0]) / 2)
+        self.center_y = (int(self.corner[0][0][2][1]) / 2) + (int(self.corner[0][0][3][1]) / 2)
+        return int(self.image_height / 2), int(self.image_width / 2), self.center_x, self.center_y
+
+    def create_marker(self, xpos, ypos, radius=3, color=(255, 0, 0), thickness=3):
+        self.image = cv2.circle(self.image, (int(xpos), int(ypos)), radius, color, thickness)
+        return self.image, 0, 0
+
+
 sensor = Sensor(robot)
 sensor.enable(timestep)
+
 motor = Actuator(robot)
-motor.arming(arming_speed=25)
+motor.arming(arming_speed=1.0)
 motor.gimbal_down(pitch_angle=1.6)
+
+marker = Marker()
 
 while robot.step(timestep) != -1:
     imu = sensor.read_imu()
     gyro = sensor.read_gyro()
     gps = sensor.read_gps()
     head = sensor.read_compass()
-    # image = sensor.read_camera()
+    image = sensor.read_camera()
 
     # print("roll={: .2f} | pitch={: .2f} | yaw={: .2f}".format(imu[0], imu[1], imu[2]))
     # print("roll_accel={: .2f} | pitch_accel={: .2f} | yaw_accel={: .2f}".format(gyro[0], gyro[1], gyro[2]))
     # print("xpos={: .2f} | ypos={: .2f} | zpos={: .2f}".format(gps[0], gps[1], gps[2]))
     # print("heading={: .2f}".format(head))
 
-    # cv2.imshow("camera", image)
-    # cv2.waitKey(1)
-
     controller = Controller(
         roll_param=roll_param,
         pitch_param=pitch_param,
         yaw_param=yaw_param,
         z_param=z_param,
-        yaw_target=0.0,
-        x_target=0.0,
-        y_target=0.0,
-        z_target=3.0,
-        z_takeoff=68.5,
-        z_offset=0.6,
+        # yaw_target=0.0,
+        # x_target=0.0,
+        # y_target=0.0,
+        z_target=10.0,
+        # z_takeoff=68.5,
+        # z_offset=0.6,
     )
 
-    action = controller.calculate(imu=imu, gyro=gyro, gps=gps, head=head)
+    error_cal = controller.error_calculation(gps=gps, marker=marker_pos, status=id)
+    action = controller.calculate(imu=imu, gyro=gyro, error=error_cal, head=head)
 
     motor_fl = action[0] + action[1] - action[2] - action[3] + action[4]
     motor_fr = action[0] + action[1] + action[2] - action[3] - action[4]
@@ -193,9 +252,18 @@ while robot.step(timestep) != -1:
 
     motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
 
-    print(
-        "z_in = {: .2f} | roll_in = {: .2f} | pitch_in = {: .2f} | yaw_in = {: .2f} | motor_fl = {: .2f} | motor_fr = {: .2f} | motor_rl = {: .2f} | motor_rr = {: .2f}".format(
-            action[1], action[2], action[3], action[4], motor_fl, motor_fr, motor_rl, motor_rr
-        )
-    )
-# cv2.destroyAllWindows()
+    # print(
+    #    "z_in:{: .2f} | roll_in:{: .2f} | pitch_in:{: .2f} | yaw_in:{: .2f} | motor_fl:{: .2f} | motor_fr:{: .2f} | motor_rl:{: .2f} | motor_rr:{: .2f}".format(
+    #        action[1], action[2], action[3], action[4], motor_fl, motor_fr, motor_rl, motor_rr
+    #    )
+    # )
+
+    corner, id, reject = marker.find_aruco(image=image)
+    if id is not None:
+        marker_pos = marker.get_center()
+        image = marker.create_marker(xpos=marker_pos[1], ypos=marker_pos[0], color=(255, 255, 0))
+        image = marker.create_marker(xpos=marker_pos[2], ypos=marker_pos[3])
+
+    cv2.imshow("camera", image[0])
+    cv2.waitKey(1)
+cv2.destroyAllWindows()
