@@ -5,3 +5,4 @@ z_param = [5, 0, 0]
 
 marker_pos = [0, 0, 0, 0]
 id = None
+status_aruco = 0

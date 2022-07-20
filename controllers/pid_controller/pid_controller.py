@@ -140,20 +140,20 @@ class Controller:
         self.converted = np.matmul([x_error, y_error], self.R)
         return self.converted
 
-    def error_calculation(self, gps=[0, 0, 0], marker=[0, 0, 0, 0], status=None):
+    def error_calculation(self, gps=[0, 0, 0], marker=[0, 0, 0, 0], status=0):
         self.z_error = self.z_target - gps[2]
         self.x_error = gps[0] - self.x_target
         self.y_error = gps[1] - self.y_target
-        self.x_error_marker = np.clip(marker[2] - marker[1], -0.5, 0.5)
-        self.y_error_marker = np.clip(marker[3] - marker[0], -0.5, 0.5)
-        # if status is not None:
-        #    self.x_error_marker = marker[2] - marker[1]
-        #    self.y_error_marker = marker[3] - marker[0]
-        # else:
+        self.x_error_marker = np.clip(marker[2] - marker[1], -1.0, 1.0)
+        self.y_error_marker = np.clip(marker[3] - marker[0], -1.0, 1.0)
+        # if status == 0:
         #    self.x_error = gps[0] - self.x_target
         #    self.y_error = gps[1] - self.y_target
+        # else:
+        #    self.x_error = np.clip(marker[2] - marker[1], -1.0, 1.0)
+        #    self.y_error = np.clip(marker[3] - marker[0], -1.0, 1.0)
         print(
-            "xr={: .2f} |xrm={: .2f} |yr={: .2f} |yrm={: .2f}".format(
+            "xr={: .2f}|xrm={: .2f}|yr={: .2f}|yrm={: .2f}".format(
                 self.x_error, self.x_error_marker, self.y_error, self.y_error_marker
             )
         )
@@ -242,7 +242,7 @@ while robot.step(timestep) != -1:
         # z_offset=0.6,
     )
 
-    error_cal = controller.error_calculation(gps=gps, marker=marker_pos, status=id)
+    error_cal = controller.error_calculation(gps=gps, marker=marker_pos, status=status_aruco)
     action = controller.calculate(imu=imu, gyro=gyro, error=error_cal, head=head)
 
     motor_fl = action[0] + action[1] - action[2] - action[3] + action[4]
@@ -260,6 +260,7 @@ while robot.step(timestep) != -1:
 
     corner, id, reject = marker.find_aruco(image=image)
     if id is not None:
+        status_aruco = 0
         marker_pos = marker.get_center()
         image = marker.create_marker(xpos=marker_pos[1], ypos=marker_pos[0], color=(255, 255, 0))
         image = marker.create_marker(xpos=marker_pos[2], ypos=marker_pos[3])
