@@ -10,7 +10,8 @@ yaw_target = 0.0
 
 marker_pos = [0, 0, 0, 0]
 id = None
-status_aruco = 0
 
-status_takeoff = 0
-status_landing = 0
+status_aruco = False
+status_takeoff = False
+status_landing = False
+status_button = False

@@ -1,7 +1,6 @@
 """pid_controller controller"""
 
 # get the variable
-from re import A
 from var import *
 
 # declaration library
@@ -19,6 +18,7 @@ import numpy as np
 import math
 import cv2
 from cv2 import aruco
+import time
 
 # instance the robot
 robot = Robot()
@@ -234,12 +234,13 @@ while robot.step(timestep) != -1:
 
     key = keyboard.getKey()
     while key > 0:
-        if key == ord("T"):
-            print("Arming and Take Off")
+        if key == ord("T") and status_takeoff == False:
             status_takeoff = 1
             motor.arming(arming_speed=1.0)
             motor.gimbal_down(pitch_angle=1.6)
             z_target = 5.0
+            print("Arming and Take Off")
+            time.sleep(0.1)
             break
         if key == Keyboard.UP:
             z_target += 0.01
@@ -261,7 +262,7 @@ while robot.step(timestep) != -1:
             x_target -= 0.01
             print("x_target=", x_target)
             break
-        if key == ord("X"):
+        if key == ord("S"):
             x_target += 0.01
             print("x_target=", x_target)
             break
@@ -279,14 +280,29 @@ while robot.step(timestep) != -1:
             y_target = 0.0
             z_target = 10.0
             yaw_target = 0.0
+            time.sleep(0.1)
             break
-        if key == ord("R"):
-            if id is not None:
-                status_aruco = 1
-            else:
-                status_aruco = 0
+        if key == ord("R") and status_takeoff == True:
+            status_aruco = not status_aruco
             print("Status Aruco:", status_aruco)
+            time.sleep(0.1)
             break
+        if key == ord("L") and status_takeoff == True:
+            print("Landing Mode")
+            status_landing = True
+            x_target = 0.0
+            y_target = 0.0
+            z_target = 10.0
+            yaw_target = 0.0
+            status_aruco = True
+            time.sleep(0.1)
+            break
+
+    if status_takeoff == True and status_landing == True:
+        z_target = z_target - 0.05
+
+    if status_landing == False:
+        z_target = z_target
 
     controller = Controller(
         roll_param=roll_param,
@@ -323,7 +339,7 @@ while robot.step(timestep) != -1:
     # )
 
     corner, id, reject = marker.find_aruco(image=image)
-    if id is not None:
+    if id is not None and status_aruco == True:
         marker_pos = marker.get_center()
         image = marker.create_marker(xpos=marker_pos[1], ypos=marker_pos[0], color=(255, 255, 0))
         image = marker.create_marker(xpos=marker_pos[2], ypos=marker_pos[3])
