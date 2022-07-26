@@ -15,3 +15,4 @@ status_aruco = False
 status_takeoff = False
 status_landing = False
 status_button = False
+status_gimbal = False

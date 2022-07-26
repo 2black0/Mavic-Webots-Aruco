@@ -140,18 +140,18 @@ class Controller:
         self.converted = np.matmul([x_error, y_error], self.R)
         return self.converted
 
-    def error_calculation(self, gps=[0, 0, 0], marker=[0, 0, 0, 0], status=0):
+    def error_calculation(self, gps=[0, 0, 0], marker=[0, 0, 0, 0], status=False):
         self.z_error = self.z_target - gps[2]
-        if status == 0:
-            self.x_error = gps[0] - self.x_target
-            self.y_error = gps[1] - self.y_target
-        else:
+        if status:
             if marker[1] != 0:
                 self.y_error = (marker[2] - marker[1]) / (marker[1] / 3)
                 self.x_error = -(marker[3] - marker[0]) / (marker[0] / 3)
             else:
                 self.x_error = 0
                 self.y_error = 0
+        else:
+            self.x_error = gps[0] - self.x_target
+            self.y_error = gps[1] - self.y_target
         return self.x_error, self.y_error, self.z_error
 
     def calculate(self, imu=[0, 0, 0], gyro=[0, 0, 0], error=[0, 0, 0], head=0):
@@ -235,7 +235,7 @@ while robot.step(timestep) != -1:
     key = keyboard.getKey()
     while key > 0:
         if key == ord("T") and status_takeoff == False:
-            status_takeoff = 1
+            status_takeoff = True
             motor.arming(arming_speed=1.0)
             motor.gimbal_down(pitch_angle=1.6)
             z_target = 5.0
@@ -274,6 +274,11 @@ while robot.step(timestep) != -1:
             y_target -= 0.01
             print("y_target=", y_target)
             break
+        if key == ord("R") and status_takeoff == True:
+            status_aruco = not status_aruco
+            print("Status Aruco:", status_aruco)
+            time.sleep(0.1)
+            break
         if key == Keyboard.HOME:
             print(" Go Home")
             x_target = 0.0
@@ -282,9 +287,10 @@ while robot.step(timestep) != -1:
             yaw_target = 0.0
             time.sleep(0.1)
             break
-        if key == ord("R") and status_takeoff == True:
-            status_aruco = not status_aruco
-            print("Status Aruco:", status_aruco)
+        """
+        if key == ord("G") and status_takeoff == True:
+            status_gimbal = not status_gimbal
+            print("Status Gimbal:", status_gimbal)
             time.sleep(0.1)
             break
         if key == ord("L") and status_takeoff == True:
@@ -296,13 +302,10 @@ while robot.step(timestep) != -1:
             yaw_target = 0.0
             status_aruco = True
             time.sleep(0.1)
-            break
+            break"""
 
-    if status_takeoff == True and status_landing == True:
-        z_target = z_target - 0.05
-
-    if status_landing == False:
-        z_target = z_target
+    # if status_landing == False:
+    #    z_target = z_target
 
     controller = Controller(
         roll_param=roll_param,
@@ -326,11 +329,8 @@ while robot.step(timestep) != -1:
     motor_rl = action[0] + action[1] - action[2] + action[3] - action[4]
     motor_rr = action[0] + action[1] + action[2] + action[3] + action[4]
 
-    if status_takeoff == 0:
+    if status_takeoff == False:
         motor_fl = motor_fr = motor_rl = motor_rr = 0.0
-
-    motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
-    motor.gimbal_down(gimbal_cal[0], gimbal_cal[1], gimbal_cal[2])
 
     # print(
     #    "z_in:{: .2f} | roll_in:{: .2f} | pitch_in:{: .2f} | yaw_in:{: .2f} | motor_fl:{: .2f} | motor_fr:{: .2f} | motor_rl:{: .2f} | motor_rr:{: .2f}".format(
@@ -338,17 +338,16 @@ while robot.step(timestep) != -1:
     #    )
     # )
 
+    # if status_takeoff == True and status_landing == True:
+    #    z_target = z_target - 0.05
+
+    motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
+    motor.gimbal_down(gimbal_cal[0], gimbal_cal[1], gimbal_cal[2])
+
     corner, id, reject = marker.find_aruco(image=image)
     if id is not None and status_aruco == True:
         marker_pos = marker.get_center()
         image = marker.create_marker(xpos=int(marker_pos[1] / 2), ypos=int(marker_pos[0] / 2), color=(255, 255, 0))
-        # image = cv2.line(
-        #    image,
-        #    (int(marker_pos[1] / 2), 0),
-        #    (int(marker_pos[1] / 2), int(marker_pos[0])),
-        #    color=(255, 255, 0),
-        #    thickness=2,
-        # )
         image = marker.create_marker(xpos=marker_pos[2], ypos=marker_pos[3])
 
     cv2.imshow("camera", image[0])
