@@ -202,7 +202,7 @@ class Marker:
         self.corner_rt = (int(self.corner[0][0][3][0]), int(self.corner[0][0][3][1]))
         self.center_x = (int(self.corner[0][0][3][0]) / 2) + (int(self.corner[0][0][0][0]) / 2)
         self.center_y = (int(self.corner[0][0][2][1]) / 2) + (int(self.corner[0][0][3][1]) / 2)
-        return self.image_height, self.image_width, self.center_x, self.center_y
+        return int(self.image_height / 2), int(self.image_width / 2), self.center_x, self.center_y
 
     def create_marker(self, xpos, ypos, radius=3, color=(255, 0, 0), thickness=2):
         self.image = cv2.circle(self.image, (int(xpos), int(ypos)), radius, color, thickness)
@@ -347,7 +347,7 @@ while robot.step(timestep) != -1:
     corner, id, reject = marker.find_aruco(image=image)
     if id is not None and status_aruco == True:
         marker_pos = marker.get_center()
-        image = marker.create_marker(xpos=int(marker_pos[1] / 2), ypos=int(marker_pos[0] / 2), color=(255, 255, 0))
+        image = marker.create_marker(xpos=marker_pos[1], ypos=marker_pos[0], color=(255, 255, 0))
         image = marker.create_marker(xpos=marker_pos[2], ypos=marker_pos[3])
 
     cv2.imshow("camera", image[0])
