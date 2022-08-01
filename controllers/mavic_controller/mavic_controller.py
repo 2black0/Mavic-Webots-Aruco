@@ -32,7 +32,7 @@ while robot.step(timestep) != -1:
     head = sensor.read_compass()
     image = sensor.read_camera()
 
-    # print("roll={: .2f}|pitch={: .2f}|yaw={: .2f}".format(imu[0], imu[1], imu[2]))
+    print("roll={: .2f}|pitch={: .2f}|yaw={: .2f}".format(imu[0], imu[1], imu[2]))
     # print("roll_accel={: .2f} | pitch_accel={: .2f} | yaw_accel={: .2f}".format(gyro[0], gyro[1], gyro[2]))
     # print("x_pos={: .2f}|y_pos={: .2f}|z_pos={: .2f}".format(gps[0], gps[1], gps[2]))
     # print("heading={: .2f}".format(head))
@@ -56,6 +56,46 @@ while robot.step(timestep) != -1:
         if key == Keyboard.DOWN:
             z_target -= 0.01
             print("z_target=", z_target)
+            break
+        if key == Keyboard.RIGHT:
+            yaw_target += 0.001
+            if yaw_target >= 3.14:
+                yaw_target = 3.14
+            elif yaw_target <= -3.14:
+                yaw_target = -3.14
+            print("yaw_target=", yaw_target)
+            break
+        if key == Keyboard.LEFT:
+            yaw_target -= 0.001
+            if yaw_target >= 3.14:
+                yaw_target = 3.14
+            elif yaw_target <= -3.14:
+                yaw_target = -3.14
+            print("yaw_target=", yaw_target)
+            break
+        if key == ord("W"):
+            x_target -= 0.1
+            print("x_target=", x_target)
+            break
+        if key == ord("S"):
+            x_target += 0.1
+            print("x_target=", x_target)
+            break
+        if key == ord("A"):
+            y_target += 0.1
+            print("y_target=", y_target)
+            break
+        if key == ord("D"):
+            y_target -= 0.1
+            print("y_target=", y_target)
+            break
+        if key == Keyboard.HOME:
+            print(" Go Home")
+            x_target = 0.0
+            y_target = 0.0
+            z_target = 10.0
+            yaw_target = 0.0
+            sleep(0.25)
             break
         if key == ord("L") and status_landing == False:
             status_landing = True

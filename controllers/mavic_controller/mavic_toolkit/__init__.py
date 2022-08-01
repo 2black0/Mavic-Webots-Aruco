@@ -148,18 +148,17 @@ class Controller:
         self.yaw_error = error[3]
 
         self.pitch_error, self.roll_error = self.convert_to_attitude(
-            np.clip(self.x_error[0], -3.5, 3.5), np.clip(self.y_error[0], -3.5, 3.5), head
+            np.clip(self.x_error[0], -1.5, 1.5), np.clip(self.y_error[0], -1.5, 1.5), head
         )
 
         self.roll_input = (
-            self.roll_param[0] * np.clip(imu[0], -0.5, 0.5) + gyro[0] + np.clip(self.roll_error, -1.0, 1.0)
+            (self.roll_param[0] * np.clip(imu[0], -0.5, 0.5)) + (self.roll_param[2] * gyro[0]) + self.roll_error
         )
         self.pitch_input = (
-            self.pitch_param[0] * np.clip(imu[1], -0.5, 0.5) - gyro[1] - np.clip(self.pitch_error, -1.0, 1.0)
+            (self.pitch_param[0] * np.clip(imu[1], -0.5, 0.5)) - (self.pitch_param[2] * gyro[1]) - self.pitch_error
         )
-        self.yaw_input = self.yaw_param[0] * self.yaw_error[0]  # Kp_Yaw * e_Yaw
-        # self.z_diff = np.clip(self.z_error[0] + self.z_offset, -1.0, 1.0)
-        # self.z_input = self.z_param[0] * math.pow(self.z_diff, 3.0)
+
+        self.yaw_input = self.yaw_param[0] * self.yaw_error[0]
 
         self.z_param = z_param_takeoff
         self.z_input = (
