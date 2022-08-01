@@ -32,7 +32,7 @@ while robot.step(timestep) != -1:
     head = sensor.read_compass()
     image = sensor.read_camera()
 
-    # print("roll={: .2f} | pitch={: .2f} | yaw={: .2f}".format(imu[0], imu[1], imu[2]))
+    # print("roll={: .2f}|pitch={: .2f}|yaw={: .2f}".format(imu[0], imu[1], imu[2]))
     # print("roll_accel={: .2f} | pitch_accel={: .2f} | yaw_accel={: .2f}".format(gyro[0], gyro[1], gyro[2]))
     # print("x_pos={: .2f}|y_pos={: .2f}|z_pos={: .2f}".format(gps[0], gps[1], gps[2]))
     # print("heading={: .2f}".format(head))
