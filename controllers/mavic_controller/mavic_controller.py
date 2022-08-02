@@ -13,7 +13,7 @@ sensor = Sensor(robot)
 sensor.enable(timestep)
 
 motor = Actuator(robot)
-motor.arming(0.0)
+motor.arming(10.0)
 
 keyboard = Keyboard()
 keyboard.enable(timestep)
@@ -137,16 +137,16 @@ while robot.step(timestep) != -1:
     if (status_landing == True and z_error < 0.1) or (status_takeoff == False and status_landing == False):
         motor.arming(arming_speed=0.0)
 
-    print(
-        "act_0={: .2f}|act_1={: .2f}|act_2={: .2f}|act_3={: .2f}|act_4={: .2f}".format(
-            action[0], action[1], action[2], action[3], action[4]
-        )
-    )
+    # print(
+    #    "act_0={: .2f}|act_1={: .2f}|act_2={: .2f}|act_3={: .2f}|act_4={: .2f}".format(
+    #        action[0], action[1], action[2], action[3], action[4]
+    #    )
+    # )
 
-    motor_fl = action[0] + action[1] - action[2] - action[3] + action[4]
-    motor_fr = action[0] + action[1] + action[2] - action[3] - action[4]
-    motor_rl = action[0] + action[1] - action[2] + action[3] - action[4]
-    motor_rr = action[0] + action[1] + action[2] + action[3] + action[4]
+    motor_fl = action[0] + action[1] - action[2] - action[3] - action[4]
+    motor_fr = action[0] + action[1] + action[2] - action[3] + action[4]
+    motor_rl = action[0] + action[1] - action[2] + action[3] + action[4]
+    motor_rr = action[0] + action[1] + action[2] + action[3] - action[4]
 
     motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
     motor.gimbal_down(gimbal_cal[0], gimbal_cal[1], gimbal_cal[2])

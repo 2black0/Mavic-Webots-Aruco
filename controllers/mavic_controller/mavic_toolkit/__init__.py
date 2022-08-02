@@ -158,8 +158,8 @@ class Controller:
             (self.pitch_param[0] * np.clip(imu[1], -0.5, 0.5)) - (self.pitch_param[2] * gyro[1]) - self.pitch_error
         )
 
-        self.yaw_input = self.yaw_param[0] * self.yaw_error[0]
-        # print(self.yaw_input)
+        self.yaw_input = (self.yaw_param[0] * self.yaw_error[0]) - (self.yaw_param[2] * self.yaw_error[2])
+
         self.z_param = z_param_takeoff
         self.z_input = (
             (self.z_param[0] * self.z_error[0])
