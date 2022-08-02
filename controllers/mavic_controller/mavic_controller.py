@@ -35,7 +35,7 @@ while robot.step(timestep) != -1:
     # print("roll={: .2f}|pitch={: .2f}|yaw={: .2f}".format(imu[0], imu[1], imu[2]))
     # print("roll_accel={: .2f} | pitch_accel={: .2f} | yaw_accel={: .2f}".format(gyro[0], gyro[1], gyro[2]))
     # print("x_pos={: .2f}|y_pos={: .2f}|z_pos={: .2f}".format(gps[0], gps[1], gps[2]))
-    print("heading={: .2f}".format(head))
+    # print("heading={: .2f}".format(head))
     # print("x_tar={: .2f}|y_tar={: .2f}|z_tar={: .2f}|yaw_tar={: .2f}".format(x_target, y_target, z_target, yaw_target))
 
     key = keyboard.getKey()
@@ -137,11 +137,11 @@ while robot.step(timestep) != -1:
     if (status_landing == True and z_error < 0.1) or (status_takeoff == False and status_landing == False):
         motor.arming(arming_speed=0.0)
 
-    # print(
-    #    "act_0={: .2f}|act_1={: .2f}|act_2={: .2f}|act_3={: .2f}|act_4={: .2f}".format(
-    #        action[0], action[1], action[2], action[3], action[4]
-    #    )
-    # )
+    print(
+        "act_0={: .2f}|act_1={: .2f}|act_2={: .2f}|act_3={: .2f}|act_4={: .2f}".format(
+            action[0], action[1], action[2], action[3], action[4]
+        )
+    )
 
     motor_fl = action[0] + action[1] - action[2] - action[3] + action[4]
     motor_fr = action[0] + action[1] + action[2] - action[3] - action[4]
