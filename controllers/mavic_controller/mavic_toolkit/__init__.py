@@ -132,7 +132,7 @@ class Controller:
             self.y_error = gps[1] - self.y_target
 
         self.yaw_error = self.yaw_target - head
-
+        # print(head)
         return self.x_error, self.y_error, self.z_error, self.yaw_error
 
     def convert_to_attitude(self, x_error, y_error, yaw):
