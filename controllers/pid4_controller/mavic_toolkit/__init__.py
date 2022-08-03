@@ -1,11 +1,11 @@
 import numpy as np
 import math
 from params import *
+from simple_pid import PID
 
 
 class Sensor:
     def __init__(self, robot):
-        # print("sensor init")
         self.robot = robot
         self.timestep = int(self.robot.getBasicTimeStep())
         self.imu = self.robot.getDevice("inertial unit")
@@ -15,7 +15,6 @@ class Sensor:
         self.camera = self.robot.getDevice("camera")
 
     def enable(self, timestep):
-        # print("sensor enable")
         self.imu.enable(timestep)
         self.gyro.enable(timestep)
         self.gps.enable(timestep)
@@ -70,7 +69,6 @@ class Sensor:
 
     def read_camera(self):
         self.camera_height_width = self.read_camera_resolution()
-        # self.camera_width = self.camera.getWidth()
         self.image = self.camera.getImage()
         self.image = np.frombuffer(self.image, np.uint8).reshape(
             (self.camera_height_width[0], self.camera_height_width[1], 4)
@@ -120,84 +118,3 @@ class Actuator:
                     motor_fl, -motor_fr, -motor_rl, motor_rr
                 )
             )
-
-
-class Controller:
-    def __init__(
-        self,
-        roll_param,
-        pitch_param,
-        yaw_param,
-        z_param,
-        z_takeoff=68.5,
-        # z_takeoff=75,
-        # z_offset=0.6,
-        z_offset=0.0,
-    ):
-        self.roll_param = roll_param
-        self.pitch_param = pitch_param
-        self.yaw_param = yaw_param
-        self.z_param = z_param
-        self.z_takeoff = z_takeoff
-        self.z_offset = z_offset
-
-    def error_calculation(self, target=[0, 0, 0, 0], gps=[0, 0, 0], marker=[0, 0, 0, 0], head=0, status=False):
-        self.x_target = target[0]
-        self.y_target = target[1]
-        self.z_target = target[2]
-        self.yaw_target = target[3]
-        self.z_error = self.z_target - gps[2]
-        if status:
-            if marker[1] != 0:
-                self.y_error = (marker[2] - marker[1]) / (marker[1] / 3)
-                self.x_error = -(marker[3] - marker[0]) / (marker[0] / 3)
-            else:
-                self.x_error = 0
-                self.y_error = 0
-        else:
-            self.x_error = gps[0] - self.x_target
-            self.y_error = gps[1] - self.y_target
-
-        self.yaw_error = self.yaw_target - head
-        # print(head)
-        return self.x_error, self.y_error, self.z_error, self.yaw_error
-
-    def convert_to_attitude(self, x_error, y_error, yaw):
-        self.c, self.s = np.cos(yaw), np.sin(yaw)
-        self.R = np.array(((self.c, -self.s), (self.s, self.c)))
-        self.converted = np.matmul([x_error, y_error], self.R)
-        return self.converted
-
-    def calculate(self, imu=[0, 0, 0], gyro=[0, 0, 0], error=[[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]], head=0):
-        self.x_error = error[0]
-        self.y_error = error[1]
-        self.z_error = error[2]
-        self.yaw_error = error[3]
-
-        self.pitch_error, self.roll_error = self.convert_to_attitude(
-            np.clip(self.x_error[0], -1.5, 1.5), np.clip(self.y_error[0], -1.5, 1.5), head
-        )
-
-        self.roll_input = (
-            (self.roll_param[0] * np.clip(imu[0], -0.5, 0.5)) + (self.roll_param[2] * gyro[0]) + self.roll_error
-        )
-        self.pitch_input = (
-            (self.pitch_param[0] * np.clip(imu[1], -0.5, 0.5)) - (self.pitch_param[2] * gyro[1]) - self.pitch_error
-        )
-
-        self.yaw_input = (self.yaw_param[0] * self.yaw_error[0]) - (self.yaw_param[2] * self.yaw_error[2])
-
-        self.z_param = thro_param
-        self.z_input = (
-            (self.z_param[0] * self.z_error[0])
-            + (self.z_param[1] * self.z_error[1])
-            + (self.z_param[2] * self.z_error[2])
-        )
-
-        return self.z_takeoff, self.z_input, self.roll_input, self.pitch_input, self.yaw_input
-
-    def gimbal_control(self, gyro=[0, 0, 0], roll_angle=0.0, pitch_angle=0.0, yaw_angle=0.0):
-        pitch_gimbal = np.clip(((-0.1 * gyro[1]) + pitch_angle), -0.5, 1.7)
-        roll_gimbal = np.clip((-0.115 * gyro[0] + roll_angle), -0.5, 0.5)
-        yaw_gimbal = np.clip((-0.115 * gyro[2] + yaw_angle), -1.7, 1.7)
-        return roll_gimbal, pitch_gimbal, yaw_gimbal

@@ -2,7 +2,8 @@
 
 from controller import Supervisor
 import sys
-import math3d as m3d
+
+# import math3d as m3d
 
 supervisor = Supervisor()
 timestep = int(supervisor.getBasicTimeStep())

@@ -1,9 +1,8 @@
-"""mavic_controller controller."""
+"""pid4_controller controller."""
 
 from controller import Robot, Keyboard
-from mavic_toolkit import Sensor, Actuator, Controller
+from mavic_toolkit import Sensor, Actuator
 from time import sleep
-import cv2
 from params import *
 from simple_pid import PID
 
@@ -12,136 +11,52 @@ timestep = int(robot.getBasicTimeStep())
 sensor = Sensor(robot)
 sensor.enable(timestep)
 motor = Actuator(robot)
-motor.arming(10.0)
+motor.arming(20.0)
 keyboard = Keyboard()
 keyboard.enable(timestep)
 
-rollPID = PID(float(roll_param[0]), float(roll_param[1]), float(roll_param[2]), setpoint=0.0)
-pitchPID = PID(float(pitch_param[0]), float(pitch_param[1]), float(pitch_param[2]), setpoint=0.0)
+xPID = PID(float(roll_param[0]), float(roll_param[1]), float(roll_param[2]), setpoint=0.0)
+yPID = PID(float(pitch_param[0]), float(pitch_param[1]), float(pitch_param[2]), setpoint=0.0)
+zPID = PID(float(thro_param[0]), float(thro_param[1]), float(thro_param[2]), setpoint=0.0)
 yawPID = PID(float(yaw_param[0]), float(yaw_param[1]), float(yaw_param[2]), setpoint=0.0)
-throttlePID = PID(float(thro_param[0]), float(thro_param[1]), float(thro_param[2]), setpoint=0.0)
+
+xPID.output_limits = (-10, 10)
+yPID.output_limits = (-10, 10)
+zPID.output_limits = (-5, 5)
+yawPID.output_limits = (-5, 5)
 
 while robot.step(timestep) != -1:
-    imu = sensor.read_imu()
-    gyro = sensor.read_gyro()
-    gps = sensor.read_gps()
-    head = sensor.read_compass()
-    image = sensor.read_camera()
+    roll, pitch, yaw = sensor.read_imu()
+    roll_accel, pitch_accel, yaw_accel = sensor.read_gyro()
+    xpos, ypos, zpos = sensor.read_gps()
+    head = sensor.read_compass_head()
 
     key = keyboard.getKey()
     while key > 0:
         if key == ord("T") and status_takeoff == False:
             status_takeoff = True
             status_landing = False
-            motor.arming(arming_speed=10.0)
-            motor.gimbal_down(pitch_angle=1.6)
             z_target = 3.0
             print("Arming and Take Off")
             sleep(0.25)
             break
-        if key == Keyboard.UP:
-            z_target += 0.01
-            print("z_target=", z_target)
-            break
-        if key == Keyboard.DOWN:
-            z_target -= 0.01
-            print("z_target=", z_target)
-            break
-        if key == Keyboard.RIGHT:
-            yaw_target += 0.001
-            if yaw_target >= 3.14:
-                yaw_target = 3.14
-            elif yaw_target <= -3.14:
-                yaw_target = -3.14
-            print("yaw_target=", yaw_target)
-            break
-        if key == Keyboard.LEFT:
-            yaw_target -= 0.001
-            if yaw_target >= 3.14:
-                yaw_target = 3.14
-            elif yaw_target <= -3.14:
-                yaw_target = -3.14
-            print("yaw_target=", yaw_target)
-            break
-        if key == ord("W"):
-            x_target -= 0.1
-            print("x_target=", x_target)
-            break
-        if key == ord("S"):
-            x_target += 0.1
-            print("x_target=", x_target)
-            break
-        if key == ord("A"):
-            y_target += 0.1
-            print("y_target=", y_target)
-            break
-        if key == ord("D"):
-            y_target -= 0.1
-            print("y_target=", y_target)
-            break
-        if key == Keyboard.HOME:
-            print(" Go Home")
-            x_target = 0.0
-            y_target = 0.0
-            z_target = 10.0
-            yaw_target = 0.0
-            sleep(0.25)
-            break
-        if key == ord("L") and status_landing == False:
-            status_landing = True
-            status_takeoff = False
-            z_target = 0.0
-            print("Landing")
-            sleep(0.25)
-            break
 
-    target = [x_target, y_target, z_target, yaw_target]
+    xPID.setpoint = x_target
+    yPID.setpoint = y_target
+    zPID.setpoint = z_target
+    yawPID.setpoint = yaw_target
 
-    x_error, y_error, z_error, yaw_error = controller.error_calculation(
-        target=target, gps=gps, marker=marker_pos, head=head, status=status_aruco
-    )
+    roll_error = xPID(xpos)
+    pitch_error = yPID(ypos)
 
-    x_int_error = x_int_error + x_error
-    y_int_error = y_int_error + y_error
-    z_int_error = z_int_error + z_error
-    yaw_int_error = yaw_int_error + yaw_error
+    vertical_input = zPID(zpos)
+    roll_input = (roll_input_param[0] * roll) + roll_accel + roll_error
+    pitch_input = (pitch_input_param[0] * pitch) - pitch_accel - pitch_error
+    yaw_input = yawPID(head)
 
-    x_dif_error = x_error - x_bef_error
-    y_dif_error = y_error - y_bef_error
-    z_dif_error = z_error - z_bef_error
-    yaw_dif_error = yaw_error - yaw_bef_error
-
-    x_bef_error = x_error
-    y_bef_error = y_error
-    z_bef_error = z_error
-    yaw_bef_error = yaw_error
-
-    x_err = [x_error, x_int_error, x_dif_error]
-    y_err = [y_error, y_int_error, y_dif_error]
-    z_err = [z_error, z_int_error, z_dif_error]
-    yaw_err = [yaw_error, yaw_int_error, yaw_dif_error]
-
-    action = controller.calculate(imu=imu, gyro=gyro, error=[x_err, y_err, z_err, yaw_err], head=head)
-    gimbal_cal = controller.gimbal_control(gyro=gyro, pitch_angle=1.6)
-
-    if (status_landing == True and z_error < 0.1) or (status_takeoff == False and status_landing == False):
-        motor.arming(arming_speed=0.0)
-
-    # print(
-    #    "act_0={: .2f}|act_1={: .2f}|act_2={: .2f}|act_3={: .2f}|act_4={: .2f}".format(
-    #        action[0], action[1], action[2], action[3], action[4]
-    #    )
-    # )
-
-    motor_fl = action[0] + action[1] - action[2] - action[3] - action[4]
-    motor_fr = action[0] + action[1] + action[2] - action[3] + action[4]
-    motor_rl = action[0] + action[1] - action[2] + action[3] + action[4]
-    motor_rr = action[0] + action[1] + action[2] + action[3] - action[4]
+    motor_fl = vertical_thrust + vertical_input - roll_input - pitch_input - yaw_input
+    motor_fr = vertical_thrust + vertical_input + roll_input - pitch_input + yaw_input
+    motor_rl = vertical_thrust + vertical_input - roll_input + pitch_input + yaw_input
+    motor_rr = vertical_thrust + vertical_input + roll_input + pitch_input - yaw_input
 
     motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
-    motor.gimbal_down(gimbal_cal[0], gimbal_cal[1], gimbal_cal[2])
-
-    cv2.imshow("camera", image)
-    cv2.waitKey(1)
-
-cv2.destroyAllWindows()
