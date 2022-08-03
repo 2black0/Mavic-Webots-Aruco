@@ -20,14 +20,18 @@ xPID = PID(float(x_param[0]), float(x_param[1]), float(x_param[2]), setpoint=flo
 yPID = PID(float(y_param[0]), float(y_param[1]), float(y_param[2]), setpoint=float(y_target))
 zPID = PID(float(z_param[0]), float(z_param[1]), float(z_param[2]), setpoint=float(z_target))
 yawPID = PID(float(yaw_param[0]), float(yaw_param[1]), float(yaw_param[2]), setpoint=float(yaw_target))
+rollPID = PID(float(roll_param[0]), float(roll_param[1]), float(roll_param[2]), setpoint=float(roll_target))
+pitchPID = PID(float(pitch_param[0]), float(pitch_param[1]), float(pitch_param[2]), setpoint=float(pitch_target))
 
 xPID.output_limits = (-2.5, 2.5)
 yPID.output_limits = (-2.5, 2.5)
 zPID.output_limits = (-5, 5)
 yawPID.output_limits = (-2.5, 2.5)
+rollPID.output_limits = (-2, 2)
+pitchPID.output_limits = (-2, 2)
 
 while robot.step(timestep) != -1:
-    roll, pitch, yaw = sensor.read_imu()
+    roll, pitch, yaw = sensor.read_imu(show=True)
     roll_accel, pitch_accel, yaw_accel = sensor.read_gyro()
     xpos, ypos, zpos = sensor.read_gps()
     head = sensor.read_compass_head()
@@ -100,6 +104,7 @@ while robot.step(timestep) != -1:
 
     vertical_input = zPID(zpos)
     roll_input = (roll_param[0] * roll) + (roll_param[2] * roll_accel) - roll_error
+    # roll_input = rollPID(roll) + (roll_accel_param[2] * roll_accel) - roll_error
     pitch_input = (pitch_param[0] * pitch) - (pitch_param[2] * pitch_accel) + pitch_error
     yaw_input = yawPID(head)
 
