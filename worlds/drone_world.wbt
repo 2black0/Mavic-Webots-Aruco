@@ -193,7 +193,7 @@ DEF drone Mavic2Pro {
   supervisor TRUE
   cameraSlot [
     Camera {
-      rotation 0.5773502691896257 -0.5773502691896257 -0.5773502691896258 2.0943951023931957
+      rotation 1 0 0 0
       width 400
       height 240
     }
