@@ -20,18 +20,18 @@ xPID = PID(float(x_param[0]), float(x_param[1]), float(x_param[2]), setpoint=flo
 yPID = PID(float(y_param[0]), float(y_param[1]), float(y_param[2]), setpoint=float(y_target))
 zPID = PID(float(z_param[0]), float(z_param[1]), float(z_param[2]), setpoint=float(z_target))
 yawPID = PID(float(yaw_param[0]), float(yaw_param[1]), float(yaw_param[2]), setpoint=float(yaw_target))
-rollPID = PID(float(roll_param[0]), float(roll_param[1]), float(roll_param[2]), setpoint=float(roll_target))
-pitchPID = PID(float(pitch_param[0]), float(pitch_param[1]), float(pitch_param[2]), setpoint=float(pitch_target))
+# rollPID = PID(float(roll_param[0]), float(roll_param[1]), float(roll_param[2]), setpoint=float(roll_target))
+# pitchPID = PID(float(pitch_param[0]), float(pitch_param[1]), float(pitch_param[2]), setpoint=float(pitch_target))
 
 xPID.output_limits = (-2.5, 2.5)
 yPID.output_limits = (-2.5, 2.5)
 zPID.output_limits = (-5, 5)
 yawPID.output_limits = (-2.5, 2.5)
-rollPID.output_limits = (-2, 2)
-pitchPID.output_limits = (-2, 2)
+# rollPID.output_limits = (-2, 2)
+# pitchPID.output_limits = (-2, 2)
 
 while robot.step(timestep) != -1:
-    roll, pitch, yaw = sensor.read_imu(show=True)
+    roll, pitch, yaw = sensor.read_imu()
     roll_accel, pitch_accel, yaw_accel = sensor.read_gyro()
     xpos, ypos, zpos = sensor.read_gps()
     head = sensor.read_compass_head()
@@ -93,6 +93,13 @@ while robot.step(timestep) != -1:
             yaw_target = 0.0
             sleep(0.25)
             break
+        if key == ord("L") and status_landing == False:
+            status_landing = True
+            status_takeoff = False
+            z_target = 0.0
+            print("Landing")
+            sleep(0.25)
+            break
 
     xPID.setpoint = x_target
     yPID.setpoint = y_target
@@ -112,5 +119,8 @@ while robot.step(timestep) != -1:
     motor_fr = np.clip((vertical_thrust + vertical_input + roll_input - pitch_input + yaw_input), 0, 100)
     motor_rl = np.clip((vertical_thrust + vertical_input - roll_input + pitch_input + yaw_input), 0, 100)
     motor_rr = np.clip((vertical_thrust + vertical_input + roll_input + pitch_input - yaw_input), 0, 100)
+
+    if status_landing == True and zpos <= 0.15:
+        motor_fl = motor_fr = motor_rl = motor_rr = 0
 
     motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
