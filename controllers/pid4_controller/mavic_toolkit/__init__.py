@@ -152,6 +152,6 @@ class Marker:
         self.center_y = (int(self.corner[0][0][2][1]) / 2) + (int(self.corner[0][0][3][1]) / 2)
         return int(self.image_height / 2), int(self.image_width / 2), self.center_x, self.center_y
 
-    def create_marker(self, xpos, ypos, radius=3, color=(255, 0, 0), thickness=2):
+    def create_marker(self, xpos, ypos, radius=3, color=(255, 0, 0), thickness=1):
         self.image = cv2.circle(self.image, (int(xpos), int(ypos)), radius, color, thickness)
         return self.image
