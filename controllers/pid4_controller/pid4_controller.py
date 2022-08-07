@@ -28,10 +28,11 @@ zPID.output_limits = (-5, 5)
 yawPID.output_limits = (-2.5, 2.5)
 
 while robot.step(timestep) != -1:
-    roll, pitch, yaw = sensor.read_imu(show=True)
+    roll, pitch, yaw = sensor.read_imu(show=False)
     roll_accel, pitch_accel, yaw_accel = sensor.read_gyro()
     xpos, ypos, zpos = sensor.read_gps()
     head = sensor.read_compass_head()
+    image = sensor.read_camera()
 
     key = keyboard.getKey()
     while key > 0:
@@ -117,6 +118,12 @@ while robot.step(timestep) != -1:
             sleep(0.25)
             break
 
+    if status_gimbal == True:
+        roll_gimbal = np.clip((-0.001 * roll_accel + roll_gimbal_angle), -0.5, 0.5)
+        pitch_gimbal = np.clip(((-0.001 * pitch_accel) + pitch_gimbal_angle), -0.5, 1.7)
+        yaw_gimbal = np.clip((-0.001 * yaw_accel + yaw_gimbal_angle), -1.7, 1.7)
+        motor.gimbal_control(roll_gimbal, pitch_gimbal, yaw_gimbal)
+
     xPID.setpoint = x_target
     yPID.setpoint = y_target
     zPID.setpoint = z_target
@@ -135,16 +142,12 @@ while robot.step(timestep) != -1:
     motor_rl = np.clip((vertical_thrust + vertical_input - roll_input + pitch_input + yaw_input), 0, 100)
     motor_rr = np.clip((vertical_thrust + vertical_input + roll_input + pitch_input - yaw_input), 0, 100)
 
-    if status_gimbal == True:
-        roll_gimbal = np.clip((-0.001 * roll_accel + roll_gimbal_angle), -0.5, 0.5)
-        pitch_gimbal = np.clip(((-0.001 * pitch_accel) + pitch_gimbal_angle), -0.5, 1.7)
-        yaw_gimbal = np.clip((-0.001 * yaw_accel + yaw_gimbal_angle), -1.7, 1.7)
-        motor.gimbal_down(roll_gimbal, pitch_gimbal, yaw_gimbal)
-
-    if status_landing == False and status_takeoff == False:
-        motor_fl = motor_fr = motor_rl = motor_rr = 0
-
-    if status_landing == True and zpos <= 0.15:
+    if (status_landing == True and zpos <= 0.15) or (status_landing == False and status_takeoff == False):
         motor_fl = motor_fr = motor_rl = motor_rr = 0
 
     motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
+
+    cv2.imshow("camera", image)
+    cv2.waitKey(1)
+
+cv2.destroyAllWindows()

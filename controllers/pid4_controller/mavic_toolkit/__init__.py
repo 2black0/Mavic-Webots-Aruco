@@ -107,7 +107,7 @@ class Actuator:
         self.motor_rl.setVelocity(arming_speed)
         self.motor_rr.setVelocity(arming_speed)
 
-    def gimbal_down(self, roll_angle=0.0, pitch_angle=0.0, yaw_angle=0.0):
+    def gimbal_control(self, roll_angle=0.0, pitch_angle=0.0, yaw_angle=0.0):
         self.camera_roll.setPosition(roll_angle)
         self.camera_pitch.setPosition(pitch_angle)
         self.camera_yaw.setPosition(yaw_angle)
