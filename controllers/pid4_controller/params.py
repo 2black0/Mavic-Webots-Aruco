@@ -19,3 +19,8 @@ pitch_target = 0.0
 
 status_takeoff = False
 status_landing = False
+status_gimbal = False
+
+roll_gimbal_angle = 0.0
+pitch_gimbal_angle = 0.0
+yaw_gimbal_angle = 0.0
