@@ -28,7 +28,7 @@ zPID.output_limits = (-5, 5)
 yawPID.output_limits = (-2.5, 2.5)
 
 while robot.step(timestep) != -1:
-    roll, pitch, yaw = sensor.read_imu()
+    roll, pitch, yaw = sensor.read_imu(show=True)
     roll_accel, pitch_accel, yaw_accel = sensor.read_gyro()
     xpos, ypos, zpos = sensor.read_gps()
     head = sensor.read_compass_head()

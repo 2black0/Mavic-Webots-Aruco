@@ -2,6 +2,7 @@ import numpy as np
 import math
 from params import *
 from simple_pid import PID
+from scipy.spatial.transform import Rotation as R
 
 
 class Sensor:
@@ -26,7 +27,11 @@ class Sensor:
         self.pitch = self.imu.getRollPitchYaw()[1] * 180 / math.pi
         self.yaw = self.imu.getRollPitchYaw()[2] * 180 / math.pi
         if show:
+            # r = R.from_euler("yxz", [[self.roll, self.pitch, self.yaw]], degrees=True)
+            # rr = r.as_matrix()
+            # rrr = r.as_euler("yxz", degrees=True)
             print("roll={: .2f}|pitch={: .2f}|yaw={: .2f}".format(self.roll, self.pitch, self.yaw))
+            # print("rol_={: .2f}|pitc_={: .2f}|ya_={: .2f}".format(rrr[0][0], rrr[0][1], rrr[0][2]))
         return self.roll, self.pitch, self.yaw
 
     def read_gyro(self, show=False):
