@@ -3,6 +3,8 @@ import math
 from params import *
 from simple_pid import PID
 from scipy.spatial.transform import Rotation as R
+import cv2
+from cv2 import aruco
 
 
 class Sensor:
@@ -123,3 +125,33 @@ class Actuator:
                     motor_fl, -motor_fr, -motor_rl, motor_rr
                 )
             )
+
+
+class Marker:
+    def __init__(self):
+        self.radius = 3
+        self.color_blue = (0, 0, 255)
+        self.color_red = (255, 0, 0)
+        self.thickness = 3
+
+    def find_aruco(self, image):
+        self.image = image
+        self.gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        self.aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
+        self.parameters = aruco.DetectorParameters_create()
+        self.corner, self.id, self.reject = aruco.detectMarkers(self.gray, self.aruco_dict, parameters=self.parameters)
+        return self.corner, self.id, self.reject
+
+    def get_center(self, cam_reso=[0, 0]):
+        self.image_height, self.image_width = cam_reso
+        # self.corner_lb = (int(self.corner[0][0][0][0]), int(self.corner[0][0][0][1]))
+        # self.corner_lt = (int(self.corner[0][0][1][0]), int(self.corner[0][0][1][1]))
+        # self.corner_rb = (int(self.corner[0][0][2][0]), int(self.corner[0][0][2][1]))
+        # self.corner_rt = (int(self.corner[0][0][3][0]), int(self.corner[0][0][3][1]))
+        self.center_x = (int(self.corner[0][0][3][0]) / 2) + (int(self.corner[0][0][0][0]) / 2)
+        self.center_y = (int(self.corner[0][0][2][1]) / 2) + (int(self.corner[0][0][3][1]) / 2)
+        return int(self.image_height / 2), int(self.image_width / 2), self.center_x, self.center_y
+
+    def create_marker(self, xpos, ypos, radius=3, color=(255, 0, 0), thickness=2):
+        self.image = cv2.circle(self.image, (int(xpos), int(ypos)), radius, color, thickness)
+        return self.image

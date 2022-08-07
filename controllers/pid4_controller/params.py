@@ -1,6 +1,6 @@
 x_param = [2, 0.0001, 5]
 y_param = [2, 0.0001, 5]
-z_param = [3, 0.1, 5]
+z_param = [3, 0.08, 10]
 
 roll_param = [0.35, 0, 0.35]
 # roll_accel_param = [0.55, 0, 0.5]
@@ -17,9 +17,13 @@ yaw_target = 0.0
 roll_target = 0.0
 pitch_target = 0.0
 
+y_error = 0.0
+x_error = 0.0
+
 status_takeoff = False
 status_landing = False
 status_gimbal = False
+status_aruco = False
 
 roll_gimbal_angle = 0.0
 pitch_gimbal_angle = 0.0

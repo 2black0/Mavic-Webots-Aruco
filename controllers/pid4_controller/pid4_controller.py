@@ -1,12 +1,13 @@
 """pid4_controller controller."""
 
 from controller import Robot, Keyboard
-from mavic_toolkit import Sensor, Actuator
+from mavic_toolkit import Sensor, Actuator, Marker
 from time import sleep
 from params import *
 from simple_pid import PID
 import numpy as np
 import cv2
+from cv2 import aruco
 
 robot = Robot()
 timestep = int(robot.getBasicTimeStep())
@@ -16,6 +17,8 @@ motor = Actuator(robot)
 motor.arming(5.0)
 keyboard = Keyboard()
 keyboard.enable(timestep)
+marker = Marker()
+cam_reso = sensor.read_camera_resolution()
 
 xPID = PID(float(x_param[0]), float(x_param[1]), float(x_param[2]), setpoint=float(x_target))
 yPID = PID(float(y_param[0]), float(y_param[1]), float(y_param[2]), setpoint=float(y_target))
@@ -87,7 +90,7 @@ while robot.step(timestep) != -1:
             status_gimbal = not status_gimbal
             if status_gimbal == True:
                 pitch_gimbal_angle = 1.6
-            print("Gimbal Stabilize ", status_gimbal)
+            print("Gimbal Stabilize", status_gimbal)
             sleep(0.25)
             break
         if key == ord("I"):
@@ -101,6 +104,11 @@ while robot.step(timestep) != -1:
             if pitch_gimbal_angle <= -0.5:
                 pitch_gimbal_angle = -0.5
             print("pitch_gimbal_angle=", pitch_gimbal_angle)
+            break
+        if key == ord("R") and status_takeoff == True:
+            status_aruco = not status_aruco
+            print("Status Aruco:", status_aruco)
+            sleep(0.25)
             break
         if key == Keyboard.HOME:
             print("Go Home")
@@ -126,6 +134,9 @@ while robot.step(timestep) != -1:
 
     xPID.setpoint = x_target
     yPID.setpoint = y_target
+    if status_aruco == True:
+        xPID.setpoint = x_error
+        yPID.setpoint = y_error
     zPID.setpoint = z_target
     yawPID.setpoint = yaw_target
 
@@ -146,6 +157,16 @@ while robot.step(timestep) != -1:
         motor_fl = motor_fr = motor_rl = motor_rr = 0
 
     motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
+
+    if status_aruco == True:
+        corner, id, reject = marker.find_aruco(image=image)
+        if id is not None:
+            marker_pos = marker.get_center(cam_reso=cam_reso)
+            image = marker.create_marker(xpos=marker_pos[1], ypos=marker_pos[0], color=(255, 255, 0))
+            image = marker.create_marker(xpos=marker_pos[2], ypos=marker_pos[3])
+            if marker_pos[1] != 0:
+                x_error = -(marker_pos[3] - marker_pos[0]) / (marker_pos[0] / 0.5)
+                y_error = (marker_pos[2] - marker_pos[1]) / (marker_pos[1] / 0.5)
 
     cv2.imshow("camera", image)
     cv2.waitKey(1)
