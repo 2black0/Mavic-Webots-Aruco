@@ -11,7 +11,7 @@ class Mavic(Robot):
     K_VERTICAL_THRUST = 68.5
     X_PID = [3, 1.5, 10]
     Y_PID = [2, 3, 10]
-    ALTI_PID = [2.5, 0.2, 10]
+    ALTI_PID = [5, 0.045, 10]
     ROLL_PID = [50, 10, 15]
     PITCH_PID = [40, 10, 15]
     YAW_PID = [0.75, 0, 0.25]
@@ -37,8 +37,8 @@ class Mavic(Robot):
 
     xPID.output_limits = (-1.5, 1.5)
     yPID.output_limits = (-1.5, 1.5)
-    yawPID.output_limits = (-1, 1)
-    altiPID.output_limits = (-4, 4)
+    yawPID.output_limits = (-0.75, 0.75)
+    altiPID.output_limits = (-2.5, 2.5)
 
     def __init__(self):
         Robot.__init__(self)
@@ -107,7 +107,7 @@ class Mavic(Robot):
             elif key == ord("G"):
                 self.status_gimbal = not self.status_gimbal
                 if self.status_gimbal == True:
-                    self.pitch_angle_gimbal = 1.6
+                    self.pitch_angle_gimbal = 0.0
                 print("Gimbal Stabilize", self.status_gimbal)
                 sleep(0.2)
             elif key == ord("I"):
@@ -133,10 +133,10 @@ class Mavic(Robot):
                 self.y_target -= 0.1
                 print("target y:{: .2f}[m]".format(self.y_target))
             elif key == Keyboard.LEFT:
-                self.yaw_target += 0.1
+                self.yaw_target += 0.05
                 print("target yaw:{: .2f}[rad]".format(self.yaw_target))
             elif key == Keyboard.RIGHT:
-                self.yaw_target -= 0.1
+                self.yaw_target -= 0.05
                 print("target yaw:{: .2f}[rad]".format(self.yaw_target))
             elif key == Keyboard.UP:
                 self.alti_target += 0.05
@@ -172,6 +172,10 @@ class Mavic(Robot):
             rear_right_motor_input = self.K_VERTICAL_THRUST + vertical_input - yaw_input - pitch_input + roll_input
 
             if self.status_takeoff == False or (self.status_landing == True and altitude <= 0.1):
+                self.status_takeoff = False
+                self.status_landing = False
+                self.status_gimbal = False
+                self.status_home = False
                 front_left_motor_input = 0.0
                 front_right_motor_input = 0.0
                 rear_left_motor_input = 0.0
