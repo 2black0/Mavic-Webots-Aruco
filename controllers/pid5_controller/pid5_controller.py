@@ -1,5 +1,6 @@
 from controller import Robot, Keyboard
 from simple_pid import PID
+from time import sleep
 
 
 def clamp(value, value_min, value_max):
@@ -7,17 +8,12 @@ def clamp(value, value_min, value_max):
 
 
 class Mavic(Robot):
-    # Constants, empirically found.
-    K_VERTICAL_THRUST = 68.5  # with this thrust, the drone lifts.
-    K_VERTICAL_OFFSET = 0.0  # Vertical offset where the robot actually targets to stabilize itself.
-    K_ROLL_P = 50.0  # P constant of the roll PID.
-    K_PITCH_P = 30.0  # P constant of the pitch PID.
-
-    X_PID = [2, 0, 10]
-    Y_PID = [2, 0.01, 5]
-    ALTI_PID = [2.75, 0.075, 10]
-    ROLL_PID = [30, 10, 15]
-    PITCH_PID = [30, 10, 15]
+    K_VERTICAL_THRUST = 68.5
+    X_PID = [2, 2, 10]
+    Y_PID = [2, 3, 10]
+    ALTI_PID = [2.75, 0.075, 5]
+    ROLL_PID = [50, 10, 15]
+    PITCH_PID = [40, 10, 15]
     YAW_PID = [0.75, 0, 0.25]
 
     x_target = 0.0
@@ -25,8 +21,14 @@ class Mavic(Robot):
     yaw_target = 0.0
     alti_target = 0.0
 
+    roll_angle_gimbal = 0.0
+    pitch_angle_gimbal = 0.0
+    yaw_angle_gimbal = 0.0
+
     status_takeoff = False
     status_landing = False
+    status_gimbal = False
+    status_home = False
 
     xPID = PID(float(X_PID[0]), float(X_PID[1]), float(X_PID[2]), setpoint=float(x_target))
     yPID = PID(float(Y_PID[0]), float(Y_PID[1]), float(Y_PID[2]), setpoint=float(y_target))
@@ -36,7 +38,7 @@ class Mavic(Robot):
     xPID.output_limits = (-1.5, 1.5)
     yPID.output_limits = (-1.5, 1.5)
     yawPID.output_limits = (-1, 1)
-    altiPID.output_limits = (-5, 5)
+    altiPID.output_limits = (-4, 4)
 
     def __init__(self):
         Robot.__init__(self)
@@ -66,22 +68,19 @@ class Mavic(Robot):
             motor.setPosition(float("inf"))
             motor.setVelocity(1)
 
-        # Display manual control message.
-        print("You can control the drone with your computer keyboard:")
-        print("- 'D': drop water")
-        print("- 'up': move forward.")
-        print("- 'down': move backward.")
-        print("- 'right': turn right.")
-        print("- 'left': turn left.")
-        print("- 'shift + up': increase the target altitude.")
-        print("- 'shift + down': decrease the target altitude.")
+        self.camera_roll = self.getDevice("camera roll")
+        self.camera_pitch = self.getDevice("camera pitch")
+        self.camera_yaw = self.getDevice("camera yaw")
+        gimbals = [self.camera_roll, self.camera_pitch, self.camera_yaw]
+        for gimbal in gimbals:
+            gimbal.setPosition(0.0)
 
     def run(self):
         while self.step(self.timeStep) != -1:
             # Read sensors
             roll, pitch, yaw = self.imu.getRollPitchYaw()
-            xpos, ypos, altitude = self.gps.getValues()
             roll_accel, pitch_accel, yaw_accel = self.gyro.getValues()
+            xpos, ypos, altitude = self.gps.getValues()
 
             key = self.keyboard.getKey()
 
@@ -99,10 +98,28 @@ class Mavic(Robot):
                 self.status_takeoff = True
                 self.alti_target = 3.0
                 print("Take Off")
+                sleep(0.2)
             elif key == ord("L"):
                 self.status_landing = True
                 self.alti_target = 0.0
                 print("Landing")
+                sleep(0.2)
+            elif key == ord("G"):
+                self.status_gimbal = not self.status_gimbal
+                if self.status_gimbal == True:
+                    self.pitch_angle_gimbal = 1.6
+                print("Gimbal Stabilize", self.status_gimbal)
+                sleep(0.2)
+            elif key == ord("I"):
+                self.pitch_angle_gimbal += 0.005
+                if self.pitch_angle_gimbal >= 1.7:
+                    self.pitch_angle_gimbal = 1.7
+                print("Pitch Gimbal Angle:", self.pitch_angle_gimbal)
+            elif key == ord("K"):
+                self.pitch_angle_gimbal -= 0.005
+                if self.pitch_angle_gimbal <= -0.5:
+                    self.pitch_angle_gimbal = -0.5
+                print("Pitch Gimbal Angle:", self.pitch_angle_gimbal)
             elif key == ord("W"):
                 self.x_target += 0.1
                 print("target x:{: .2f}[m]".format(self.x_target))
@@ -127,6 +144,14 @@ class Mavic(Robot):
             elif key == Keyboard.DOWN:
                 self.alti_target -= 0.05
                 print("target altitude:{: .2f}[m]".format(self.alti_target))
+            elif key == Keyboard.HOME:
+                self.status_home = not self.status_home
+                self.x_target = 0.0
+                self.y_target = 0.0
+                self.yaw_target = 0.0
+                self.alti_target = 10.0
+                print("Status Home:", self.status_home)
+                sleep(0.2)
 
             self.xPID.setpoint = self.x_target
             self.yPID.setpoint = self.y_target
@@ -156,6 +181,40 @@ class Mavic(Robot):
             self.front_right_motor.setVelocity(-front_right_motor_input)
             self.rear_left_motor.setVelocity(-rear_left_motor_input)
             self.rear_right_motor.setVelocity(rear_right_motor_input)
+
+            if self.status_gimbal == True:
+                roll_gimbal = clamp((-0.001 * roll_accel + self.roll_angle_gimbal), -0.5, 0.5)
+                pitch_gimbal = clamp(((-0.001 * pitch_accel) + self.pitch_angle_gimbal), -0.5, 1.7)
+                yaw_gimbal = clamp((-0.001 * yaw_accel + self.yaw_angle_gimbal), -1.7, 1.7)
+                self.camera_roll.setPosition(roll_gimbal)
+                self.camera_pitch.setPosition(pitch_gimbal)
+                self.camera_yaw.setPosition(yaw_gimbal)
+
+            debug_mode = True
+            if debug_mode == True:
+                print(
+                    "r={: .2f}|p={: .2f}|y={: .2f}|ra={: .2f}|pa={: .2f}|ya={: .2f}|x={: .2f}|y={: .2f}|z={: .2f}|re={: .2f}|pe={: .2f}|ri={: .2f}|pi={: .2f}|yi={: .2f}|vi={: .2f}|fl={: .2f}|fr={: .2f}|rl={: .2f}|rr={: .2f}".format(
+                        roll,
+                        pitch,
+                        yaw,
+                        roll_accel,
+                        pitch_accel,
+                        yaw_accel,
+                        xpos,
+                        ypos,
+                        altitude,
+                        roll_error,
+                        pitch_error,
+                        roll_input,
+                        pitch_input,
+                        yaw_input,
+                        vertical_input,
+                        front_left_motor_input,
+                        front_right_motor_input,
+                        rear_left_motor_input,
+                        rear_right_motor_input,
+                    )
+                )
 
 
 robot = Mavic()
