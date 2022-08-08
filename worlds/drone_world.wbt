@@ -1,4 +1,19 @@
-#VRML_SIM R2022a utf8
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/appearances/protos/SandyGround.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/objects/road/protos/Road.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/appearances/protos/Pavement.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/objects/buildings/protos/Windmill.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/objects/buildings/protos/SmallManor.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/objects/factory/containers/protos/CardboardBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/vehicles/protos/tesla/TeslaModel3Simple.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/objects/trees/protos/Pine.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/7a674e34eb8f3958626605feb92f72ebac787003/projects/objects/trees/protos/Forest.proto"
+EXTERNPROTO "/home/ubuntu/Documents/GitHub/mavic-webots/protos/Mavic2Pro.proto"
+
 WorldInfo {
   info [
     "This demonstration shows a DJI Mavic 2 PRO flying over a rural area."
@@ -14,7 +29,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.23940408632760599 -0.5778965610554402 -0.7802059011376036 2.0960370860357673
-  position 3.9327977762310877 5.0685151959325045 -7.696367998375823
+  position 2.015885160254323 2.2490456765717584 -3.627275327994269
   near 0.2
   follow "Mavic 2 PRO"
   followSmoothness 0.2
@@ -30,6 +45,19 @@ Floor {
   tileSize 6 6
   appearance SandyGround {
   }
+}
+Mavic2Pro {
+  translation 2.78077e-08 0.0657087 -0.805754
+  rotation -0.563453882823861 0.5634528828240689 0.6041858743532166 2.05461
+  name "Mavic 2 PRO(1)"
+  controller "pid4_controller"
+  cameraSlot [
+    Camera {
+      rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+      width 400
+      height 240
+    }
+  ]
 }
 Robot {
   name "supervisor"

@@ -31,3 +31,4 @@ pitch_gimbal_angle = 0.0
 yaw_gimbal_angle = 0.0
 
 counter = 0
+debug_mode = False

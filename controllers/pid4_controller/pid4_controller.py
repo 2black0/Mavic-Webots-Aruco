@@ -111,11 +111,12 @@ while robot.step(timestep) != -1:
             sleep(0.25)
             break
         if key == Keyboard.HOME:
-            print("Go Home")
+            status_home = not status_home
             x_target = 0.0
             y_target = 0.0
             z_target = 10.0
             yaw_target = 0.0
+            print("Status Home:", status_home)
             sleep(0.25)
             break
         if key == ord("L") and status_landing == False:
@@ -132,11 +133,11 @@ while robot.step(timestep) != -1:
         yaw_gimbal = np.clip((-0.001 * yaw_accel + yaw_gimbal_angle), -1.7, 1.7)
         motor.gimbal_control(roll_gimbal, pitch_gimbal, yaw_gimbal)
 
+    # if status_aruco == True:
+    #    x_target = x_error
+    #    y_target = y_error
     xPID.setpoint = x_target
     yPID.setpoint = y_target
-    if status_aruco == True:
-        xPID.setpoint = x_error
-        yPID.setpoint = y_error
     zPID.setpoint = z_target
     yawPID.setpoint = yaw_target
 
@@ -156,7 +157,20 @@ while robot.step(timestep) != -1:
     if (status_landing == True and zpos <= 0.15) or (status_landing == False and status_takeoff == False):
         motor_fl = motor_fr = motor_rl = motor_rr = 0
 
-    motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
+    y_error = ypos - y_target
+    x_error = xpos - x_target
+    z_error = zpos - z_target
+
+    if status_home == True and status_aruco == False:
+        if (
+            (y_error <= 1.0 or y_error >= -1.0)
+            and (x_error <= 1.0 or x_error >= -1.0)
+            and (z_error <= 1.0 or z_error >= -1.0)
+        ):
+            counter += 1
+            if counter >= 100:
+                status_aruco = True
+                print("Status Aruco:", status_aruco)
 
     if status_aruco == True:
         corner, id, reject = marker.find_aruco(image=image)
@@ -165,10 +179,12 @@ while robot.step(timestep) != -1:
             image = marker.create_marker(xpos=marker_pos[1], ypos=marker_pos[0], color=(255, 255, 0))
             image = marker.create_marker(xpos=marker_pos[2], ypos=marker_pos[3])
             if marker_pos[1] != 0:
-                x_error = -(marker_pos[3] - marker_pos[0]) / (marker_pos[0] / 0.5)
-                y_error = (marker_pos[2] - marker_pos[1]) / (marker_pos[1] / 0.5)
+                x_target = -(marker_pos[3] - marker_pos[0]) / (marker_pos[0] / 0.5)
+                y_target = (marker_pos[2] - marker_pos[1]) / (marker_pos[1] / 0.5)
 
     cv2.imshow("camera", image)
     cv2.waitKey(1)
+
+    motor.motor_speed(motor_fl=motor_fl, motor_fr=motor_fr, motor_rl=motor_rl, motor_rr=motor_rr)
 
 cv2.destroyAllWindows()
