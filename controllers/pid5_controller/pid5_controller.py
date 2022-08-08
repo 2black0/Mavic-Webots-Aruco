@@ -9,9 +9,9 @@ def clamp(value, value_min, value_max):
 
 class Mavic(Robot):
     K_VERTICAL_THRUST = 68.5
-    X_PID = [2, 2, 10]
+    X_PID = [3, 1.5, 10]
     Y_PID = [2, 3, 10]
-    ALTI_PID = [2.75, 0.075, 5]
+    ALTI_PID = [2.5, 0.2, 10]
     ROLL_PID = [50, 10, 15]
     PITCH_PID = [40, 10, 15]
     YAW_PID = [0.75, 0, 0.25]
