@@ -1,6 +1,9 @@
 from controller import Robot, Keyboard
 from simple_pid import PID
 from time import sleep
+import numpy as np
+import cv2
+from cv2 import aruco
 
 
 def clamp(value, value_min, value_max):
@@ -9,12 +12,12 @@ def clamp(value, value_min, value_max):
 
 class Mavic(Robot):
     K_VERTICAL_THRUST = 68.5
-    X_PID = [2, 2, 3]
-    Y_PID = [1.5, 2, 2]
+    X_PID = [2, 2, 4]
+    Y_PID = [1.5, 2, 3]
     ALTI_PID = [5, 0.05, 5]
-    ROLL_PID = [55, 1, 7]
-    PITCH_PID = [50, 1, 7]
-    YAW_PID = [0.8, 0.0075, 3]
+    ROLL_PID = [45, 1, 7]
+    PITCH_PID = [35, 1, 7]
+    YAW_PID = [0.5, 0.0075, 3]
 
     x_target = 0.0
     y_target = 0.0
@@ -75,12 +78,20 @@ class Mavic(Robot):
         for gimbal in gimbals:
             gimbal.setPosition(0.0)
 
+    def read_camera(self):
+        self.camera_height = self.camera.getHeight()
+        self.camera_width = self.camera.getWidth()
+        self.image = self.camera.getImage()
+        self.image = np.frombuffer(self.image, np.uint8).reshape((self.camera_height, self.camera_width, 4))
+        return self.image
+
     def run(self):
         while self.step(self.timeStep) != -1:
             # Read sensors
             roll, pitch, yaw = self.imu.getRollPitchYaw()
             roll_accel, pitch_accel, yaw_accel = self.gyro.getValues()
             xpos, ypos, altitude = self.gps.getValues()
+            image = self.read_camera()
 
             key = self.keyboard.getKey()
 
@@ -99,7 +110,7 @@ class Mavic(Robot):
                 self.alti_target = 3.0
                 print("Take Off")
                 sleep(0.2)
-            elif key == ord("L"):
+            elif key == Keyboard.END:
                 self.status_landing = True
                 self.alti_target = 0.0
                 print("Landing")
@@ -107,7 +118,7 @@ class Mavic(Robot):
             elif key == ord("G"):
                 self.status_gimbal = not self.status_gimbal
                 if self.status_gimbal == True:
-                    self.pitch_angle_gimbal = 0.0
+                    self.pitch_angle_gimbal = 1.6
                 print("Gimbal Stabilize", self.status_gimbal)
                 sleep(0.2)
             elif key == ord("I"):
@@ -120,6 +131,26 @@ class Mavic(Robot):
                 if self.pitch_angle_gimbal <= -0.5:
                     self.pitch_angle_gimbal = -0.5
                 print("Pitch Gimbal Angle:", self.pitch_angle_gimbal)
+            elif key == ord("J"):
+                self.roll_angle_gimbal += 0.005
+                if self.roll_angle_gimbal >= 0.5:
+                    self.roll_angle_gimbal = 0.5
+                print("Roll Gimbal Angle:", self.roll_angle_gimbal)
+            elif key == ord("L"):
+                self.roll_angle_gimbal -= 0.005
+                if self.roll_angle_gimbal <= -0.5:
+                    self.roll_angle_gimbal = -0.5
+                print("Roll Gimbal Angle:", self.roll_angle_gimbal)
+            elif key == ord("U"):
+                self.yaw_angle_gimbal += 0.005
+                if self.yaw_angle_gimbal >= 1.7:
+                    self.yaw_angle_gimbal = 1.7
+                print("Yaw Gimbal Angle:", self.yaw_angle_gimbal)
+            elif key == ord("O"):
+                self.yaw_angle_gimbal -= 0.005
+                if self.yaw_angle_gimbal <= -1.7:
+                    self.yaw_angle_gimbal = -1.7
+                print("Yaw Gimbal Angle:", self.yaw_angle_gimbal)
             elif key == ord("W"):
                 self.x_target += 0.1
                 print("target x:{: .2f}[m]".format(self.x_target))
@@ -219,6 +250,10 @@ class Mavic(Robot):
                         rear_right_motor_input,
                     )
                 )
+
+            cv2.imshow("Camera", image)
+            cv2.waitKey(1)
+        cv2.destroyAllWindows()
 
 
 robot = Mavic()
