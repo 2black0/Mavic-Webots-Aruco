@@ -9,12 +9,12 @@ def clamp(value, value_min, value_max):
 
 class Mavic(Robot):
     K_VERTICAL_THRUST = 68.5
-    X_PID = [3, 1.5, 10]
-    Y_PID = [2, 3, 10]
-    ALTI_PID = [5, 0.045, 10]
-    ROLL_PID = [50, 10, 15]
-    PITCH_PID = [40, 10, 15]
-    YAW_PID = [0.75, 0, 0.25]
+    X_PID = [2, 2, 3]
+    Y_PID = [1.5, 2, 2]
+    ALTI_PID = [5, 0.05, 5]
+    ROLL_PID = [55, 1, 7]
+    PITCH_PID = [50, 1, 7]
+    YAW_PID = [0.8, 0.0075, 3]
 
     x_target = 0.0
     y_target = 0.0
@@ -35,9 +35,9 @@ class Mavic(Robot):
     yawPID = PID(float(YAW_PID[0]), float(YAW_PID[1]), float(YAW_PID[2]), setpoint=float(yaw_target))
     altiPID = PID(float(ALTI_PID[0]), float(ALTI_PID[1]), float(ALTI_PID[2]), setpoint=float(alti_target))
 
-    xPID.output_limits = (-1.5, 1.5)
-    yPID.output_limits = (-1.5, 1.5)
-    yawPID.output_limits = (-0.75, 0.75)
+    xPID.output_limits = (-1, 1)
+    yPID.output_limits = (-1, 1)
+    yawPID.output_limits = (-0.5, 0.5)
     altiPID.output_limits = (-2.5, 2.5)
 
     def __init__(self):
@@ -194,7 +194,7 @@ class Mavic(Robot):
                 self.camera_pitch.setPosition(pitch_gimbal)
                 self.camera_yaw.setPosition(yaw_gimbal)
 
-            debug_mode = True
+            debug_mode = False
             if debug_mode == True:
                 print(
                     "r={: .2f}|p={: .2f}|y={: .2f}|ra={: .2f}|pa={: .2f}|ya={: .2f}|x={: .2f}|y={: .2f}|z={: .2f}|re={: .2f}|pe={: .2f}|ri={: .2f}|pi={: .2f}|yi={: .2f}|vi={: .2f}|fl={: .2f}|fr={: .2f}|rl={: .2f}|rr={: .2f}".format(
