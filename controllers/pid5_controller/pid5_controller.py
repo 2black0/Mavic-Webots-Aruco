@@ -32,6 +32,7 @@ class Mavic(Robot):
     status_landing = False
     status_gimbal = False
     status_home = False
+    status_aruco = False
 
     xPID = PID(float(X_PID[0]), float(X_PID[1]), float(X_PID[2]), setpoint=float(x_target))
     yPID = PID(float(Y_PID[0]), float(Y_PID[1]), float(Y_PID[2]), setpoint=float(y_target))
@@ -85,7 +86,15 @@ class Mavic(Robot):
         self.image = np.frombuffer(self.image, np.uint8).reshape((self.camera_height, self.camera_width, 4))
         return self.image
 
-    def run(self):
+    def find_aruco(self, image):
+        self.image = image
+        self.gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        self.aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
+        self.parameters = aruco.DetectorParameters_create()
+        self.corner, self.id, self.reject = aruco.detectMarkers(self.gray, self.aruco_dict, parameters=self.parameters)
+        return self.corner, self.id, self.reject
+
+    def run(self, show=False):
         while self.step(self.timeStep) != -1:
             # Read sensors
             roll, pitch, yaw = self.imu.getRollPitchYaw()
@@ -107,7 +116,9 @@ class Mavic(Robot):
             # Movement
             if key == ord("T"):
                 self.status_takeoff = True
+                self.status_gimbal = True
                 self.alti_target = 3.0
+                self.pitch_angle_gimbal = 1.6
                 print("Take Off")
                 sleep(0.2)
             elif key == Keyboard.END:
@@ -183,6 +194,32 @@ class Mavic(Robot):
                 self.alti_target = 10.0
                 print("Status Home:", self.status_home)
                 sleep(0.2)
+            elif key == ord("M"):
+                self.status_aruco = not self.status_aruco
+                print("Status Aruco:", self.status_aruco)
+                sleep(0.2)
+
+            cam_height = int(self.camera.getHeight())
+            cam_width = int(self.camera.getWidth())
+            # print(cam_height, cam_width)
+
+            if self.status_aruco == True:
+                corner, id, _ = self.find_aruco(image=image)
+                if id is not None:
+                    center_x = corner[0][0][1][0] + ((corner[0][0][0][0] - corner[0][0][1][0]) / 2)
+                    center_y = corner[0][0][2][1] + ((corner[0][0][0][1] - corner[0][0][2][1]) / 2)
+                    # image = cv2.circle(image, (int(center_x), int(center_y)), 3, (255, 0, 0), 3)
+                    self.x_target = -(center_y - (cam_height / 2)) / cam_height
+                    self.y_target = (center_x - (cam_width / 2)) / cam_width
+                    self.xPID.tunings = (0.75, 1, 2)
+                    self.yPID.tunings = (1, 2, 2)
+                    # print(self.x_target, self.y_target)
+
+                image = cv2.line(image, (int(cam_width / 2), cam_height), (int(cam_width / 2), 0), (255, 255, 0), 1)
+                image = cv2.line(image, (0, int(cam_height / 2)), (cam_width, int(cam_height / 2)), (255, 255, 0), 1)
+            else:
+                self.xPID.tunings = self.X_PID
+                self.yPID.tunings = self.Y_PID
 
             self.xPID.setpoint = self.x_target
             self.yPID.setpoint = self.y_target
@@ -225,7 +262,7 @@ class Mavic(Robot):
                 self.camera_pitch.setPosition(pitch_gimbal)
                 self.camera_yaw.setPosition(yaw_gimbal)
 
-            debug_mode = False
+            debug_mode = show
             if debug_mode == True:
                 print(
                     "r={: .2f}|p={: .2f}|y={: .2f}|ra={: .2f}|pa={: .2f}|ya={: .2f}|x={: .2f}|y={: .2f}|z={: .2f}|re={: .2f}|pe={: .2f}|ri={: .2f}|pi={: .2f}|yi={: .2f}|vi={: .2f}|fl={: .2f}|fr={: .2f}|rl={: .2f}|rr={: .2f}".format(
@@ -257,4 +294,4 @@ class Mavic(Robot):
 
 
 robot = Mavic()
-robot.run()
+robot.run(show=False)

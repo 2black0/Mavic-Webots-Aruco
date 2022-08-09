@@ -13,7 +13,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.2864943538733455 -0.11314974536730747 0.9513769601593303 3.805895089906696
-  position 5.305334879195385 3.9333581161065854 5.152415269262098
+  position 19.246935927584158 15.436543390107557 17.27214018447698
   near 0.2
   follow "Mavic 2 PRO"
   followSmoothness 0.2
@@ -73,7 +73,7 @@ SmallManor {
   rotation 0 0 -1 0.392394
 }
 SquareManhole {
-  translation -1 0 -0.03
+  translation -19.73 0 -0.03
 }
 Solid {
   translation 0 0 -0.03
@@ -190,7 +190,7 @@ DEF drone Mavic2Pro {
   supervisor TRUE
   cameraSlot [
     Camera {
-      rotation 0.5773502691896257 -0.5773502691896257 -0.5773502691896258 2.0943951023931957
+      rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
       width 400
       height 240
       near 0.2
