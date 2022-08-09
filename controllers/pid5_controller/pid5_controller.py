@@ -129,7 +129,9 @@ class Mavic(Robot):
             elif key == ord("G"):
                 self.status_gimbal = not self.status_gimbal
                 if self.status_gimbal == True:
+                    self.roll_angle_gimbal = 0.0
                     self.pitch_angle_gimbal = 1.6
+                    self.yaw_angle_gimbal = 0.0
                 print("Gimbal Stabilize", self.status_gimbal)
                 sleep(0.2)
             elif key == ord("I"):
@@ -208,12 +210,12 @@ class Mavic(Robot):
                 if id is not None:
                     center_x = corner[0][0][1][0] + ((corner[0][0][0][0] - corner[0][0][1][0]) / 2)
                     center_y = corner[0][0][2][1] + ((corner[0][0][0][1] - corner[0][0][2][1]) / 2)
-                    # image = cv2.circle(image, (int(center_x), int(center_y)), 3, (255, 0, 0), 3)
+                    image = cv2.circle(image, (int(center_x), int(center_y)), 3, (255, 0, 0), 3)
                     self.x_target = -(center_y - (cam_height / 2)) / cam_height
                     self.y_target = (center_x - (cam_width / 2)) / cam_width
-                    self.xPID.tunings = (0.75, 1, 2)
-                    self.yPID.tunings = (1, 2, 2)
-                    # print(self.x_target, self.y_target)
+                    # self.xPID.tunings = (2, 2, 4)
+                    # self.yPID.tunings = (0.8, 2.5, 3)  # (0.1, 0.01, 1)
+                    print("xe={: .2f}|ye={: .2f}".format(self.x_target, self.y_target))
 
                 image = cv2.line(image, (int(cam_width / 2), cam_height), (int(cam_width / 2), 0), (255, 255, 0), 1)
                 image = cv2.line(image, (0, int(cam_height / 2)), (cam_width, int(cam_height / 2)), (255, 255, 0), 1)
