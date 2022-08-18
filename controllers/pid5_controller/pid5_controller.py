@@ -14,7 +14,7 @@ class Mavic(Robot):
     K_VERTICAL_THRUST = 68.5
     X_PID = [2, 2, 4]
     Y_PID = [1.5, 2, 3]
-    ALTI_PID = [5, 0.05, 5]
+    ALTI_PID = [4, 0.05, 10]
     ROLL_PID = [45, 1, 7]
     PITCH_PID = [35, 1, 7]
     YAW_PID = [0.5, 0.0075, 3]
@@ -34,15 +34,15 @@ class Mavic(Robot):
     status_home = False
     status_aruco = False
 
-    xPID = PID(float(X_PID[0]), float(X_PID[1]), float(X_PID[2]), setpoint=float(x_target))
-    yPID = PID(float(Y_PID[0]), float(Y_PID[1]), float(Y_PID[2]), setpoint=float(y_target))
+    # xPID = PID(float(X_PID[0]), float(X_PID[1]), float(X_PID[2]), setpoint=float(x_target))
+    # yPID = PID(float(Y_PID[0]), float(Y_PID[1]), float(Y_PID[2]), setpoint=float(y_target))
     yawPID = PID(float(YAW_PID[0]), float(YAW_PID[1]), float(YAW_PID[2]), setpoint=float(yaw_target))
     altiPID = PID(float(ALTI_PID[0]), float(ALTI_PID[1]), float(ALTI_PID[2]), setpoint=float(alti_target))
 
-    xPID.output_limits = (-1, 1)
-    yPID.output_limits = (-1, 1)
+    # xPID.output_limits = (-1, 1)
+    # yPID.output_limits = (-1, 1)
     yawPID.output_limits = (-0.5, 0.5)
-    altiPID.output_limits = (-2.5, 2.5)
+    altiPID.output_limits = (-1.5, 1.5)
 
     def __init__(self):
         Robot.__init__(self)
@@ -78,6 +78,12 @@ class Mavic(Robot):
         gimbals = [self.camera_roll, self.camera_pitch, self.camera_yaw]
         for gimbal in gimbals:
             gimbal.setPosition(0.0)
+
+    def convert_to_attitude(self, x_error, y_error, yaw):
+        self.c, self.s = np.cos(yaw), np.sin(yaw)
+        self.R = np.array(((self.c, -self.s), (self.s, self.c)))
+        self.converted = np.matmul([x_error, y_error], self.R)
+        return self.converted
 
     def read_camera(self):
         self.camera_height = self.camera.getHeight()
@@ -201,8 +207,8 @@ class Mavic(Robot):
                 print("Status Aruco:", self.status_aruco)
                 sleep(0.2)
 
-            cam_height = int(self.camera.getHeight())
-            cam_width = int(self.camera.getWidth())
+            cam_height = int(self.camera.getHeight())  # 240
+            cam_width = int(self.camera.getWidth())  # 400
             # print(cam_height, cam_width)
 
             if self.status_aruco == True:
@@ -210,26 +216,34 @@ class Mavic(Robot):
                 if id is not None:
                     center_x = corner[0][0][1][0] + ((corner[0][0][0][0] - corner[0][0][1][0]) / 2)
                     center_y = corner[0][0][2][1] + ((corner[0][0][0][1] - corner[0][0][2][1]) / 2)
-                    image = cv2.circle(image, (int(center_x), int(center_y)), 3, (255, 0, 0), 3)
-                    self.x_target = -(center_y - (cam_height / 2)) / cam_height
-                    self.y_target = (center_x - (cam_width / 2)) / cam_width
-                    # self.xPID.tunings = (2, 2, 4)
-                    # self.yPID.tunings = (0.8, 2.5, 3)  # (0.1, 0.01, 1)
-                    print("xe={: .2f}|ye={: .2f}".format(self.x_target, self.y_target))
+                    image = cv2.circle(image, (int(center_x), int(center_y)), 2, (0, 0, 255), 3)
+                    self.x_target = -4 * ((center_y - (cam_height / 2)) / cam_height)
+                    self.y_target = 4 * ((center_x - (cam_width / 2)) / cam_width)
+                    roll_error = clamp(-self.y_target + 0.06, -1.5, 1.5)
+                    pitch_error = clamp(self.x_target - 0.13, -1.5, 1.5)
+                    # print("xe={: .2f}|ye={: .2f}".format(self.x_target, self.y_target))
+                    # len_aruco = corner[0][0][0][0] - corner[0][0][1][0]
+                    # wid_aruco = corner[0][0][0][1] - corner[0][0][2][1]
+                    # print("len_aruco={: .2f}|wid_aruco={: .2f}".format(len_aruco, wid_aruco))
 
                 image = cv2.line(image, (int(cam_width / 2), cam_height), (int(cam_width / 2), 0), (255, 255, 0), 1)
                 image = cv2.line(image, (0, int(cam_height / 2)), (cam_width, int(cam_height / 2)), (255, 255, 0), 1)
             else:
-                self.xPID.tunings = self.X_PID
-                self.yPID.tunings = self.Y_PID
+                # self.xPID.tunings = self.X_PID
+                # self.yPID.tunings = self.Y_PID
+                roll_error = clamp(-ypos + 0.06, -1.5, 1.5)
+                pitch_error = clamp(-xpos - 0.13, -1.5, 1.5)
 
-            self.xPID.setpoint = self.x_target
-            self.yPID.setpoint = self.y_target
+            # self.xPID.setpoint = self.x_target
+            # self.yPID.setpoint = self.y_target
             self.yawPID.setpoint = self.yaw_target
             self.altiPID.setpoint = self.alti_target
 
-            roll_error = self.yPID(ypos)
-            pitch_error = self.xPID(xpos)
+            # roll_error = self.yPID(ypos)
+            # pitch_error = self.xPID(xpos)
+
+            # roll_error = clamp(-ypos + 0.06, -1.5, 1.5)
+            # pitch_error = clamp(-xpos - 0.13, -1, 1)
 
             roll_input = (self.ROLL_PID[0] * clamp(roll, -1, 1)) + (self.ROLL_PID[2] * roll_accel) + roll_error
             pitch_input = (self.PITCH_PID[0] * clamp(pitch, -1, 1)) + (self.PITCH_PID[2] * pitch_accel) - pitch_error
@@ -277,8 +291,8 @@ class Mavic(Robot):
                         xpos,
                         ypos,
                         altitude,
-                        roll_error,
-                        pitch_error,
+                        roll_error - 0.06,
+                        pitch_error + 0.13,
                         roll_input,
                         pitch_input,
                         yaw_input,
@@ -296,4 +310,4 @@ class Mavic(Robot):
 
 
 robot = Mavic()
-robot.run(show=False)
+robot.run(show=True)
