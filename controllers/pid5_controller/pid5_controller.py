@@ -1,3 +1,4 @@
+from tracemalloc import start
 from controller import Robot, Keyboard
 from simple_pid import PID
 from time import sleep
@@ -29,6 +30,9 @@ header = [
     "front_right_motor_input",
     "rear_left_motor_input",
     "rear_right_motor_input",
+    "Speed_X",
+    "Speed_Y",
+    "Speed_Z",
     "status_takeoff",
     "status_home",
     "status_aruco",
@@ -240,7 +244,14 @@ class Mavic(Robot):
                 if id is not None:
                     center_x = corner[0][0][1][0] + ((corner[0][0][0][0] - corner[0][0][1][0]) / 2)
                     center_y = corner[0][0][2][1] + ((corner[0][0][0][1] - corner[0][0][2][1]) / 2)
-                    image = cv2.circle(image, (int(center_x), int(center_y)), 2, (0, 0, 255), 3)
+                    # image = cv2.circle(image, (int(center_x), int(center_y)), 2, (0, 0, 255), 3)
+                    start_point = (corner[0][0][1][0], corner[0][0][0][1])
+                    end_point = (corner[0][0][0][0], corner[0][0][2][1])
+                    # shapes = np.zeros_like(image, np.uint8)
+                    shapes = image.copy()
+                    cv2.rectangle(shapes, start_point, end_point, (0, 255, 0), -1)
+                    alpha = 0.4
+                    image = cv2.addWeighted(shapes, alpha, image, 1 - alpha, 0)
                     self.x_target = -4 * ((center_y - (cam_height / 2)) / cam_height)
                     self.y_target = 4 * ((center_x - (cam_width / 2)) / cam_width)
                     roll_error = clamp(-self.y_target + 0.06, -1.5, 1.5)
@@ -289,6 +300,9 @@ class Mavic(Robot):
                 self.camera_pitch.setPosition(pitch_gimbal)
                 self.camera_yaw.setPosition(yaw_gimbal)
 
+            speed = self.gps.getSpeedVector()
+            # print("SX={:+.2f}|SY={:+.2f}|SZ={:+.2f}".format(speed[0], speed[1], speed[2]))
+
             logs = [
                 roll,
                 pitch,
@@ -309,6 +323,9 @@ class Mavic(Robot):
                 front_right_motor_input,
                 rear_left_motor_input,
                 rear_right_motor_input,
+                speed[0],
+                speed[1],
+                speed[2],
                 self.status_takeoff,
                 self.status_home,
                 self.status_aruco,
@@ -322,7 +339,7 @@ class Mavic(Robot):
             debug_mode = show
             if debug_mode == True:
                 print(
-                    "r={:+.2f}|p={:+.2f}|y={:+.2f}|ra={:+.2f}|pa={:+.2f}|ya={:+.2f}|x={:+.2f}|y={:+.2f}|z={:+.2f}|re={:+.2f}|pe={:+.2f}|ri={:+.2f}|pi={:+.2f}|yi={:+.2f}|vi={:+.2f}|fl={:+.2f}|fr={:+.2f}|rl={:+.2f}|rr={:+.2f}|st={}|sh={}|sa={}|sl={}".format(
+                    "r={:+.2f}|p={:+.2f}|y={:+.2f}|ra={:+.2f}|pa={:+.2f}|ya={:+.2f}|x={:+.2f}|y={:+.2f}|z={:+.2f}|re={:+.2f}|pe={:+.2f}|ri={:+.2f}|pi={:+.2f}|yi={:+.2f}|vi={:+.2f}|fl={:+.2f}|fr={:+.2f}|rl={:+.2f}|rr={:+.2f}|sx={:+.2f}|sy={:+.2f}|sz={:+.2f}|st={}|sh={}|sa={}|sl={}".format(
                         dlogs[0],
                         dlogs[1],
                         dlogs[2],
@@ -345,7 +362,10 @@ class Mavic(Robot):
                         dlogs[19],
                         dlogs[20],
                         dlogs[21],
-                        dlogs[22],
+                        int(dlogs[22]),
+                        int(dlogs[23]),
+                        int(dlogs[24]),
+                        int(dlogs[25]),
                     )
                 )
 
@@ -362,4 +382,4 @@ class Mavic(Robot):
 
 
 robot = Mavic()
-robot.run(show=False, log=True)
+robot.run(show=False, log=False)
