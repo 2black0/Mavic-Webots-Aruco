@@ -4,6 +4,37 @@ from time import sleep
 import numpy as np
 import cv2
 from cv2 import aruco
+from csv_logger import CsvLogger
+
+filename = "logger.csv"
+header = [
+    "time",
+    "counter",
+    "roll",
+    "pitch",
+    "yaw",
+    "roll_accel",
+    "pitch_accel",
+    "yaw_accel",
+    "xpos",
+    "ypos",
+    "altitude",
+    "roll_error",
+    "pitch_error",
+    "roll_input",
+    "pitch_input",
+    "yaw_input",
+    "vertical_input",
+    "front_left_motor_input",
+    "front_right_motor_input",
+    "rear_left_motor_input",
+    "rear_right_motor_input",
+    "status_takeoff",
+    "status_home",
+    "status_aruco",
+    "status_landing",
+]
+csvlogger = CsvLogger(filename=filename, header=header)
 
 
 def clamp(value, value_min, value_max):
@@ -69,9 +100,9 @@ class Mavic(Robot):
         self.camera_roll = self.getDevice("camera roll")
         self.camera_pitch = self.getDevice("camera pitch")
         self.camera_yaw = self.getDevice("camera yaw")
-        gimbals = [self.camera_roll, self.camera_pitch, self.camera_yaw]
-        for gimbal in gimbals:
-            gimbal.setPosition(0.0)
+        # gimbals = [self.camera_roll, self.camera_pitch, self.camera_yaw]
+        # for gimbal in gimbals:
+        #    gimbal.setPosition(0.0)
 
     def convert_to_attitude(self, x_error, y_error, yaw):
         self.c, self.s = np.cos(yaw), np.sin(yaw)
@@ -94,7 +125,8 @@ class Mavic(Robot):
         self.corner, self.id, self.reject = aruco.detectMarkers(self.gray, self.aruco_dict, parameters=self.parameters)
         return self.corner, self.id, self.reject
 
-    def run(self, show=False):
+    def run(self, show=False, log=False):
+        counter = 0
         while self.step(self.timeStep) != -1:
             # Read sensors
             roll, pitch, yaw = self.imu.getRollPitchYaw()
@@ -104,7 +136,8 @@ class Mavic(Robot):
 
             key = self.keyboard.getKey()
 
-            # Movement
+            # Command
+            ## takeoff
             if key == ord("T"):
                 self.status_takeoff = True
                 self.status_gimbal = True
@@ -112,11 +145,13 @@ class Mavic(Robot):
                 self.pitch_angle_gimbal = 1.6
                 print("Take Off")
                 sleep(0.2)
+            ## landing
             elif key == Keyboard.END:
                 self.status_landing = True
                 self.alti_target = 0.0
                 print("Landing")
                 sleep(0.2)
+            ## gimbal
             elif key == ord("G"):
                 self.status_gimbal = not self.status_gimbal
                 if self.status_gimbal == True:
@@ -155,6 +190,7 @@ class Mavic(Robot):
                 if self.yaw_angle_gimbal <= -1.7:
                     self.yaw_angle_gimbal = -1.7
                 print("Yaw Gimbal Angle:", self.yaw_angle_gimbal)
+            # moving
             elif key == ord("W"):
                 self.x_target += 0.1
                 print("target x:{: .2f}[m]".format(self.x_target))
@@ -179,14 +215,17 @@ class Mavic(Robot):
             elif key == Keyboard.DOWN:
                 self.alti_target -= 0.05
                 print("target altitude:{: .2f}[m]".format(self.alti_target))
+            ## home
             elif key == Keyboard.HOME:
                 self.status_home = not self.status_home
-                self.x_target = 0.0
-                self.y_target = 0.0
-                self.yaw_target = 0.0
-                self.alti_target = 10.0
+                if self.status_home == True:
+                    self.x_target = 0.0
+                    self.y_target = 0.0
+                    self.yaw_target = 0.0
+                    self.alti_target = 10.0
                 print("Status Home:", self.status_home)
                 sleep(0.2)
+            ## aruco
             elif key == ord("M"):
                 self.status_aruco = not self.status_aruco
                 print("Status Aruco:", self.status_aruco)
@@ -211,8 +250,8 @@ class Mavic(Robot):
                 image = cv2.line(image, (int(cam_width / 2), cam_height), (int(cam_width / 2), 0), (255, 255, 0), 1)
                 image = cv2.line(image, (0, int(cam_height / 2)), (cam_width, int(cam_height / 2)), (255, 255, 0), 1)
             else:
-                roll_error = clamp(-ypos + 0.06, -1.5, 1.5)
-                pitch_error = clamp(-xpos - 0.13, -1.5, 1.5)
+                roll_error = clamp(-ypos + 0.06 + self.y_target, -1.5, 1.5)
+                pitch_error = clamp(-xpos - 0.13 + self.x_target, -1.5, 1.5)
 
             self.yawPID.setpoint = self.yaw_target
             self.altiPID.setpoint = self.alti_target
@@ -250,36 +289,77 @@ class Mavic(Robot):
                 self.camera_pitch.setPosition(pitch_gimbal)
                 self.camera_yaw.setPosition(yaw_gimbal)
 
+            logs = [
+                roll,
+                pitch,
+                yaw,
+                roll_accel,
+                pitch_accel,
+                yaw_accel,
+                xpos,
+                ypos,
+                altitude,
+                roll_error,
+                pitch_error,
+                roll_input,
+                pitch_input,
+                yaw_input,
+                vertical_input,
+                front_left_motor_input,
+                front_right_motor_input,
+                rear_left_motor_input,
+                rear_right_motor_input,
+                self.status_takeoff,
+                self.status_home,
+                self.status_aruco,
+                self.status_landing,
+            ]
+
+            dlogs = []
+            for i in logs:
+                dlogs.append(float("{:.2f}".format(i)))
+
             debug_mode = show
             if debug_mode == True:
                 print(
-                    "r={: .2f}|p={: .2f}|y={: .2f}|ra={: .2f}|pa={: .2f}|ya={: .2f}|x={: .2f}|y={: .2f}|z={: .2f}|re={: .2f}|pe={: .2f}|ri={: .2f}|pi={: .2f}|yi={: .2f}|vi={: .2f}|fl={: .2f}|fr={: .2f}|rl={: .2f}|rr={: .2f}".format(
-                        roll,
-                        pitch,
-                        yaw,
-                        roll_accel,
-                        pitch_accel,
-                        yaw_accel,
-                        xpos,
-                        ypos,
-                        altitude,
-                        roll_error - 0.06,
-                        pitch_error + 0.13,
-                        roll_input,
-                        pitch_input,
-                        yaw_input,
-                        vertical_input,
-                        front_left_motor_input,
-                        front_right_motor_input,
-                        rear_left_motor_input,
-                        rear_right_motor_input,
+                    "r={:+.2f}|p={:+.2f}|y={:+.2f}|ra={:+.2f}|pa={:+.2f}|ya={:+.2f}|x={:+.2f}|y={:+.2f}|z={:+.2f}|re={:+.2f}|pe={:+.2f}|ri={:+.2f}|pi={:+.2f}|yi={:+.2f}|vi={:+.2f}|fl={:+.2f}|fr={:+.2f}|rl={:+.2f}|rr={:+.2f}|st={}|sh={}|sa={}|sl={}".format(
+                        dlogs[0],
+                        dlogs[1],
+                        dlogs[2],
+                        dlogs[3],
+                        dlogs[4],
+                        dlogs[5],
+                        dlogs[6],
+                        dlogs[7],
+                        dlogs[8],
+                        dlogs[9],
+                        dlogs[10],
+                        dlogs[11],
+                        dlogs[12],
+                        dlogs[13],
+                        dlogs[14],
+                        dlogs[15],
+                        dlogs[16],
+                        dlogs[17],
+                        dlogs[18],
+                        dlogs[19],
+                        dlogs[20],
+                        dlogs[21],
+                        dlogs[22],
                     )
                 )
 
             cv2.imshow("Camera", image)
             cv2.waitKey(1)
+
+            log_mode = log
+            if log_mode == True:
+                dlogs.insert(0, counter)
+                csvlogger.critical(dlogs)
+
+            counter += 1
         cv2.destroyAllWindows()
 
 
 robot = Mavic()
-robot.run(show=True)
+robot.run(show=False, log=True)
