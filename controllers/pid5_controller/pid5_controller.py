@@ -34,13 +34,9 @@ class Mavic(Robot):
     status_home = False
     status_aruco = False
 
-    # xPID = PID(float(X_PID[0]), float(X_PID[1]), float(X_PID[2]), setpoint=float(x_target))
-    # yPID = PID(float(Y_PID[0]), float(Y_PID[1]), float(Y_PID[2]), setpoint=float(y_target))
     yawPID = PID(float(YAW_PID[0]), float(YAW_PID[1]), float(YAW_PID[2]), setpoint=float(yaw_target))
     altiPID = PID(float(ALTI_PID[0]), float(ALTI_PID[1]), float(ALTI_PID[2]), setpoint=float(alti_target))
 
-    # xPID.output_limits = (-1, 1)
-    # yPID.output_limits = (-1, 1)
     yawPID.output_limits = (-0.5, 0.5)
     altiPID.output_limits = (-1.5, 1.5)
 
@@ -48,12 +44,10 @@ class Mavic(Robot):
         Robot.__init__(self)
         self.timeStep = int(self.getBasicTimeStep())
 
-        # keyboard
         self.keyboard = self.getKeyboard()
         self.keyboard.enable(10 * self.timeStep)
         self.water_to_drop = 0
 
-        # Get and enable devices.
         self.camera = self.getDevice("camera")
         self.camera.enable(self.timeStep)
         self.imu = self.getDevice("inertial unit")
@@ -109,15 +103,6 @@ class Mavic(Robot):
             image = self.read_camera()
 
             key = self.keyboard.getKey()
-
-            # Drop the water from the drone
-            if key == ord("D"):
-                self.water_to_drop += 1
-            elif self.water_to_drop > 0:
-                self.setCustomData(str(self.water_to_drop))
-                self.water_to_drop = 0
-            else:
-                self.setCustomData(str(0))
 
             # Movement
             if key == ord("T"):
@@ -222,28 +207,15 @@ class Mavic(Robot):
                     roll_error = clamp(-self.y_target + 0.06, -1.5, 1.5)
                     pitch_error = clamp(self.x_target - 0.13, -1.5, 1.5)
                     # print("xe={: .2f}|ye={: .2f}".format(self.x_target, self.y_target))
-                    # len_aruco = corner[0][0][0][0] - corner[0][0][1][0]
-                    # wid_aruco = corner[0][0][0][1] - corner[0][0][2][1]
-                    # print("len_aruco={: .2f}|wid_aruco={: .2f}".format(len_aruco, wid_aruco))
 
                 image = cv2.line(image, (int(cam_width / 2), cam_height), (int(cam_width / 2), 0), (255, 255, 0), 1)
                 image = cv2.line(image, (0, int(cam_height / 2)), (cam_width, int(cam_height / 2)), (255, 255, 0), 1)
             else:
-                # self.xPID.tunings = self.X_PID
-                # self.yPID.tunings = self.Y_PID
                 roll_error = clamp(-ypos + 0.06, -1.5, 1.5)
                 pitch_error = clamp(-xpos - 0.13, -1.5, 1.5)
 
-            # self.xPID.setpoint = self.x_target
-            # self.yPID.setpoint = self.y_target
             self.yawPID.setpoint = self.yaw_target
             self.altiPID.setpoint = self.alti_target
-
-            # roll_error = self.yPID(ypos)
-            # pitch_error = self.xPID(xpos)
-
-            # roll_error = clamp(-ypos + 0.06, -1.5, 1.5)
-            # pitch_error = clamp(-xpos - 0.13, -1, 1)
 
             roll_input = (self.ROLL_PID[0] * clamp(roll, -1, 1)) + (self.ROLL_PID[2] * roll_accel) + roll_error
             pitch_input = (self.PITCH_PID[0] * clamp(pitch, -1, 1)) + (self.PITCH_PID[2] * pitch_accel) - pitch_error
