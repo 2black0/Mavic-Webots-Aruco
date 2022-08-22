@@ -1,0 +1,232 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.8) (preloaded format=pdflatex 2022.8.22)  22 AUG 2022 22:38
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex
+(c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex
+LaTeX2e <2022-06-01> patch level 5
+L3 programming layer <2022-08-05> (jpconf.cls
+Document Class: jpconf 2007/03/07 v1.1 LaTeX class for Journal of Physics: Conference Series
+(jpconf11.clo
+File: jpconf11.clo 2005/05/04 v1.0 LaTeX2e file (size option)
+)
+\indentedwidth=\skip47
+\mathindent=\dimen138
+\c@oldftnote=\count185
+\c@section=\count186
+\c@subsection=\count187
+\c@subsubsection=\count188
+\c@paragraph=\count189
+\c@subparagraph=\count190
+\c@figure=\count191
+\c@table=\count192
+\abovecaptionskip=\skip48
+\belowcaptionskip=\skip49
+\bibindent=\dimen139
+\c@eqnval=\count193
+) (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+ (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks16
+) (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+Package: graphics 2022/03/10 v1.4e Standard LaTeX Graphics (DPC,SPQR)
+ (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+) (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+ (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen140
+\Gin@req@width=\dimen141
+) (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/base\fixltx2e.sty
+Package: fixltx2e 2016/12/29 v2.1a fixes to LaTeX (obsolete)
+Applying: [2015/01/01] Old fixltx2e package on input line 46.
+
+
+Package fixltx2e Warning: fixltx2e is not required with releases after 2015
+(fixltx2e)                All fixes are now in the LaTeX kernel.
+(fixltx2e)                See the latexrelease package for details.
+
+Already applied: [0000/00/00] Old fixltx2e package on input line 53.
+) (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
+File: l3backend-pdftex.def 2022-08-05 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count194
+\l__pdf_internal_box=\box51
+) (JPCSLaTeXGuidelines.aux
+
+LaTeX Warning: Label `label' multiply defined.
+
+
+LaTeX Warning: Label `label' multiply defined.
+
+)
+\openout1 = `JPCSLaTeXGuidelines.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+ (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count195
+\scratchdimen=\dimen142
+\scratchbox=\box52
+\nofMPsegments=\count196
+\nofMParguments=\count197
+\everyMPshowfont=\toks17
+\MPscratchCnt=\count198
+\MPscratchDim=\dimen143
+\MPnumerator=\count199
+\makeMPintoPDFobject=\count266
+\everyMPtoPDFconversion=\toks18
+) (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
+ (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
+))
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <18.06749> not available
+(Font)              size <17.28> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <18.06749> not available
+(Font)              size <17.28> substituted on input line 6.
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 8.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 8.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 8.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <9> on input line 10.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 10.
+[1
+
+{C:/Users/User/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2] [3]
+LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 157.
+
+Underfull \hbox (badness 2698) in paragraph at lines 186--194
+\OT1/cmr/m/n/10.95 Numeric reference lists should contain the references within an unnumbered section
+ []
+
+
+Underfull \hbox (badness 1845) in paragraph at lines 186--194
+\OT1/cmr/m/n/10.95 (such as [][]\OT1/cmtt/m/n/10.95 \section*{References}[]\OT1/cmr/m/n/10.95 ). The reference list itself is started by the code
+ []
+
+[4]
+Overfull \hbox (4.65094pt too wide) in paragraph at lines 242--242
+[]\OT1/cmtt/m/n/10.95 \item Nakamura S, Senoh M, Nagahama S, Iwase N, Yamada T, Matsushita T, Kiyoku H[] 
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[5] [6]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[7]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <17.28> on input line 456.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 456.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[8]
+Package epstopdf Info: Source file: <name.eps>
+(epstopdf)                    date: 2004-05-26 12:32:04
+(epstopdf)                    size: 273 bytes
+(epstopdf)             Output file: <name-eps-converted-to.pdf>
+(epstopdf)                    date: 2022-08-22 19:47:48
+(epstopdf)                    size: 4904 bytes
+(epstopdf)             Command: <miktex-epstopdf --outfile=name-eps-converted-to.pdf name.eps>
+(epstopdf)             \includegraphics on input line 475.
+Package epstopdf Info: Output file is already uptodate.
+
+
+pdfTeX warning: pdflatex (file ./name-eps-converted-to.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<name-eps-converted-to.pdf, id=43, 146.5475pt x 146.5475pt>
+File: name-eps-converted-to.pdf Graphic file (type pdf)
+<use name-eps-converted-to.pdf>
+Package pdftex.def Info: name-eps-converted-to.pdf  used on input line 475.
+(pdftex.def)             Requested size: 168.0pt x 167.99832pt.
+Package epstopdf Info: Source file: <name.eps>
+(epstopdf)                    date: 2004-05-26 12:32:04
+(epstopdf)                    size: 273 bytes
+(epstopdf)             Output file: <name-eps-converted-to.pdf>
+(epstopdf)                    date: 2022-08-22 19:47:48
+(epstopdf)                    size: 4904 bytes
+(epstopdf)             Command: <miktex-epstopdf --outfile=name-eps-converted-to.pdf name.eps>
+(epstopdf)             \includegraphics on input line 479.
+Package epstopdf Info: Output file is already uptodate.
+File: name-eps-converted-to.pdf Graphic file (type pdf)
+<use name-eps-converted-to.pdf>
+Package pdftex.def Info: name-eps-converted-to.pdf  used on input line 479.
+(pdftex.def)             Requested size: 168.0pt x 167.99832pt.
+
+Underfull \hbox (badness 1371) in paragraph at lines 480--480
+[]\OT1/cmr/bx/n/10.95 Figure 2. []\OT1/cmr/m/n/10.95 Figure caption for
+ []
+
+Package epstopdf Info: Source file: <name.eps>
+(epstopdf)                    date: 2004-05-26 12:32:04
+(epstopdf)                    size: 273 bytes
+(epstopdf)             Output file: <name-eps-converted-to.pdf>
+(epstopdf)                    date: 2022-08-22 19:47:48
+(epstopdf)                    size: 4904 bytes
+(epstopdf)             Command: <miktex-epstopdf --outfile=name-eps-converted-to.pdf name.eps>
+(epstopdf)             \includegraphics on input line 485.
+Package epstopdf Info: Output file is already uptodate.
+File: name-eps-converted-to.pdf Graphic file (type pdf)
+<use name-eps-converted-to.pdf>
+Package pdftex.def Info: name-eps-converted-to.pdf  used on input line 485.
+(pdftex.def)             Requested size: 168.0pt x 167.99832pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[9 <./name-eps-converted-to.pdf>] [10] (JPCSLaTeXGuidelines.aux)
+
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 0.78749pt have occurred.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 1538 strings out of 477992
+ 24316 string characters out of 2827938
+ 339996 words of memory out of 3000000
+ 20335 multiletter control sequences out of 15000+600000
+ 477597 words of font info for 56 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 55i,14n,62p,1276b,432s stack positions out of 10000i,1000n,20000p,200000b,80000s
+<C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
+Output written on JPCSLaTeXGuidelines.pdf (10 pages, 264226 bytes).
+PDF statistics:
+ 121 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+
