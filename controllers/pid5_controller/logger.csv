@@ -1,0 +1,1 @@
+time,counter,roll,pitch,yaw,roll_accel,pitch_accel,yaw_accel,xpos,ypos,altitude,roll_error,pitch_error,roll_input,pitch_input,yaw_input,vertical_input,front_left_motor_input,front_right_motor_input,rear_left_motor_input,rear_right_motor_input,Speed_X,Speed_Y,Speed_Z,status_takeoff,status_home,status_aruco,status_landing
