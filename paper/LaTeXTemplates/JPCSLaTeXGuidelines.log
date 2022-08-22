@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.8) (preloaded format=pdflatex 2022.8.22)  22 AUG 2022 22:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.8) (preloaded format=pdflatex 2022.8.22)  22 AUG 2022 22:45
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -62,7 +62,52 @@ File: l3backend-pdftex.def 2022-08-05 L3 backend support: PDF output (pdfTeX)
 LaTeX Warning: Label `label' multiply defined.
 
 
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
 LaTeX Warning: Label `label' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
+
+
+LaTeX Warning: Label `iopartnum' multiply defined.
 
 )
 \openout1 = `JPCSLaTeXGuidelines.aux'.
@@ -206,7 +251,7 @@ Package pdftex.def Info: name-eps-converted-to.pdf  used on input line 485.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[9 <./name-eps-converted-to.pdf>] [10] (JPCSLaTeXGuidelines.aux)
+[9 <./name-eps-converted-to.pdf>] [10] [11] (JPCSLaTeXGuidelines.aux)
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 0.78749pt have occurred.
@@ -218,15 +263,15 @@ LaTeX Warning: There were multiply-defined labels.
 Here is how much of TeX's memory you used:
  1538 strings out of 477992
  24316 string characters out of 2827938
- 339996 words of memory out of 3000000
+ 339997 words of memory out of 3000000
  20335 multiletter control sequences out of 15000+600000
  477597 words of font info for 56 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  55i,14n,62p,1276b,432s stack positions out of 10000i,1000n,20000p,200000b,80000s
 <C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on JPCSLaTeXGuidelines.pdf (10 pages, 264226 bytes).
+Output written on JPCSLaTeXGuidelines.pdf (11 pages, 266395 bytes).
 PDF statistics:
- 121 PDF objects out of 1000 (max. 8388607)
+ 124 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

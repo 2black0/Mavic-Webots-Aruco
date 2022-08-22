@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1661182690 "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" "JPCSLaTeXGuidelines.pdf" "JPCSLaTeXGuidelines" 1661182690
+["pdflatex"] 1661183139 "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" "JPCSLaTeXGuidelines.pdf" "JPCSLaTeXGuidelines" 1661183140
   "C:/Users/User/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1661174416 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/User/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1661172285 10359135 ebc7f9a4f97ab70fd9bf72762d0961c0 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmbx10.tfm" 1136765053 1328 c834bbb027764024c09d3d2bf908b5f0 ""
@@ -53,9 +53,9 @@
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/graphics/keyval.sty" 1655058252 2671 7e67d78d9b88c845599a85b2d41f2e39 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/graphics/trig.sty" 1655058252 4023 293ea1c16429fc0c4cf605f4da1791a9 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/l3backend/l3backend-pdftex.def" 1659713780 31050 e4358cca33d04613ad0709cc9084f95a ""
-  "JPCSLaTeXGuidelines.aux" 1661182690 2869 62b7d79bf5270fb22a8451a64e605590 "pdflatex"
-  "JPCSLaTeXGuidelines.tex" 1661182690 29297 cdc7a07088102a4c014242ecdc181536 ""
-  "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" 1661182690 29297 cdc7a07088102a4c014242ecdc181536 ""
+  "JPCSLaTeXGuidelines.aux" 1661183140 3221 87a13abf1076eed05ebcf0b13609d20f "pdflatex"
+  "JPCSLaTeXGuidelines.tex" 1661183138 34701 f54d53395db0cffe84170ff354d263d8 ""
+  "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" 1661183138 34701 f54d53395db0cffe84170ff354d263d8 ""
   "jpconf.cls" 1174963130 35662 9eebec330923a103253705ffabf3109e ""
   "jpconf11.clo" 1174962758 5275 a11555519e412871bd7501f64c7b5aae ""
   "name.eps" 1085549524 273 d856575da56d3bf76beef119e177ff37 ""
