@@ -54,10 +54,15 @@ class Mavic(Robot):
     PITCH_PID = [35, 1, 7]
     YAW_PID = [0.5, 0.0075, 3]
 
+    counter = 0
+
     x_target = 0.0
     y_target = 0.0
     yaw_target = 0.0
     alti_target = 0.0
+
+    x_target_aruco = 0.0
+    y_target_aruco = 0.0
 
     roll_angle_gimbal = 0.0
     pitch_angle_gimbal = 0.0
@@ -68,6 +73,10 @@ class Mavic(Robot):
     status_gimbal = False
     status_home = False
     status_aruco = False
+
+    status_home_A = False
+    status_home_B = False
+    status_home_C = False
 
     yawPID = PID(float(YAW_PID[0]), float(YAW_PID[1]), float(YAW_PID[2]), setpoint=float(yaw_target))
     altiPID = PID(float(ALTI_PID[0]), float(ALTI_PID[1]), float(ALTI_PID[2]), setpoint=float(alti_target))
@@ -148,13 +157,13 @@ class Mavic(Robot):
                 self.alti_target = 3.0
                 self.pitch_angle_gimbal = 1.6
                 print("Take Off")
-                sleep(0.2)
+                sleep(0.15)
             ## landing
             elif key == Keyboard.END:
                 self.status_landing = True
-                self.alti_target = 0.0
+                self.alti_target = 0.1
                 print("Landing")
-                sleep(0.2)
+                sleep(0.15)
             ## gimbal
             elif key == ord("G"):
                 self.status_gimbal = not self.status_gimbal
@@ -163,7 +172,7 @@ class Mavic(Robot):
                     self.pitch_angle_gimbal = 1.6
                     self.yaw_angle_gimbal = 0.0
                 print("Gimbal Stabilize", self.status_gimbal)
-                sleep(0.2)
+                sleep(0.15)
             elif key == ord("I"):
                 self.pitch_angle_gimbal += 0.005
                 if self.pitch_angle_gimbal >= 1.7:
@@ -228,12 +237,41 @@ class Mavic(Robot):
                     self.yaw_target = 0.0
                     self.alti_target = 10.0
                 print("Status Home:", self.status_home)
-                sleep(0.2)
+                sleep(0.15)
             ## aruco
             elif key == ord("M"):
                 self.status_aruco = not self.status_aruco
                 print("Status Aruco:", self.status_aruco)
-                sleep(0.2)
+                sleep(0.15)
+            ## rth
+            elif key == Keyboard.PAGEDOWN:
+                self.status_home_A = not self.status_home_A
+                self.status_aruco = not self.status_aruco
+                if self.status_home_A == True:
+                    self.x_target = 0.0
+                    self.y_target = 0.0
+                    self.yaw_target = 0.0
+                    self.alti_target = 20.0
+                    # self.status_home_A = True
+                print("Return To Home:", self.status_home_A)
+                sleep(0.15)
+
+            """
+            if self.status_home_A == True:
+                error_X = xpos - self.x_target
+                error_Y = ypos - self.y_target
+                error_alti = altitude - self.alti_target
+                print(error_alti)
+                if (
+                    (error_X < 0.25 and error_X > -0.25)
+                    and (error_Y < 0.25 and error_Y > -0.25)
+                    and (error_alti < 0.25 and error_alti > -0.25)
+                ):
+                    self.status_home_A = False
+                    print(self.status_home_A)
+            # elif self.status_home_A == True and self.status_takeoff == True:
+            #    self.status_aruco = True
+            """
 
             cam_height = int(self.camera.getHeight())  # 240
             cam_width = int(self.camera.getWidth())  # 400
@@ -242,6 +280,15 @@ class Mavic(Robot):
             if self.status_aruco == True:
                 corner, id, _ = self.find_aruco(image=image)
                 if id is not None:
+                    # counter += 1
+                    # print(counter)
+                    image = cv2.line(
+                        image, (int(cam_width / 2), cam_height), (int(cam_width / 2), 0), (255, 255, 0), 1
+                    )
+                    image = cv2.line(
+                        image, (0, int(cam_height / 2)), (cam_width, int(cam_height / 2)), (255, 255, 0), 1
+                    )
+
                     center_x = corner[0][0][1][0] + ((corner[0][0][0][0] - corner[0][0][1][0]) / 2)
                     center_y = corner[0][0][2][1] + ((corner[0][0][0][1] - corner[0][0][2][1]) / 2)
                     # image = cv2.circle(image, (int(center_x), int(center_y)), 2, (0, 0, 255), 3)
@@ -252,14 +299,24 @@ class Mavic(Robot):
                     cv2.rectangle(shapes, start_point, end_point, (0, 255, 0), -1)
                     alpha = 0.4
                     image = cv2.addWeighted(shapes, alpha, image, 1 - alpha, 0)
-                    self.x_target = -4 * ((center_y - (cam_height / 2)) / cam_height)
-                    self.y_target = 4 * ((center_x - (cam_width / 2)) / cam_width)
-                    roll_error = clamp(-self.y_target + 0.06, -1.5, 1.5)
-                    pitch_error = clamp(self.x_target - 0.13, -1.5, 1.5)
-                    # print("xe={: .2f}|ye={: .2f}".format(self.x_target, self.y_target))
-
-                image = cv2.line(image, (int(cam_width / 2), cam_height), (int(cam_width / 2), 0), (255, 255, 0), 1)
-                image = cv2.line(image, (0, int(cam_height / 2)), (cam_width, int(cam_height / 2)), (255, 255, 0), 1)
+                    self.x_target_aruco = -4 * ((center_y - (cam_height / 2)) / cam_height)
+                    self.y_target_aruco = 4 * ((center_x - (cam_width / 2)) / cam_width)
+                    roll_error = clamp(-self.y_target_aruco + 0.06, -1.5, 1.5)
+                    pitch_error = clamp(self.x_target_aruco - 0.13, -1.5, 1.5)
+                    # print("xe={: .2f}|ye={: .2f}".format(self.x_target_aruco, self.y_target_aruco))
+                    error_alti = altitude - self.alti_target
+                    if (
+                        (self.x_target_aruco < 0.1 and self.x_target_aruco > -0.1)
+                        and (self.y_target_aruco < 0.1 and self.y_target_aruco > -0.1)
+                        and (error_alti < 0.5 and error_alti > -0.5)
+                        and self.status_landing == False
+                    ):
+                        self.status_landing = True
+                        self.alti_target = 0.0
+                        print("Landing")
+                else:
+                    roll_error = clamp(-ypos + 0.06 + self.y_target, -1.5, 1.5)
+                    pitch_error = clamp(-xpos - 0.13 + self.x_target, -1.5, 1.5)
             else:
                 roll_error = clamp(-ypos + 0.06 + self.y_target, -1.5, 1.5)
                 pitch_error = clamp(-xpos - 0.13 + self.x_target, -1.5, 1.5)
