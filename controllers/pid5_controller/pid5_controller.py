@@ -248,30 +248,29 @@ class Mavic(Robot):
                 self.status_home_A = not self.status_home_A
                 self.status_aruco = not self.status_aruco
                 if self.status_home_A == True:
-                    self.x_target = 0.0
-                    self.y_target = 0.0
                     self.yaw_target = 0.0
                     self.alti_target = 20.0
                     # self.status_home_A = True
                 print("Return To Home:", self.status_home_A)
                 sleep(0.15)
 
-            """
             if self.status_home_A == True:
-                error_X = xpos - self.x_target
-                error_Y = ypos - self.y_target
+                # error_X = xpos - self.x_target
+                # error_Y = ypos - self.y_target
                 error_alti = altitude - self.alti_target
-                print(error_alti)
-                if (
-                    (error_X < 0.25 and error_X > -0.25)
-                    and (error_Y < 0.25 and error_Y > -0.25)
-                    and (error_alti < 0.25 and error_alti > -0.25)
-                ):
-                    self.status_home_A = False
-                    print(self.status_home_A)
+                if error_alti < 0.25 and error_alti > -0.25:
+                    self.x_target = 0.0
+                    self.y_target = 0.0
+                # print(error_alti)
+                # if (
+                #    (error_X < 0.25 and error_X > -0.25)
+                #    and (error_Y < 0.25 and error_Y > -0.25)
+                #    and (error_alti < 0.25 and error_alti > -0.25)
+                # ):
+                #    self.status_home_A = False
+                #    print(self.status_home_A)
             # elif self.status_home_A == True and self.status_takeoff == True:
             #    self.status_aruco = True
-            """
 
             cam_height = int(self.camera.getHeight())  # 240
             cam_width = int(self.camera.getWidth())  # 400
@@ -439,4 +438,4 @@ class Mavic(Robot):
 
 
 robot = Mavic()
-robot.run(show=False, log=False)
+robot.run(show=True, log=False)
