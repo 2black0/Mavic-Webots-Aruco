@@ -133,9 +133,9 @@ INPUT C:\Users\ardys\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy9.tfm
 INPUT C:\Users\ardys\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmtt9.tfm
 INPUT C:\Users\ardys\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx9.tfm
 INPUT C:\Users\ardys\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmti9.tfm
-INPUT C:\Users\ardys\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmtt10.tfm
 OUTPUT JPCSLaTeXGuidelines.pdf
 INPUT C:\Users\ardys\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
+INPUT C:\Users\ardys\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmtt10.tfm
 INPUT C:\Users\ardys\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmti10.tfm
 INPUT C:\Users\ardys\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmcsc10.tfm
 INPUT C:\Users\ardys\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr12.tfm

@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1661209510 "c:/Users/ardys/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" "JPCSLaTeXGuidelines.pdf" "JPCSLaTeXGuidelines" 1661209511
+["pdflatex"] 1661306106 "c:/Users/ardys/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" "JPCSLaTeXGuidelines.pdf" "JPCSLaTeXGuidelines" 1661306106
   "C:/Users/ardys/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1661209391 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/ardys/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1661209398 10359607 75e3387ff3d4954c6d74bd4b057636e5 ""
   "C:/Users/ardys/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmbx10.tfm" 1136765053 1328 c834bbb027764024c09d3d2bf908b5f0 ""
@@ -53,9 +53,9 @@
   "C:/Users/ardys/AppData/Local/Programs/MiKTeX/tex/latex/graphics/keyval.sty" 1655058252 2671 7e67d78d9b88c845599a85b2d41f2e39 ""
   "C:/Users/ardys/AppData/Local/Programs/MiKTeX/tex/latex/graphics/trig.sty" 1655058252 4023 293ea1c16429fc0c4cf605f4da1791a9 ""
   "C:/Users/ardys/AppData/Local/Programs/MiKTeX/tex/latex/l3backend/l3backend-pdftex.def" 1659713780 31050 e4358cca33d04613ad0709cc9084f95a ""
-  "JPCSLaTeXGuidelines.aux" 1661209511 3221 87a13abf1076eed05ebcf0b13609d20f "pdflatex"
-  "JPCSLaTeXGuidelines.tex" 1661209508 34701 f54d53395db0cffe84170ff354d263d8 ""
-  "c:/Users/ardys/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" 1661209508 34701 f54d53395db0cffe84170ff354d263d8 ""
+  "JPCSLaTeXGuidelines.aux" 1661306106 34 3985256e7290058c681f74d7a3565a19 "pdflatex"
+  "JPCSLaTeXGuidelines.tex" 1661306101 36385 08e9992f071e58c05bb5b822b59e9484 ""
+  "c:/Users/ardys/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" 1661306101 36385 08e9992f071e58c05bb5b822b59e9484 ""
   "jpconf.cls" 1661208448 35662 9eebec330923a103253705ffabf3109e ""
   "jpconf11.clo" 1661208448 5275 a11555519e412871bd7501f64c7b5aae ""
   "name.eps" 1661208448 273 d856575da56d3bf76beef119e177ff37 ""
