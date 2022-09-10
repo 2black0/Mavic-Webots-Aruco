@@ -2,6 +2,10 @@
 \usepackage{graphicx}
 \usepackage{fixltx2e}
 
+\graphicspath{{pics/}}
+
+\newcommand{\dd}[1]{\mathrm{d}#1}
+
 \begin{document}
 \title{A Vision and GPS Based System for Autonomous Vertical Landing of UAV Quadcopter}
 
@@ -24,18 +28,54 @@ In general, flying vehicles' flight actions are based on GPS sensors. A global p
 
 Manually landing a quadcopter usually has difficulties. For example, pilots find it difficult to gradually reduce the quadcopter's altitude and land smoothly and accurately at precise locations. Automatic landing using GPS is a method to facilitate the quadcopter land smoothly and accurately. However, in particular area and time conditions, the GPS accurateness becomes less good and causes the quadcopter not to land in the accurately determined area\cite{ref4}. In this paper, we propose a new automatic landing method based on GPS and computer vision so that the quadcopter can land precisely in the specified area. The take-off and landing area used in this study is an aruco marker. Improved landing accuracy, safety and reliability are the advantages of our proposed method.
 
-\section{Material and Methods}
-\verb"jpconf" requires \LaTeXe\ and  can be used with other package files such
-as those loading the AMS extension fonts
-\verb"msam" and \verb"msbm" (these fonts provide the
-blackboard bold alphabet and various extra maths symbols as well as
-symbols useful in figure captions); an extra style file \verb"iopams.sty" is
-provided to load these packages and provide extra definitions for bold Greek letters.
-\subsection{Material}
+\section{Methodology}
+\subsection{Quadcopter Model}
+A quadcopter is a type of flying vehicle which has four motors used to rotate the propeller. The propeller's rotation here will generate lift to raise the quadcopter. Adjusting the speed on each quadcopter motor can perform roll, pitch, yaw or vertical movements. Quadcopters with X configuration consist of front right, rear right, rear left, and front left motors, usually numbered 1,2,3 and 4. The roll movement is influenced by the speed of the right part (1 \& 2) and left part(3 \& 4) motors. Pitch movement is affected by the speed of the front part (1 \& 4) and rear part (2 \& 3) motors. Yaw movement is influenced by combination of motors 1 \& 3 and 2 \& 4. The speed of the four motors on the quadcopter influences the vertical movement. The illustration of the quadcopter movement can be seen in Figure 1.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=30pc]{quadcopter-basic-movement.png}
+    \caption{\label{label}Quadcopter Basic Movement: (A)Pitch (B)Roll (C)Yaw (D)Vertical Movement}
+\end{figure}
+
+Based on rotational and translational movements, a quadcopter mathematical model can be derived for 6-DOF using the Newton-Euler technique. Using this approach, the 6-DOF were deduced as follows:
+
+\begin{equation}
+    \ddot{\phi}=\dot{\theta}\dot{\psi}\left ( \frac{I_{y}-I_{z}}{I_{x}} \right )-\frac{J_{r}}{I_{x}}\dot{\theta}\Omega+\frac{l}{I_{x}}U_{2}
+\end{equation}
+
+\begin{equation}
+    \ddot{\theta}=\dot{\phi}\dot{\psi}\left ( \frac{I_{z}-I_{x}}{I_{y}} \right )-\frac{J_{r}}{I_{y}}\dot{\phi}\Omega+\frac{l}{I_{y}}U_{3}
+\end{equation}
+
+\begin{equation}
+    \ddot{\psi}=\dot{\phi}\dot{\theta}\left ( \frac{I_{x}-I_{y}}{I_{z}} \right )+\frac{l}{I_{z}}U_{4}
+\end{equation}
+
+\begin{equation}
+    \ddot{x}=(cos\phi sin\theta cos\psi + sin\phi sin\psi)\frac{U_{1}}{m}
+\end{equation}
+
+\begin{equation}
+    \ddot{y}=(cos\phi sin\theta cos\psi - sin\phi sin\psi)\frac{U_{1}}{m}
+\end{equation}
+
+\begin{equation}
+    \ddot{z}=-g+(cos\phi cos\theta)\frac{U_{1}}{m}
+\end{equation}
+
+
+\subsection{Landing using GPS}
 Authors should {\it not} add headers, footers or page numbers to the pages of their article---they will
 be added by \iopp\ as part of the production process.
 
-\subsection{Methods}
+
+\subsection{Vision-Based Landing}
+Authors should {\it not} add headers, footers or page numbers to the pages of their article---they will
+be added by \iopp\ as part of the production process.
+
+
+\subsection{Proposed Landing Control}
 The \cls\ class file has two options `a4paper' and `letterpaper':
 \begin{verbatim}
 \documentclass[a4paper]{jpconf}
@@ -501,10 +541,7 @@ Using the graphicx package figures can be included using code such as:
 \end{verbatim}
 
 \section*{Acknowledgments}
-The authors thank the anonymous reviewers for their valuable comments. The research was financially
-supported by Department of Electronics Engineering Education under Universitas Negeri Yogyakarta
-and Ministry of Research, Technology, and Higher Education (Indonesia). Authors also thank to
-Southern Taiwan University of Science and Technology (Taiwan) for setting of robotic manipulators.
+This work was supported by the Group Research Research Grant for the BEAIS Research Group in 2021 which was funded by DIPA Yogyakarta State University, Indonesia, Contract Number XXX
 
 \section*{References}
 \begin{thebibliography}{9}
@@ -542,5 +579,3 @@ Southern Taiwan University of Science and Technology (Taiwan) for setting of rob
 \end{thebibliography}
 
 \end{document}
-
-
