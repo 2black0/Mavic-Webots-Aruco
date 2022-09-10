@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.8) (preloaded format=pdflatex 2022.8.22)  10 SEP 2022 14:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.8) (preloaded format=pdflatex 2022.8.22)  10 SEP 2022 23:41
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -124,103 +124,46 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 [1
 
 {C:/Users/User/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-<pics//quadcopter-basic-movement.png, id=15, 473.478pt x 198.633pt>
+<pics//quadcopter-basic-movement.png, id=15, 938.75719pt x 411.78844pt>
 File: pics//quadcopter-basic-movement.png Graphic file (type png)
 <use pics//quadcopter-basic-movement.png>
-Package pdftex.def Info: pics//quadcopter-basic-movement.png  used on input line 37.
-(pdftex.def)             Requested size: 360.0pt x 151.02931pt.
- [2 <./pics//quadcopter-basic-movement.png>] [3] [4]
-LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 200.
-
-
-LaTeX Warning: Citation `iopartnum' on page 5 undefined on input line 200.
-
-[5]
-Underfull \hbox (badness 2698) in paragraph at lines 229--237
-\OT1/cmr/m/n/10.95 Numeric reference lists should contain the references within an unnumbered section
- []
-
-
-Underfull \hbox (badness 1845) in paragraph at lines 229--237
-\OT1/cmr/m/n/10.95 (such as [][]\OT1/cmtt/m/n/10.95 \section*{References}[]\OT1/cmr/m/n/10.95 ). The reference list itself is started by the code
- []
-
-[6]
-Overfull \hbox (4.65094pt too wide) in paragraph at lines 285--285
-[]\OT1/cmtt/m/n/10.95 \item Nakamura S, Senoh M, Nagahama S, Iwase N, Yamada T, Matsushita T, Kiyoku H[] 
- []
-
-[7] [8]
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[9]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <17.28> on input line 499.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 499.
-Package epstopdf Info: Source file: <name.eps>
-(epstopdf)                    date: 2004-05-26 12:32:04
-(epstopdf)                    size: 273 bytes
-(epstopdf)             Output file: <name-eps-converted-to.pdf>
-(epstopdf)                    date: 2022-08-22 19:47:48
-(epstopdf)                    size: 4904 bytes
-(epstopdf)             Command: <miktex-epstopdf --outfile=name-eps-converted-to.pdf name.eps>
-(epstopdf)             \includegraphics on input line 518.
-Package epstopdf Info: Output file is already uptodate.
-
-
-pdfTeX warning: pdflatex (file ./name-eps-converted-to.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
-<name-eps-converted-to.pdf, id=51, 146.5475pt x 146.5475pt>
-File: name-eps-converted-to.pdf Graphic file (type pdf)
-<use name-eps-converted-to.pdf>
-Package pdftex.def Info: name-eps-converted-to.pdf  used on input line 518.
-(pdftex.def)             Requested size: 168.0pt x 167.99832pt.
-Package epstopdf Info: Source file: <name.eps>
-(epstopdf)                    date: 2004-05-26 12:32:04
-(epstopdf)                    size: 273 bytes
-(epstopdf)             Output file: <name-eps-converted-to.pdf>
-(epstopdf)                    date: 2022-08-22 19:47:48
-(epstopdf)                    size: 4904 bytes
-(epstopdf)             Command: <miktex-epstopdf --outfile=name-eps-converted-to.pdf name.eps>
-(epstopdf)             \includegraphics on input line 522.
-Package epstopdf Info: Output file is already uptodate.
-File: name-eps-converted-to.pdf Graphic file (type pdf)
-<use name-eps-converted-to.pdf>
-Package pdftex.def Info: name-eps-converted-to.pdf  used on input line 522.
-(pdftex.def)             Requested size: 168.0pt x 167.99832pt.
-
-Underfull \hbox (badness 1371) in paragraph at lines 523--523
-[]\OT1/cmr/bx/n/10.95 Figure 3. []\OT1/cmr/m/n/10.95 Figure caption for
- []
+Package pdftex.def Info: pics//quadcopter-basic-movement.png  used on input line 39.
+(pdftex.def)             Requested size: 384.0pt x 168.43849pt.
+ [2 <./pics//quadcopter-basic-movement.png>]
+<pics//flowchart-proposed-algorithm.png, id=22, 522.95375pt x 502.87875pt>
+File: pics//flowchart-proposed-algorithm.png Graphic file (type png)
+<use pics//flowchart-proposed-algorithm.png>
+Package pdftex.def Info: pics//flowchart-proposed-algorithm.png  used on input line 78.
+(pdftex.def)             Requested size: 288.0pt x 276.94481pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-Package epstopdf Info: Source file: <name.eps>
-(epstopdf)                    date: 2004-05-26 12:32:04
-(epstopdf)                    size: 273 bytes
-(epstopdf)             Output file: <name-eps-converted-to.pdf>
-(epstopdf)                    date: 2022-08-22 19:47:48
-(epstopdf)                    size: 4904 bytes
-(epstopdf)             Command: <miktex-epstopdf --outfile=name-eps-converted-to.pdf name.eps>
-(epstopdf)             \includegraphics on input line 528.
-Package epstopdf Info: Output file is already uptodate.
-File: name-eps-converted-to.pdf Graphic file (type pdf)
-<use name-eps-converted-to.pdf>
-Package pdftex.def Info: name-eps-converted-to.pdf  used on input line 528.
-(pdftex.def)             Requested size: 168.0pt x 167.99832pt.
+<pics//block-diagram-controller.png, id=23, 860.21375pt x 397.485pt>
+File: pics//block-diagram-controller.png Graphic file (type png)
+<use pics//block-diagram-controller.png>
+Package pdftex.def Info: pics//block-diagram-controller.png  used on input line 84.
+(pdftex.def)             Requested size: 432.0pt x 199.62144pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[10] [11 <./name-eps-converted-to.pdf>] [12] (JPCSLaTeXGuidelines.aux)
+[3]
+<pics//webots-dji-mavic-2pro.png, id=32, 1028.34187pt x 541.27219pt>
+File: pics//webots-dji-mavic-2pro.png Graphic file (type png)
+<use pics//webots-dji-mavic-2pro.png>
+Package pdftex.def Info: pics//webots-dji-mavic-2pro.png  used on input line 97.
+(pdftex.def)             Requested size: 432.0pt x 227.39058pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[4 <./pics//flowchart-proposed-algorithm.png> <./pics//block-diagram-controller.png>] [5 <./pics//webots-dji-mavic-2pro.png>] [6] [7] (JPCSLaTeXGuidelines.aux)
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 0.78749pt have occurred.
-
-
-LaTeX Warning: There were undefined references.
 
 
 LaTeX Warning: There were multiply-defined labels.
@@ -228,16 +171,16 @@ LaTeX Warning: There were multiply-defined labels.
  ) 
 Here is how much of TeX's memory you used:
  1565 strings out of 477992
- 24760 string characters out of 2827938
- 339067 words of memory out of 3000000
+ 25341 string characters out of 2827938
+ 338012 words of memory out of 3000000
  20359 multiletter control sequences out of 15000+600000
- 477597 words of font info for 56 fonts, out of 8000000 for 9000
+ 475768 words of font info for 50 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,14n,62p,1276b,432s stack positions out of 10000i,1000n,20000p,200000b,80000s
+ 55i,8n,62p,1276b,332s stack positions out of 10000i,1000n,20000p,200000b,80000s
 <C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on JPCSLaTeXGuidelines.pdf (12 pages, 1890623 bytes).
+Output written on JPCSLaTeXGuidelines.pdf (7 pages, 1926062 bytes).
 PDF statistics:
- 140 PDF objects out of 1000 (max. 8388607)
+ 125 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 21 words of extra memory for PDF output out of 10000 (max. 10000000)
 
