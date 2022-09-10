@@ -69,6 +69,11 @@ Based on rotational and translational movements, a quadcopter mathematical model
 \subsection{Vision-Based Landing}
 This study used the well-known ArUco marker as the take-off and landing area. The ArUco marker is a synthetic square marker composed of a wide black border and an inner binary matrix that defines its identifier. Black border for fast image detection and binary codification enables and application of detection and error techniques. The marker's size determines the internal matrix's size; for example, the 4x4 marker size consists of 16 bits.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=16pc]{camera-capture-aruco.png}
+    \caption{\label{label}Calculation X and Y position error based on detection of ArUco Marker}
+\end{figure}
 
 \subsection{Proposed Landing Control}
 GPS is a Global Positioning System, a tool or system that can use to inform users that they are (globally) on the surface of the earth based on satellites. GPS is installed on the flight controller so the flight controller can find out where the quadcopter is. The flight controller can store the take-off position so that, theoretically, the quadcopter can land in the take-off area. In addition, GPS can also function as flying navigation at specific coordinate points.
@@ -131,6 +136,24 @@ organizations should do so in an unnumbered Acknowledgments section
 immediately following the last numbered section of the paper. The
 command \verb"\ack" sets the acknowledgments heading as an unnumbered
 section.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=36pc]{marker-detection-testing-edit.png}
+    \caption{\label{label}Marker detecion testing in Webots. There is information about the translational and rotational position of the quadcopter which is displayed in red font. The quadcopter is marked with a red circle and the aruco marker is marked with an yellow circle.}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{15pc}
+        \includegraphics[width=16pc]{aruco-at-2m.png}
+        \caption{\label{label}Detection of ArUco marker at a distance of 2.17 meters}
+    \end{minipage}\hspace{2pc}%
+    \begin{minipage}{15pc}
+        \includegraphics[width=16pc]{aruco-at-29m.png}
+        \caption{\label{label}Detection of ArUco marker at a distance of 29.05 meters}
+    \end{minipage}
+\end{figure}
 
 \subsection{Precision Landing}
 Authors wishing to acknowledge assistance or encouragement from

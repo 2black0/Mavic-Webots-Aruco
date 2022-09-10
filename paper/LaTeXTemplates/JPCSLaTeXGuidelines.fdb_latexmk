@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1662828064 "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" "JPCSLaTeXGuidelines.pdf" "JPCSLaTeXGuidelines" 1662828065
+["pdflatex"] 1662830351 "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" "JPCSLaTeXGuidelines.pdf" "JPCSLaTeXGuidelines" 1662830352
   "C:/Users/User/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1661174416 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/User/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1661172285 10359135 ebc7f9a4f97ab70fd9bf72762d0961c0 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmbx10.tfm" 1136765053 1328 c834bbb027764024c09d3d2bf908b5f0 ""
@@ -53,13 +53,17 @@
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/graphics/keyval.sty" 1655058252 2671 7e67d78d9b88c845599a85b2d41f2e39 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/graphics/trig.sty" 1655058252 4023 293ea1c16429fc0c4cf605f4da1791a9 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/l3backend/l3backend-pdftex.def" 1659713780 31050 e4358cca33d04613ad0709cc9084f95a ""
-  "JPCSLaTeXGuidelines.aux" 1662828065 1600 d2da0dc8e9dc4803a759f3a9878bd838 "pdflatex"
-  "JPCSLaTeXGuidelines.tex" 1662828063 18350 972450de00e48d3b77f159c4389610b6 ""
-  "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" 1662828063 18350 972450de00e48d3b77f159c4389610b6 ""
+  "JPCSLaTeXGuidelines.aux" 1662830352 1700 8d7fc23b77986ba3f18b24b346ea41c9 "pdflatex"
+  "JPCSLaTeXGuidelines.tex" 1662830351 19402 a910bc394a40a3dd7e7bf56232008490 ""
+  "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" 1662830351 19402 a910bc394a40a3dd7e7bf56232008490 ""
   "jpconf.cls" 1174963130 35662 9eebec330923a103253705ffabf3109e ""
   "jpconf11.clo" 1174962758 5275 a11555519e412871bd7501f64c7b5aae ""
+  "pics//aruco-at-29m.png" 1662828801 269190 28e5115b26e2a258847e05ddcc98ac53 ""
+  "pics//aruco-at-2m.png" 1662828939 204930 3effe274b2e0cdb507e473946d8b778a ""
   "pics//block-diagram-controller.png" 1662827491 64132 62013cc4ca544c226fae8a25dc45215a ""
+  "pics//camera-capture-aruco.png" 1662830287 39336 1bf9601b8d14495214f16f1e99d1cca7 ""
   "pics//flowchart-proposed-algorithm.png" 1662823754 45196 b5670a4c95da7d5a127114c9b21e3baa ""
+  "pics//marker-detection-testing-edit.png" 1662829373 831495 25ad5f0cd312491380fa0764559ccdab ""
   "pics//quadcopter-basic-movement.png" 1662796531 1912266 066c180bf7f6795d292b944efcedbdd1 ""
   "pics//webots-dji-mavic-2pro.png" 1662822265 1106755 f8bfddfcfa969e43fc70e739e6283791 ""
   (generated)
