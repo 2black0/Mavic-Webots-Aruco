@@ -138,8 +138,17 @@ class Mavic(Robot):
         self.corner, self.id, self.reject = aruco.detectMarkers(self.gray, self.aruco_dict, parameters=self.parameters)
         return self.corner, self.id, self.reject
 
-    def run(self, show=False, log=False):
+    def run(self, show=False, log=False, save=False):
         counter = 0
+
+        videoWriter = 0
+        if save is True:
+            fourcc = cv2.VideoWriter_fourcc("X", "V", "I", "D")
+            # fourcc = cv2.VideoWriter_fourcc(*"XVID")
+            # fourcc = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+            # fourcc = cv2.VideoWriter_fourcc("m", "p", "4", "v")
+            videoWriter = cv2.VideoWriter("./video.avi", fourcc, 20, (400, 240))
+
         while self.step(self.timeStep) != -1:
             # Read sensors
             roll, pitch, yaw = self.imu.getRollPitchYaw()
@@ -426,6 +435,8 @@ class Mavic(Robot):
                 )
 
             cv2.imshow("Camera", image)
+            if save is True:
+                videoWriter.write(image)
             cv2.waitKey(1)
 
             log_mode = log
@@ -434,8 +445,10 @@ class Mavic(Robot):
                 csvlogger.critical(dlogs)
 
             counter += 1
+        if save is True:
+            videoWriter.release()
         cv2.destroyAllWindows()
 
 
 robot = Mavic()
-robot.run(show=False, log=True)
+robot.run(show=False, log=True, save=False)
