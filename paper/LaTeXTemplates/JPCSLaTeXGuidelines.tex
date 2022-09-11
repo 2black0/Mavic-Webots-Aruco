@@ -6,6 +6,8 @@
 
 \newcommand{\dd}[1]{\mathrm{d}#1}
 
+\setlength\intextsep{1mm}
+
 \begin{document}
 \title{A Vision and GPS Based System for Autonomous Vertical Landing of UAV Quadcopter}
 
@@ -26,7 +28,7 @@ There are various types of UAVs, namely fixed wing, rotary wing and hybrid fixed
 
 In general, flying vehicles' flight actions are based on GPS sensors. A global positioning system (GPS) is an electronic device that can be used for navigation. GPS provides latitude, longitude and altitude values as a reference from the UAV so that the UAV can fly to a certain point based on that reference. GPS on UAVs, especially quadcopters, is also used to get the take-off location and later used as a landing point. However, the GPS does not provide accurate values in some conditions and environments, so the landing becomes imprecise. In limited applications where the take-off and landing places are very narrow, this is a challenge, so we cannot just rely on GPS to find out the location of the landing point.
 
-Manually landing a quadcopter usually has difficulties. For example, pilots find it difficult to gradually reduce the quadcopter's altitude and land smoothly and accurately at precise locations. Automatic landing using GPS is a method to facilitate the quadcopter land smoothly and accurately. However, in particular area and time conditions, the GPS accurateness becomes less good and causes the quadcopter not to land in the accurately determined area\cite{ref4}. In this paper, we propose a new automatic landing method based on GPS and computer vision so that the quadcopter can land precisely in the specified area. The take-off and landing area used in this study is an aruco marker. Improved landing accuracy, safety and reliability are the advantages of our proposed method.
+Manually landing a quadcopter usually has difficulties. For example, pilots find it difficult to gradually reduce the quadcopter's altitude and land smoothly and accurately at precise locations. Automatic landing using GPS is a method to facilitate the quadcopter land smoothly and accurately. However, in particular area and time conditions, the GPS accurateness becomes less good and causes the quadcopter not to land in the accurately determined area\cite{ref4}. In this paper, we propose a new automatic landing method based on GPS and computer vision so that the quadcopter can land precisely in the specified area. The take-off and landing area used in this study is an ArUco marker. Improved landing accuracy, safety and reliability are the advantages of our proposed method.
 
 \section{Methodology}
 \subsection{Quadcopter Model}
@@ -36,11 +38,11 @@ The roll movement is influenced by the speed of the right part (1,2) and left pa
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=32pc]{quadcopter-basic-movement.png}
+    \includegraphics[width=20pc]{quadcopter-basic-movement.png}
     \caption{\label{label}Quadcopter Basic Movement: (A)Pitch (B)Roll (C)Yaw (D)Vertical Movement (the red color means faster than green)}
 \end{figure}
 
-Based on rotational and translational movements, a quadcopter mathematical model can be derived for 6-DOF using the Newton-Euler technique. Using this approach, the 6-DOF were deduced as follows:
+Based on rotational and translational movements, a quadcopter mathematical model can be derived for 6-DOF using the Newton-Euler technique. Using this approach, the 6-DOF were deduced show in equation 1-6.
 
 \begin{equation}
     \ddot{\phi}=\dot{\theta}\dot{\psi}\left ( \frac{I_{y}-I_{z}}{I_{x}} \right )-\frac{J_{r}}{I_{x}}\dot{\theta}\Omega+\frac{l}{I_{x}}U_{2}
@@ -67,12 +69,38 @@ Based on rotational and translational movements, a quadcopter mathematical model
 \end{equation}
 
 \subsection{Vision-Based Landing}
-This study used the well-known ArUco marker as the take-off and landing area. The ArUco marker is a synthetic square marker composed of a wide black border and an inner binary matrix that defines its identifier. Black border for fast image detection and binary codification enables and application of detection and error techniques. The marker's size determines the internal matrix's size; for example, the 4x4 marker size consists of 16 bits.
+Several artificial fiducial marking systems exist April-Tags, ArUco, and ARToolKit. With this comparison, ArUco detection can detect markers quickly and reliably. Therefore, the ArUco marker was used as a landing pad in this study. The ArUco marker is a synthetic square marker composed of a wide black border and an inner binary matrix that defines its identifier. Black border for fast image detection and binary codification enables and application of detection and error techniques. The marker's size determines the internal matrix's size; for example, the 4x4 marker size consists of 16 bits. ArUco markers generated for landing pads have specifications, as shown in Table 1. We can create ArUco markers using python and OpenCV or through websites that provide ArUco Generator services. The generated marker is an image file in PNG or JPG format shows in Figure 2.
+
+\begin{table}[h]
+    \centering
+    \caption{\label{opt}Parameter of ArUco marker used}
+    \begin{tabular}{@{}*{7}{l}}
+        \br
+        Parameter        & Value                    \\
+        \mr
+        Dictionary       & 6x6 (50, 100, 250, 1000) \\
+        Marker ID        & 1                        \\
+        Marker size (mm) & 100                      \\
+        \br
+    \end{tabular}
+\end{table}
+
+By using OpenCV in the ArUco marker detection process, you will get two values, namely (1) the position of the four corners of the marker; (2) the id of the marker. In this study, what is needed is the position of the four corners so that the midpoint of the marker can be calculated, which can then be calculated for the error in the position of the camera's centre. The marker detection process consists of several steps. The first step is to apply an adaptive threshold by calculating the average value of the surrounding pixels of a given pixel. This way, all the contours in the image are expected to be found, and then the non-square shapes are filtered. The next step is to extract the marker bits in the picture. The first perspective transformation is applied to get the marker in canonical form. Then the canonical image is subjected to a threshold process using otsu to separate the white and black bits. The image is divided into cells according to marker size and border size.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=16pc]{camera-capture-aruco.png}
-    \caption{\label{label}Calculation X and Y position error based on detection of ArUco Marker}
+    \includegraphics[width=6pc]{ArUco-land.png}\hspace{2pc}%
+    \begin{minipage}[b]{14pc}\caption{\label{label}ArUco marker used in this research}
+    \end{minipage}
+\end{figure}
+
+The number of black and white pixels in each cell is then counted to determine whether it includes black or white bits. The final step is to compare with a specific dictionary. The results obtained are the position of the four corners and the id value of the marker. After getting the position of the four corners of the marker, the centre of the marker can be calculated, which can later be used to calculate the position of the X and Y errors by comparing with the midpoint of the camera capture, as shown in Figure 3. The X and Y position error values will be used to adjust the roll and pitch angle of the quadcopter to correct its position according to the desired set point.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=10pc]{camera-capture-ArUco.png}\hspace{2pc}%
+    \begin{minipage}[b]{14pc}\caption{\label{label}Calculation X and Y position error based on detection of ArUco Marker}
+    \end{minipage}
 \end{figure}
 
 \subsection{Proposed Landing Control}
@@ -80,22 +108,44 @@ GPS is a Global Positioning System, a tool or system that can use to inform user
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=24pc]{flowchart-proposed-algorithm.png}
-    \caption{\label{label}Proposed Algorithm Flowchart of Vision and GPS Based System for Vertical Landing Quadcopter}
+    \includegraphics[width=30pc]{block-diagram-controller.png}
+    \caption{\label{label}Block Diagram of Proposed Controller}
 \end{figure}
+
+There are two control loops designed, namely attitude control and position control. Position control is in charge of adjusting the translational position of the quadcopter so that it is right at specific coordinates and altitudes. The output of the position control is the set point values for the roll and pitch angles. The roll and pitch set point values will be input for attitude control so that the quadcopter will move to follow the set points from a predetermined position. The block diagram used in this control proposal is shown in Figure 4. The control system used in this proposal is a PID control system known to be reliable in correcting various systems. The PID control system consists of 3 components: proportional control, integral control, and derivative control. The equation of the PID control system is shown in equation 7.
+
+\begin{equation}
+    u(t)=K_{p}e(t)+K_{i}\int_{0}^{t}e(t)dt+K_{d}\frac{de(t)}{dt}
+\end{equation}
+
+It has been mentioned that GPS has shortcomings, so there is an additional camera used to detect the ArUco marker, which functions as a landing pad. The reference from the position control will switch from GPS to the estimated position based on the camera when the quadcopter camera detects the marker. That way, the quadcopter will position exactly above the marker, and the process of lowering the height is carried out slowly until the quadcopter touches the ground. The proposed control running the algorithm is shown in Figure 5.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=36pc]{block-diagram-controller.png}
-    \caption{\label{label}Block Diagram of Proposed Controller}
+    \includegraphics[width=20pc]{flowchart-proposed-algorithm.png}
+    \caption{\label{label}Proposed Flowchart of Vision and GPS Based System for Vertical Landing Quadcopter}
 \end{figure}
 
 \subsection{Simulation Environment}
 Webots is an application or software developed by the Swiss Federal Institute of Technology that serves to create models, programs, and simulations of a robot. Using webots, we can design or design and develop programs that will run robots in an artificial environment. This application was first developed in 1996 by Dr Oliver Michael. Then in 1998, it was developed again by Cyberbotics Ltd. as proprietary licensed software. Thanks to Cyberbotics Ltd in 2018, made webots an open source application so that it is easy to use and its development becomes more available. Webots can be installed on Windows, Mac OS and Linux (Ubuntu) operating systems.
 
-Webots provides many components in the form of robots, sensors, actuators and other objects such as humans, animals, boxes and many other things that we can use in an artificial environment. In addition, we can also create our objects through 3D CAD applications.The programming languages supported by webots also vary, namely Matlab, C/C++, Python, Java and ROS.
+Webots provides many components in the form of robots, sensors, actuators and other objects such as humans, animals, boxes and many other things that we can use in an artificial environment. In addition, we can also create our objects through 3D CAD applications.The programming languages supported by webots also vary, namely Matlab, C/C++, Python, Java and ROS. This study uses a DJI Mavic 2 Pro drone shows in Figure 6, in which the proposed controller will simulate a yard environment consisting of several objects such as houses, cars, roads, and many trees. Webots version used in theis research is R2022a. The landing pad used to search at the top is displayed with the ArUco marker, which the quadcopter will later recognize as the area for landing. DJI Mavic 2 Pro consists of several sensors such as an accelerometer, gyroscope, barometer, compass and GPS that we can access through the program. The webots simulation program is run on a computer with the specifications listed in Table 2.
 
-This study uses a DJI Mavic 2 Pro drone, in which the proposed controller will simulate a yard environment consisting of several objects such as houses, cars, roads, and many trees. The landing pad used to search at the top is displayed with the aruco marker, which the quadcopter will later recognize as the runway for landing. DJI Mavic 2 Pro consists of several sensors such as an accelerometer, gyroscope, barometer, compass and GPS that we can access through the program. The webots simulation program is run on a computer with the specifications listed in table 1.
+\begin{table}[h]
+    \centering
+    \caption{\label{opt}Computer Spesification}
+    \begin{tabular}{@{}*{7}{l}}
+        \br
+        Component        & Description     \\
+        \mr
+        CPU              & Intel i5 12400F \\
+        RAM              & 2x8GBs          \\
+        GPU              & RTX 3060 12GB   \\
+        Storage          & SSD NVMe Gen4x  \\
+        Operating System & Ubuntu 20.04    \\
+        \br
+    \end{tabular}
+\end{table}
 
 \begin{figure}[h]
     \centering
@@ -103,73 +153,35 @@ This study uses a DJI Mavic 2 Pro drone, in which the proposed controller will s
     \caption{\label{label}DJI Mavic 2 Pro in Webots Environment}
 \end{figure}
 
-\begin{center}
-    \begin{table}[h]
-        \caption{\label{opt}Computer Spesification}
-        \centering
-        \begin{tabular}{@{}*{7}{l}}
-            \br
-            Component        & Description     \\
-            \mr
-            CPU              & Intel i5 12400F \\
-            RAM              & 2x8GBs          \\
-            GPU              & RTX 3060 12GB   \\
-            Storage          & SSD NVMe Gen4x  \\
-            Operating System & Ubuntu 20.04    \\
-            \br
-        \end{tabular}
-    \end{table}
-\end{center}
-
 \section{Result and Discussion}
-Authors wishing to acknowledge assistance or encouragement from
-colleagues, special work by technical staff or financial support from
-organizations should do so in an unnumbered Acknowledgments section
-immediately following the last numbered section of the paper. The
-command \verb"\ack" sets the acknowledgments heading as an unnumbered
-section.
+This section will show the results of testing the proposed control system—several tests on the ArUco marker detection section and overall system testing involving GPS and Computer Vision.
 
 \subsection{Marker Detection}
-Authors wishing to acknowledge assistance or encouragement from
-colleagues, special work by technical staff or financial support from
-organizations should do so in an unnumbered Acknowledgments section
-immediately following the last numbered section of the paper. The
-command \verb"\ack" sets the acknowledgments heading as an unnumbered
-section.
+The ArUco marker detection test is carried out by positioning the quadcopter at several X and Y positions and heights, as shown in Figure 7. To make it easier to observe, the roll, pitch, and yaw angle data, as well as the X, Y, and altitude positions, are displayed on the simulation screen of the webots. Before testing, the gimbal camera must be directed downwards, and there is a control mechanism that makes the camera direction always perpendicular to the ground so that it is hoped that the marker is caught. The camera is in a perfect square shape. Obtained at the height of 2.17 meters is the minimum height that the quadcopter must reach for the camera to detect the presence of a marker. In comparison, the maximum value is 29.85 meters. Beyond this altitude value, the marker cannot be detected, so the quadcopter is set when returning to home mode at 20 meters. The results of this height measurement are shown in Figures 8 and 9, where the marker will be overlaid with a transparent green box.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=36pc]{marker-detection-testing-edit.png}
-    \caption{\label{label}Marker detecion testing in Webots. There is information about the translational and rotational position of the quadcopter which is displayed in red font. The quadcopter is marked with a red circle and the aruco marker is marked with an yellow circle.}
+    \includegraphics[width=20pc]{marker-detection-testing-edit.png}
+    \caption{\label{label}Marker detecion testing in Webots. There is information about the translational and rotational position of the quadcopter which is displayed in red font. The quadcopter is marked with a red circle and the ArUco marker is marked with an yellow circle.}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \begin{minipage}{15pc}
-        \includegraphics[width=16pc]{aruco-at-2m.png}
-        \caption{\label{label}Detection of ArUco marker at a distance of 2.17 meters}
+        \includegraphics[width=16pc]{ArUco-at-2m.png}
+        \caption{\label{label}Minimum range of ArUco marker detection at a distance of 2.17 meters}
     \end{minipage}\hspace{2pc}%
     \begin{minipage}{15pc}
-        \includegraphics[width=16pc]{aruco-at-29m.png}
-        \caption{\label{label}Detection of ArUco marker at a distance of 29.05 meters}
+        \includegraphics[width=16pc]{ArUco-at-29m.png}
+        \caption{\label{label}Maximal range of ArUco marker detection at a distance of 29.85 meters}
     \end{minipage}
 \end{figure}
 
 \subsection{Precision Landing}
-Authors wishing to acknowledge assistance or encouragement from
-colleagues, special work by technical staff or financial support from
-organizations should do so in an unnumbered Acknowledgments section
-immediately following the last numbered section of the paper. The
-command \verb"\ack" sets the acknowledgments heading as an unnumbered
-section.
+test test
 
 \section{Conclusion}
-Authors wishing to acknowledge assistance or encouragement from
-colleagues, special work by technical staff or financial support from
-organizations should do so in an unnumbered Acknowledgments section
-immediately following the last numbered section of the paper. The
-command \verb"\ack" sets the acknowledgments heading as an unnumbered
-section.
+test test
 
 \section*{Acknowledgments}
 This work was supported by the Group Research Research Grant for the BEAIS Research Group in 2021 which was funded by DIPA Yogyakarta State University, Indonesia, Contract Number XXX
