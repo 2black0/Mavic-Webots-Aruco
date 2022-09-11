@@ -178,13 +178,25 @@ The ArUco marker detection test is carried out by positioning the quadcopter at 
 \end{figure}
 
 \subsection{Precision Landing}
-test test
+Overall, testing was carried out after marker detection worked well. Initially, the quadcopter was flown randomly in both X, Y and altitude positions. In this test, the initial position of the quadcopter is X = -11.9m which means its position is towards the back of the home, Y = -8.6m which means its position is to the right of the home, and the initial height is 16.48m. After the quadcopter is in the initial place, the return to home mode is activated. Autonomously the quadcopter will rise to a safe height of 20 meters. After the altitude is reached, the X and Y positions are corrected based on the GPS sensor so that the quadcopter will move towards the landing pad. With a height of 20 meters, the marker will be easily visible; as soon as it is detected, the position reference is replaced on the detection results of the ArUco marker. The quadcopter will then lock its position right above the landing pad so that the quadcopter lowers its height slowly until it hits the landing pad. When the quadcopter has landed perfectly, all the motors will stop turning. Figure 10 shows that this process is going well, and the quadcopter can land perfectly on the landing pad. This can be seen in Figure 11.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=30pc]{graph-response-position-edited.png}
+    \caption{\label{label}X, Y Position, and Altitude of quadcopter in Autonomous Vertical Landing}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=38pc]{process-of-landing.png}
+    \caption{\label{label}Process of Autonomous Vertical Landing: (a) Intial Position of Quadcopter; (b) Return to Home activated; (c) Position Correction based on GPS; (d) Marker detected; (e) Marker at Center of Camera Capture; (f) decrease height of quadcopter, closed to landing pad; (g) landing successful at landing pad}
+\end{figure}
 
 \section{Conclusion}
 test test
 
 \section*{Acknowledgments}
-This work was supported by the Group Research Research Grant for the BEAIS Research Group in 2021 which was funded by DIPA Yogyakarta State University, Indonesia, Contract Number XXX
+This work was supported by the Group Research Research Grant for the BEAIS Research Group in 2021 which was funded by DIPA Yogyakarta State University, Indonesia.
 
 \section*{References}
 \begin{thebibliography}{9}
