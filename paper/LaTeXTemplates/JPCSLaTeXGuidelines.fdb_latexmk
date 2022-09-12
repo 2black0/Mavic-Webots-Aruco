@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1662991285 "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" "JPCSLaTeXGuidelines.pdf" "JPCSLaTeXGuidelines" 1662991286
+["pdflatex"] 1662991828 "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" "JPCSLaTeXGuidelines.pdf" "JPCSLaTeXGuidelines" 1662991830
   "C:/Users/User/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1662989342 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/User/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1661172285 10359135 ebc7f9a4f97ab70fd9bf72762d0961c0 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmbx10.tfm" 1136765053 1328 c834bbb027764024c09d3d2bf908b5f0 ""
@@ -48,9 +48,9 @@
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/graphics/keyval.sty" 1655058252 2671 7e67d78d9b88c845599a85b2d41f2e39 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/graphics/trig.sty" 1655058252 4023 293ea1c16429fc0c4cf605f4da1791a9 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/l3backend/l3backend-pdftex.def" 1659713780 31050 e4358cca33d04613ad0709cc9084f95a ""
-  "JPCSLaTeXGuidelines.aux" 1662991286 1862 7704dda825e854540e8fa9a8f82cb378 "pdflatex"
-  "JPCSLaTeXGuidelines.tex" 1662991284 24736 3b6ab8e571ad1b5c3c550b41646219cc ""
-  "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" 1662991284 24736 3b6ab8e571ad1b5c3c550b41646219cc ""
+  "JPCSLaTeXGuidelines.aux" 1662991830 1862 7704dda825e854540e8fa9a8f82cb378 "pdflatex"
+  "JPCSLaTeXGuidelines.tex" 1662991827 24838 7cd6fb4dd2322818298146d53e6557c4 ""
+  "c:/Users/User/Downloads/mavic-webots/paper/LaTeXTemplates/JPCSLaTeXGuidelines.tex" 1662991827 24838 7cd6fb4dd2322818298146d53e6557c4 ""
   "jpconf.cls" 1174963130 35662 9eebec330923a103253705ffabf3109e ""
   "jpconf11.clo" 1174962758 5275 a11555519e412871bd7501f64c7b5aae ""
   "pics//ArUco-at-29m.png" 1662828801 269190 28e5115b26e2a258847e05ddcc98ac53 ""

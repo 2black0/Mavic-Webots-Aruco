@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.8) (preloaded format=pdflatex 2022.8.22)  12 SEP 2022 21:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.8) (preloaded format=pdflatex 2022.8.22)  12 SEP 2022 21:10
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -143,7 +143,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 19.
 
-Underfull \hbox (badness 10000) in paragraph at lines 23--25
+Underfull \hbox (badness 10000) in paragraph at lines 29--31
 
  []
 
@@ -153,35 +153,35 @@ Underfull \hbox (badness 10000) in paragraph at lines 23--25
 <pics//quadcopter-basic-movement.png, id=14, 938.75719pt x 411.78844pt>
 File: pics//quadcopter-basic-movement.png Graphic file (type png)
 <use pics//quadcopter-basic-movement.png>
-Package pdftex.def Info: pics//quadcopter-basic-movement.png  used on input line 47.
+Package pdftex.def Info: pics//quadcopter-basic-movement.png  used on input line 53.
 (pdftex.def)             Requested size: 240.0pt x 105.2717pt.
  [2 <./pics//quadcopter-basic-movement.png>] [3]
 <pics//camera-capture-ArUco.png, id=29, 429.10312pt x 574.39594pt>
 File: pics//camera-capture-ArUco.png Graphic file (type png)
 <use pics//camera-capture-ArUco.png>
-Package pdftex.def Info: pics//camera-capture-ArUco.png  used on input line 107.
+Package pdftex.def Info: pics//camera-capture-ArUco.png  used on input line 113.
 (pdftex.def)             Requested size: 120.0pt x 160.62817pt.
 <pics//block-diagram-controller.png, id=30, 860.21375pt x 397.485pt>
 File: pics//block-diagram-controller.png Graphic file (type png)
 <use pics//block-diagram-controller.png>
-Package pdftex.def Info: pics//block-diagram-controller.png  used on input line 117.
+Package pdftex.def Info: pics//block-diagram-controller.png  used on input line 123.
 (pdftex.def)             Requested size: 360.0pt x 166.34818pt.
  [4 <./pics//camera-capture-ArUco.png> <./pics//block-diagram-controller.png>]
 <pics//flowchart-proposed-algorithm.png, id=36, 522.95375pt x 502.87875pt>
 File: pics//flowchart-proposed-algorithm.png Graphic file (type png)
 <use pics//flowchart-proposed-algorithm.png>
-Package pdftex.def Info: pics//flowchart-proposed-algorithm.png  used on input line 131.
+Package pdftex.def Info: pics//flowchart-proposed-algorithm.png  used on input line 137.
 (pdftex.def)             Requested size: 240.0pt x 230.7899pt.
  [5 <./pics//flowchart-proposed-algorithm.png>]
 <pics//webots-dji-mavic-2pro.png, id=41, 1028.34187pt x 541.27219pt>
 File: pics//webots-dji-mavic-2pro.png Graphic file (type png)
 <use pics//webots-dji-mavic-2pro.png>
-Package pdftex.def Info: pics//webots-dji-mavic-2pro.png  used on input line 158.
+Package pdftex.def Info: pics//webots-dji-mavic-2pro.png  used on input line 164.
 (pdftex.def)             Requested size: 360.0pt x 189.4894pt.
 <pics//marker-detection-testing-edit.png, id=42, 474.27188pt x 349.305pt>
 File: pics//marker-detection-testing-edit.png Graphic file (type png)
 <use pics//marker-detection-testing-edit.png>
-Package pdftex.def Info: pics//marker-detection-testing-edit.png  used on input line 170.
+Package pdftex.def Info: pics//marker-detection-testing-edit.png  used on input line 176.
 (pdftex.def)             Requested size: 240.0pt x 176.76273pt.
 
 
@@ -190,20 +190,20 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 <pics//ArUco-at-2m.png, id=43, 300.3722pt x 179.92218pt>
 File: pics//ArUco-at-2m.png Graphic file (type png)
 <use pics//ArUco-at-2m.png>
-Package pdftex.def Info: pics//ArUco-at-2m.png  used on input line 177.
+Package pdftex.def Info: pics//ArUco-at-2m.png  used on input line 183.
 (pdftex.def)             Requested size: 192.0pt x 115.00978pt.
 
-Overfull \hbox (12.0pt too wide) in paragraph at lines 177--178
+Overfull \hbox (12.0pt too wide) in paragraph at lines 183--184
 [][] 
  []
 
 <pics//ArUco-at-29m.png, id=44, 301.8778pt x 179.16937pt>
 File: pics//ArUco-at-29m.png Graphic file (type png)
 <use pics//ArUco-at-29m.png>
-Package pdftex.def Info: pics//ArUco-at-29m.png  used on input line 181.
+Package pdftex.def Info: pics//ArUco-at-29m.png  used on input line 187.
 (pdftex.def)             Requested size: 192.0pt x 113.95445pt.
 
-Overfull \hbox (12.0pt too wide) in paragraph at lines 181--182
+Overfull \hbox (12.0pt too wide) in paragraph at lines 187--188
 [][] 
  []
 
@@ -214,13 +214,13 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 <pics//graph-response-position-edited.png, id=49, 571.809pt x 378.651pt>
 File: pics//graph-response-position-edited.png Graphic file (type png)
 <use pics//graph-response-position-edited.png>
-Package pdftex.def Info: pics//graph-response-position-edited.png  used on input line 193.
+Package pdftex.def Info: pics//graph-response-position-edited.png  used on input line 199.
 (pdftex.def)             Requested size: 336.0pt x 222.50659pt.
  [7 <./pics//marker-detection-testing-edit.png> <./pics//ArUco-at-2m.png> <./pics//ArUco-at-29m.png>]
 <pics//process-of-landing.png, id=57, 497.568pt x 385.659pt>
 File: pics//process-of-landing.png Graphic file (type png)
 <use pics//process-of-landing.png>
-Package pdftex.def Info: pics//process-of-landing.png  used on input line 199.
+Package pdftex.def Info: pics//process-of-landing.png  used on input line 205.
 (pdftex.def)             Requested size: 384.0pt x 297.63507pt.
  [8 <./pics//graph-response-position-edited.png> <./pics//process-of-landing.png>] [9] (JPCSLaTeXGuidelines.aux)
 
