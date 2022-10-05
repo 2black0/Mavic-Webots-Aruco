@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.8) (preloaded format=pdflatex 2022.8.22)  12 SEP 2022 21:10
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.8) (preloaded format=pdflatex 2022.8.22)  13 SEP 2022 21:19
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -132,16 +132,6 @@ LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <18.06749> not available
 LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <18.06749> not available
 (Font)              size <17.28> substituted on input line 15.
 
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 17.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 17.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 17.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 19.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 19.
 
 Underfull \hbox (badness 10000) in paragraph at lines 29--31
 
@@ -150,35 +140,41 @@ Underfull \hbox (badness 10000) in paragraph at lines 29--31
 [1
 
 {C:/Users/User/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-<pics//quadcopter-basic-movement.png, id=14, 938.75719pt x 411.78844pt>
+<pics//quadcopter-basic-movement.png, id=12, 938.75719pt x 411.78844pt>
 File: pics//quadcopter-basic-movement.png Graphic file (type png)
 <use pics//quadcopter-basic-movement.png>
 Package pdftex.def Info: pics//quadcopter-basic-movement.png  used on input line 53.
 (pdftex.def)             Requested size: 240.0pt x 105.2717pt.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 59.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 59.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 59.
  [2 <./pics//quadcopter-basic-movement.png>] [3]
-<pics//camera-capture-ArUco.png, id=29, 429.10312pt x 574.39594pt>
+<pics//camera-capture-ArUco.png, id=27, 429.10312pt x 574.39594pt>
 File: pics//camera-capture-ArUco.png Graphic file (type png)
 <use pics//camera-capture-ArUco.png>
 Package pdftex.def Info: pics//camera-capture-ArUco.png  used on input line 113.
 (pdftex.def)             Requested size: 120.0pt x 160.62817pt.
-<pics//block-diagram-controller.png, id=30, 860.21375pt x 397.485pt>
+<pics//block-diagram-controller.png, id=28, 860.21375pt x 397.485pt>
 File: pics//block-diagram-controller.png Graphic file (type png)
 <use pics//block-diagram-controller.png>
 Package pdftex.def Info: pics//block-diagram-controller.png  used on input line 123.
 (pdftex.def)             Requested size: 360.0pt x 166.34818pt.
  [4 <./pics//camera-capture-ArUco.png> <./pics//block-diagram-controller.png>]
-<pics//flowchart-proposed-algorithm.png, id=36, 522.95375pt x 502.87875pt>
+<pics//flowchart-proposed-algorithm.png, id=34, 522.95375pt x 502.87875pt>
 File: pics//flowchart-proposed-algorithm.png Graphic file (type png)
 <use pics//flowchart-proposed-algorithm.png>
 Package pdftex.def Info: pics//flowchart-proposed-algorithm.png  used on input line 137.
 (pdftex.def)             Requested size: 240.0pt x 230.7899pt.
  [5 <./pics//flowchart-proposed-algorithm.png>]
-<pics//webots-dji-mavic-2pro.png, id=41, 1028.34187pt x 541.27219pt>
+<pics//webots-dji-mavic-2pro.png, id=39, 1028.34187pt x 541.27219pt>
 File: pics//webots-dji-mavic-2pro.png Graphic file (type png)
 <use pics//webots-dji-mavic-2pro.png>
 Package pdftex.def Info: pics//webots-dji-mavic-2pro.png  used on input line 164.
 (pdftex.def)             Requested size: 360.0pt x 189.4894pt.
-<pics//marker-detection-testing-edit.png, id=42, 474.27188pt x 349.305pt>
+<pics//marker-detection-testing-edit.png, id=40, 474.27188pt x 349.305pt>
 File: pics//marker-detection-testing-edit.png Graphic file (type png)
 <use pics//marker-detection-testing-edit.png>
 Package pdftex.def Info: pics//marker-detection-testing-edit.png  used on input line 176.
@@ -187,7 +183,7 @@ Package pdftex.def Info: pics//marker-detection-testing-edit.png  used on input 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<pics//ArUco-at-2m.png, id=43, 300.3722pt x 179.92218pt>
+<pics//ArUco-at-2m.png, id=41, 300.3722pt x 179.92218pt>
 File: pics//ArUco-at-2m.png Graphic file (type png)
 <use pics//ArUco-at-2m.png>
 Package pdftex.def Info: pics//ArUco-at-2m.png  used on input line 183.
@@ -197,7 +193,7 @@ Overfull \hbox (12.0pt too wide) in paragraph at lines 183--184
 [][] 
  []
 
-<pics//ArUco-at-29m.png, id=44, 301.8778pt x 179.16937pt>
+<pics//ArUco-at-29m.png, id=42, 301.8778pt x 179.16937pt>
 File: pics//ArUco-at-29m.png Graphic file (type png)
 <use pics//ArUco-at-29m.png>
 Package pdftex.def Info: pics//ArUco-at-29m.png  used on input line 187.
@@ -211,13 +207,13 @@ Overfull \hbox (12.0pt too wide) in paragraph at lines 187--188
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [6 <./pics//webots-dji-mavic-2pro.png>]
-<pics//graph-response-position-edited.png, id=49, 571.809pt x 378.651pt>
+<pics//graph-response-position-edited.png, id=47, 571.809pt x 378.651pt>
 File: pics//graph-response-position-edited.png Graphic file (type png)
 <use pics//graph-response-position-edited.png>
 Package pdftex.def Info: pics//graph-response-position-edited.png  used on input line 199.
 (pdftex.def)             Requested size: 336.0pt x 222.50659pt.
  [7 <./pics//marker-detection-testing-edit.png> <./pics//ArUco-at-2m.png> <./pics//ArUco-at-29m.png>]
-<pics//process-of-landing.png, id=57, 497.568pt x 385.659pt>
+<pics//process-of-landing.png, id=55, 497.568pt x 385.659pt>
 File: pics//process-of-landing.png Graphic file (type png)
 <use pics//process-of-landing.png>
 Package pdftex.def Info: pics//process-of-landing.png  used on input line 205.
@@ -232,17 +228,17 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 1611 strings out of 477992
- 27035 string characters out of 2827938
+ 1603 strings out of 477992
+ 26950 string characters out of 2827938
  336001 words of memory out of 3000000
- 20401 multiletter control sequences out of 15000+600000
- 475299 words of font info for 48 fonts, out of 8000000 for 9000
+ 20396 multiletter control sequences out of 15000+600000
+ 474377 words of font info for 45 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  55i,8n,62p,1413b,360s stack positions out of 10000i,1000n,20000p,200000b,80000s
-<C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on JPCSLaTeXGuidelines.pdf (9 pages, 9587693 bytes).
+<C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
+Output written on JPCSLaTeXGuidelines.pdf (9 pages, 9566336 bytes).
 PDF statistics:
- 128 PDF objects out of 1000 (max. 8388607)
+ 118 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  51 words of extra memory for PDF output out of 10000 (max. 10000000)
 
