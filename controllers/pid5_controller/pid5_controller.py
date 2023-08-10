@@ -130,6 +130,7 @@ class Mavic(Robot):
         self.image = np.frombuffer(self.image, np.uint8).reshape((self.camera_height, self.camera_width, 4))
         return self.image
 
+    # for opencv 4.6.0 and below
     def find_aruco(self, image):
         self.image = image
         self.gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
