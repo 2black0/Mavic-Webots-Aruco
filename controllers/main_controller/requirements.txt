@@ -1,0 +1,8 @@
+# Core dependencies
+numpy>=1.20.0
+opencv-python>=4.5.0
+simple-pid>=1.0.0
+
+# Webots robotics simulation - this is typically installed with Webots
+# and not via pip, but including as reference
+# controller>=R2023a  # Provided by Webots installation
