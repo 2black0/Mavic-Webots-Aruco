@@ -22,24 +22,26 @@ A full simulation environment for a DJI Mavic 2–style quadcopter using [Webots
 
 ```
 
-Mavic_Webots_Aruco/
+Mavic-Webots-Aruco/
 ├── LICENSE
-├── README.md
-├── controllers/
-│   └── main_controller/
-│       ├── main_controller.py       # Main simulation controller
-│       └── mavic_toolkit/           # Modular control framework
-│           ├── actuators.py         # Motor and gimbal control logic
-│           ├── command.py           # Keyboard interaction handler
-│           ├── config.py            # PID gains and flight constants
-│           ├── markers.py           # ArUco marker detection
-│           ├── pid_controller.py    # Custom PID implementation
-│           ├── sensors.py           # IMU, GPS, camera, gyro access
-│           └── **init**.py
-└── worlds/
-├── mavic_world.wbt              # Webots world with landing pad
-└── assets/
-└── aruco-land.png           # Landing target image
+├── Project
+│   ├── controllers
+│   │   └── main_controller
+│   │       ├── main_controller.py
+│   │       ├── mavic_toolkit
+│   │       │   ├── __init__.py
+│   │       │   ├── actuators.py
+│   │       │   ├── command.py
+│   │       │   ├── config.py
+│   │       │   ├── markers.py
+│   │       │   ├── pid_controller.py
+│   │       │   └── sensors.py
+│   │       └── requirements.txt
+│   └── worlds
+│       ├── assets
+│       │   └── aruco-land.png
+│       └── mavic_world.wbt
+└── README.md
 
 ```
 
